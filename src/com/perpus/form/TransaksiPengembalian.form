@@ -67,7 +67,7 @@
                               <Component id="iconJudul" min="-2" pref="30" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="260" max="32767" attributes="0"/>
+                              <EmptySpace pref="358" max="32767" attributes="0"/>
                               <Component id="iconDashboard" min="-2" pref="30" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
@@ -129,7 +129,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Data Pengembalian Buku Perpustakaan"/>
+                <Property name="text" type="java.lang.String" value="Pengembalian Perangkat IT"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
@@ -264,7 +264,7 @@
                                   <Component id="iconJudul3" min="-2" pref="30" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel22" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="389" max="32767" attributes="0"/>
+                                  <EmptySpace pref="349" max="32767" attributes="0"/>
                                   <Component id="btnCloseDetail" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
@@ -395,20 +395,11 @@
                           <Group type="102" alignment="1" attributes="0">
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="jPanel1" alignment="0" max="32767" attributes="0"/>
-                                  <Group type="102" attributes="0">
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                      <Component id="jLabel20" min="-2" pref="80" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="lbInfoDenda" min="-2" pref="150" max="-2" attributes="0"/>
-                                          <Component id="txtDenda" min="-2" pref="148" max="-2" attributes="0"/>
-                                      </Group>
-                                  </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="iconJudul2" min="-2" pref="30" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="185" max="32767" attributes="0"/>
+                                      <EmptySpace pref="260" max="32767" attributes="0"/>
                                       <Component id="iconDashboard2" min="-2" pref="30" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
@@ -427,14 +418,13 @@
                                           <Component id="txtIdPeminjaman" max="32767" attributes="0"/>
                                           <Component id="txtTanggalPinjam" max="32767" attributes="0"/>
                                           <Component id="txtTanggalKembali" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="txtIdAnggota" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="txtNamaAnggota" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="txtIdPegawai" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="txtNamaPegawai" alignment="0" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Component id="btnGetPeminjaman" min="-2" pref="38" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Component id="jLabel21" max="32767" attributes="0"/>
                                           <Component id="jLabel18" alignment="0" max="32767" attributes="0"/>
                                           <Component id="jLabel17" alignment="0" max="32767" attributes="0"/>
                                           <Component id="jLabel16" alignment="0" max="32767" attributes="0"/>
@@ -442,14 +432,14 @@
                                       </Group>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="txtIdBuku" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="txtJudul" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="txtPengarang" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="txtPenerbit" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="txtJumlahKembali" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="txtIdPerangkat" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="txtJenisPerangkat" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="txtMerek" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="txtNoSerial" alignment="0" max="32767" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-                                      <Component id="lbGambar" min="-2" pref="130" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="btnGetPerangkat" min="-2" pref="38" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="110" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -504,61 +494,47 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel15" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                  <Component id="txtIdAnggota" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="txtIdPegawai" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="txtNamaAnggota" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="txtNamaPegawai" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                   <Component id="jLabel24" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                  <Component id="jLabel21" alignment="1" min="-2" pref="30" max="-2" attributes="0"/>
-                                  <Group type="102" attributes="0">
-                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Group type="102" alignment="0" attributes="0">
-                                                      <EmptySpace min="2" pref="2" max="-2" attributes="0"/>
-                                                      <Component id="jLabel19" min="-2" pref="28" max="-2" attributes="0"/>
-                                                  </Group>
-                                                  <Component id="btnGetPeminjaman" alignment="0" min="-2" pref="31" max="-2" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace max="32767" attributes="0"/>
-                                              <Component id="jLabel16" min="-2" pref="29" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" attributes="0">
-                                              <Component id="txtIdBuku" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="3" attributes="0">
-                                                  <Component id="txtJudul" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                                  <Component id="jLabel18" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="3" attributes="0">
-                                                  <Component id="txtPengarang" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                                  <Component id="jLabel17" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="txtPenerbit" min="-2" pref="30" max="-2" attributes="0"/>
-                                          </Group>
+                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <EmptySpace min="2" pref="2" max="-2" attributes="0"/>
+                                          <Component id="jLabel19" min="-2" pref="28" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="txtJumlahKembali" min="-2" pref="30" max="-2" attributes="0"/>
+                                      <Component id="btnGetPeminjaman" min="-2" pref="31" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="lbGambar" alignment="1" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="jLabel16" min="-2" pref="29" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jLabel20" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                  <Component id="txtDenda" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="txtIdPerangkat" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                      <Component id="btnGetPerangkat" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="txtJenisPerangkat" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                      <Component id="jLabel18" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="txtMerek" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                      <Component id="jLabel17" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="txtNoSerial" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="lbInfoDenda" min="-2" pref="30" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="216" max="32767" attributes="0"/>
+                      <EmptySpace pref="280" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -572,7 +548,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Tambah Data Pengembalian Buku Perpustakaan"/>
+                <Property name="text" type="java.lang.String" value="Tambah Data Pengembalian Perangkat"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel6">
@@ -595,24 +571,6 @@
                 </Property>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
-                </Property>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="lbGambar">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="SansSerif" size="14" style="1"/>
-                </Property>
-                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="66" green="66" red="66" type="rgb"/>
-                </Property>
-                <Property name="horizontalAlignment" type="int" value="0"/>
-                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                    <LineBorder>
-                      <Color PropertyName="color" blue="cc" green="cc" red="cc" type="rgb"/>
-                    </LineBorder>
-                  </Border>
                 </Property>
               </Properties>
             </Component>
@@ -657,7 +615,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="ID Anggota"/>
+                <Property name="text" type="java.lang.String" value="ID Pegawai"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="btnGetPeminjaman">
@@ -673,7 +631,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Penerbit"/>
+                <Property name="text" type="java.lang.String" value="No Serial"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel17">
@@ -684,7 +642,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Pengarang"/>
+                <Property name="text" type="java.lang.String" value="Merek"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel18">
@@ -695,7 +653,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Judul"/>
+                <Property name="text" type="java.lang.String" value="Jenis Perangkat"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel19">
@@ -706,29 +664,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Buku"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel20">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="SansSerif" size="14" style="1"/>
-                </Property>
-                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="66" green="66" red="66" type="rgb"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Denda"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="lbInfoDenda">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="SansSerif" size="10" style="2"/>
-                </Property>
-                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="66" green="66" red="66" type="rgb"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Info Denda"/>
+                <Property name="text" type="java.lang.String" value="ID Perangkat"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel24">
@@ -739,18 +675,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Nama Anggota"/>
-              </Properties>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel21">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="SansSerif" size="14" style="1"/>
-                </Property>
-                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="66" green="66" red="66" type="rgb"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Jumlah Kembali"/>
+                <Property name="text" type="java.lang.String" value="Nama Pegawai"/>
               </Properties>
             </Component>
             <Container class="javax.swing.JPanel" name="jPanel1">
@@ -831,21 +756,22 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtTanggalKembali">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtIdAnggota">
+            <Component class="javax.swing.JTextField" name="txtIdPegawai">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtNamaAnggota">
+            <Component class="javax.swing.JTextField" name="txtNamaPegawai">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtJumlahKembali">
+            <Component class="javax.swing.JTextField" name="txtNoSerial">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtPenerbit">
+            <Component class="javax.swing.JTextField" name="txtMerek">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtPengarang">
+            <Component class="javax.swing.JTextField" name="txtJenisPerangkat">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtJudul">
+            <Component class="javax.swing.JTextField" name="txtIdPerangkat">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtIdBuku">
-            </Component>
-            <Component class="javax.swing.JTextField" name="txtDenda">
+            <Component class="javax.swing.JButton" name="btnGetPerangkat">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="..."/>
+              </Properties>
             </Component>
           </SubComponents>
         </Container>

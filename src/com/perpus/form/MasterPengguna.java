@@ -18,29 +18,88 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 public class MasterPengguna extends javax.swing.JPanel {
-
     private int halamanSaatIni = 1;
     private int dataPerHalaman = 14;
     private int totalPages;
-    
+
     private final Connection conn;
-    private FormLogin formLogin;
-    
+    private String selectedPegawaiID = null; // BISA NULL
+    private JDialog dialogPegawai;
+    private JTable tblPegawai;
+
     public MasterPengguna() {
         initComponents();
-        
         conn = Koneksi.getConnection();
-        formLogin = new FormLogin();
+        setupDialogPegawai();
         setTabelModel();
         loadData();
         paginationUser();
         setColumnWidth();
         setLayoutForm();
+    }
+
+    private void setupDialogPegawai() {
+        dialogPegawai = new JDialog();
+        dialogPegawai.setTitle("Pilih Pegawai");
+        dialogPegawai.setSize(600, 400);
+        dialogPegawai.setModal(true);
+        dialogPegawai.setLocationRelativeTo(this);
+
+        tblPegawai = new JTable();
+        tblPegawai.setRowHeight(40);
+        JScrollPane sp = new JScrollPane(tblPegawai);
+        dialogPegawai.add(sp);
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("No");
+        model.addColumn("ID");
+        model.addColumn("Nama");
+        model.addColumn("Email");
+        tblPegawai.setModel(model);
+
+        tblPegawai.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = tblPegawai.rowAtPoint(evt.getPoint());
+                if (row >= 0) {
+                    selectedPegawaiID = tblPegawai.getValueAt(row, 1).toString();
+                    String nama = tblPegawai.getValueAt(row, 2).toString();
+                    String email = tblPegawai.getValueAt(row, 3).toString();
+                    txtNama.setText(nama);
+                    txtEmail.setText(email);
+                    dialogPegawai.dispose();
+                }
+            }
+        });
+    }
+
+    private void loadDataPegawai(DefaultTableModel model) {
+        model.setRowCount(0);
+        try {
+            String sql = "SELECT ID_Pegawai, Nama_Pegawai, Email FROM pegawai ORDER BY Nama_Pegawai";
+            PreparedStatement st = conn.prepareStatement(sql);
+            ResultSet rs = st.executeQuery();
+            int no = 1;
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    no++,
+                    rs.getString("ID_Pegawai"),
+                    rs.getString("Nama_Pegawai"),
+                    rs.getString("Email")
+                });
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE, null, e);
+        }
     }
 
     private void setColumnWidth() {
@@ -49,8 +108,8 @@ public class MasterPengguna extends javax.swing.JPanel {
         columnModel.getColumn(0).setMaxWidth(40);
         columnModel.getColumn(0).setMinWidth(40);
     }
-    
-    private void setLayoutForm(){
+
+    private void setLayoutForm() {
         iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/petugas.svg", 1f));
         iconJudul2.setIcon(new FlatSVGIcon("com/perpus/icon/petugas.svg", 1f));
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
@@ -60,46 +119,45 @@ public class MasterPengguna extends javax.swing.JPanel {
         btnCancel.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
         btnSave.setIcon(new FlatSVGIcon("com/perpus/icon/save_white.svg", 1f));
         btnCancel2.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
-        
-        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON, 
+
+        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
                 new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
-        
+
         txtID.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
         txtNama.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
         txtUsername.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
         txtEmail.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
         txtPassword.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
-        
+
         txtPassword.putClientProperty(FlatClientProperties.STYLE, "showRevealButton:true;showCapsLock:true");
-        
+
         txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pencarian");
-        txtID.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ID Petugas");
-        txtNama.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Nama Petugas");
-        txtUsername.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Username Petugas");
-        txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Email Petugas");
-        txtPassword.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Password Petugas");
-        
+        txtID.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ID User");
+        txtNama.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Nama Full");
+        txtUsername.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Nama User");
+        txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Email");
+        txtPassword.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Password");
+
         cbxLevel.setForeground(new Color(153, 153, 153));
         cbxLevel.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    if (cbxLevel.getSelectedItem().equals("Pilih Level")) {
+                    if (cbxLevel.getSelectedItem().equals("Pilih Role")) {
                         cbxLevel.setForeground(new Color(153, 153, 153));
                     } else {
-                        cbxLevel.setForeground(new Color(0, 0, 0));
+                        cbxLevel.setForeground(Color.BLACK);
                     }
                 }
             }
         });
-
         cbxLevel.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                if (cbxLevel.getSelectedItem().equals("Pilih Level")) {
+                if (cbxLevel.getSelectedItem().equals("Pilih Role")) {
                     cbxLevel.setForeground(new Color(153, 153, 153));
                 } else {
-                    cbxLevel.setForeground(new Color(0, 0, 0));
+                    cbxLevel.setForeground(Color.BLACK);
                 }
             }
         });
@@ -149,6 +207,7 @@ public class MasterPengguna extends javax.swing.JPanel {
         txtUsername = new javax.swing.JTextField();
         txtEmail = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
+        btnPegawai = new javax.swing.JButton();
 
         setLayout(new java.awt.CardLayout());
 
@@ -318,11 +377,11 @@ public class MasterPengguna extends javax.swing.JPanel {
 
         jLabel5.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel5.setText("Tambah Data Petugas Perpustakaan");
+        jLabel5.setText("Tambah Data Pengguna ");
 
         jLabel6.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel6.setText("Master Data > Petugas");
+        jLabel6.setText("Master Data > Pengguna");
 
         iconJudul2.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         iconJudul2.setForeground(new java.awt.Color(102, 102, 102));
@@ -353,7 +412,7 @@ public class MasterPengguna extends javax.swing.JPanel {
 
         cbxLevel.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         cbxLevel.setForeground(new java.awt.Color(102, 102, 102));
-        cbxLevel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pilih Level", "Admin", "User" }));
+        cbxLevel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pilih Role", "admin", "user" }));
 
         btnSave.setText("SIMPAN");
         btnSave.addActionListener(new java.awt.event.ActionListener() {
@@ -366,6 +425,13 @@ public class MasterPengguna extends javax.swing.JPanel {
         btnCancel2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancel2ActionPerformed(evt);
+            }
+        });
+
+        btnPegawai.setText("PEGAWAI");
+        btnPegawai.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPegawaiActionPerformed(evt);
             }
         });
 
@@ -382,12 +448,14 @@ public class MasterPengguna extends javax.swing.JPanel {
                         .addComponent(iconJudul2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 550, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 632, Short.MAX_VALUE)
                         .addComponent(iconDashboard2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel6))
                     .addComponent(txtPassword)
                     .addComponent(txtEmail)
+                    .addComponent(txtUsername)
+                    .addComponent(txtNama)
                     .addGroup(panelAddLayout.createSequentialGroup()
                         .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel14)
@@ -399,10 +467,10 @@ public class MasterPengguna extends javax.swing.JPanel {
                             .addGroup(panelAddLayout.createSequentialGroup()
                                 .addComponent(btnSave)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnCancel2)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtUsername)
-                    .addComponent(txtNama))
+                                .addComponent(btnCancel2)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnPegawai)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(20, 20, 20))
         );
         panelAddLayout.setVerticalGroup(
@@ -422,7 +490,8 @@ public class MasterPengguna extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCancel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnCancel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -447,7 +516,7 @@ public class MasterPengguna extends javax.swing.JPanel {
                 .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cbxLevel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(104, Short.MAX_VALUE))
         );
 
         panelMain.add(panelAdd, "card2");
@@ -456,39 +525,38 @@ public class MasterPengguna extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        panelMain.removeAll();
+     panelMain.removeAll();
         panelMain.add(panelAdd);
         panelMain.repaint();
         panelMain.revalidate();
-        
+
         txtID.setText(setIDUser());
         txtID.setEnabled(false);
-        
-        if(btnAdd.getText().equals("UBAH")){
-            dataTabel();
+        selectedPegawaiID = null;
+
+        if (btnAdd.getText().equals("UBAH")) {
+            // <-- GANTI dataTabel()
             btnSave.setText("PERBARUI");
+            lbPassword.setVisible(false);
+            txtPassword.setVisible(false);
+        } else {
+            btnSave.setText("SIMPAN");
+            lbPassword.setVisible(true);
+            txtPassword.setVisible(true);
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-       if(btnSave.getText().equals("TAMBAH"))
-            {
-                btnSave.setText("SIMPAN");
-            }
-        else if(btnSave.getText().equals("SIMPAN"))
-            {
-                insertData();
-            }
-        else if (btnSave.getText().equals("PERBARUI"))
-            {
-                updateData();
-            }
+    if (btnSave.getText().equals("SIMPAN")) {
+            insertData();
+        } else if (btnSave.getText().equals("PERBARUI")) {
+            updateData();
+        }
         
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnCancel2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel2ActionPerformed
-        showPanel();
-        loadData();
+      showPanel();
     }//GEN-LAST:event_btnCancel2ActionPerformed
 
     private void tblDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDataMouseClicked
@@ -513,12 +581,18 @@ public class MasterPengguna extends javax.swing.JPanel {
         searchData();
     }//GEN-LAST:event_txtSearchKeyReleased
 
+    private void btnPegawaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPegawaiActionPerformed
+       loadDataPegawai((DefaultTableModel) tblPegawai.getModel());
+        dialogPegawai.setVisible(true);
+    }//GEN-LAST:event_btnPegawaiActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnCancel2;
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnPegawai;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btn_before;
     private javax.swing.JButton btn_first;
@@ -557,15 +631,15 @@ public class MasterPengguna extends javax.swing.JPanel {
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 
-    private void paginationUser() {   btn_first.addActionListener(new ActionListener(){
+ private void paginationUser() { btn_first.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 halamanSaatIni = 1;
                 loadData();
             }
-            
+           
         });
-        
+       
         btn_before.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -575,9 +649,9 @@ public class MasterPengguna extends javax.swing.JPanel {
                     loadData();
                 }
             }
-            
+           
         });
-        
+       
         cbx_data.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -585,9 +659,9 @@ public class MasterPengguna extends javax.swing.JPanel {
                 halamanSaatIni = 1;
                 loadData();
             }
-            
+           
         });
-        
+       
         btn_next.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -596,99 +670,96 @@ public class MasterPengguna extends javax.swing.JPanel {
                     loadData();
                 }
             }
-            
+           
         });
-        
+       
         btn_last.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 halamanSaatIni = totalPages;
                 loadData();
             }
-            
+           
         });
     }
-    
+   
     private int getTotalData(){
        int totalData = 0;
-        
+       
         try {
-            String sql = "SELECT COUNT(*) AS total FROM users";
+            String sql = "SELECT COUNT(*) AS total FROM user";
             try (PreparedStatement st = conn.prepareStatement(sql)){
                 ResultSet rs = st.executeQuery();
                 if(rs.next()){
                     totalData = rs.getInt("total");
                 }
-            } 
+            }
         } catch (Exception e) {
             Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE,null,e);
         }
-        
+       
         return totalData;
     }
-    
+   
     private void calculateTotalPages(){
        int totalData = getTotalData();
         totalPages = (int) Math.ceil((double) totalData / dataPerHalaman );
     }
-    
+   
     private void loadData() {
         calculateTotalPages();
         int totalData = getTotalData();
         lb_halaman.setText(String.valueOf("Halaman "+ halamanSaatIni + " dari Total Data " + totalData));
-        
+       
         int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
         getData(startIndex, dataPerHalaman,(DefaultTableModel) tblData.getModel());
         btnDelete.setVisible(false);
         btnCancel.setVisible(false);
     }
-    
+   
     private void showPanel(){
         panelMain.removeAll();
         panelMain.add(new MasterPengguna());
         panelMain.repaint();
         panelMain.revalidate();
     }
-    
+   
     private void resetForm() {
-        txtID.setText("");
+     txtID.setText("");
         txtNama.setText("");
         txtUsername.setText("");
         txtEmail.setText("");
         txtPassword.setText("");
-        cbxLevel.setSelectedItem("Pilih Level");
+        cbxLevel.setSelectedItem("Pilih Role");
+        selectedPegawaiID = null;
     }
-    
+   
     private void setTabelModel() {
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.addColumn("No");
         model.addColumn("ID");
-        model.addColumn("Nama");
-        model.addColumn("Username");
+        model.addColumn("Nama Full");
+        model.addColumn("Nama User");
         model.addColumn("Email");
-        model.addColumn("Level");
+        model.addColumn("Role");
     }
-
     public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
         model.setRowCount(0);
-
         try {
-            String sql = "SELECT * FROM users LIMIT ?,?";
+            String sql = "SELECT ID_User, Nama_Full, Nama_User, Email, Role FROM user LIMIT ?,?";
             try (PreparedStatement st = conn.prepareStatement(sql)) {
                 st.setInt(1, startIndex);
                 st.setInt(2, entriesPage);
                 ResultSet rs = st.executeQuery();
-
                 int no = startIndex + 1;
-                
+               
                 while (rs.next()) {
-                    String userId = rs.getString("user_id");
-                    String fullName = rs.getString("full_name");
-                    String username = rs.getString("username");
-                    String email = rs.getString("email");
-                    String role = rs.getString("role");
-
-                    Object[] rowData = {"   " + no++, userId, fullName, username, email, role};
+                    String userId = rs.getString("ID_User");
+                    String namaFull = rs.getString("Nama_Full");
+                    String namaUser = rs.getString("Nama_User");
+                    String email = rs.getString("Email");
+                    String role = rs.getString("Role");
+                    Object[] rowData = {" " + no++, userId, namaFull, namaUser, email, role};
                     model.addRow(rowData);
                 }
             }
@@ -696,143 +767,147 @@ public class MasterPengguna extends javax.swing.JPanel {
             Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE, null, e);
         }
     }
-
 private String setIDUser(){
         String urutan = null;
         Date now = new Date();
         SimpleDateFormat noFormat = new SimpleDateFormat("yyMM");
         String no = noFormat.format(now);
-        
-        String sql = "SELECT RIGHT(user_id, 3) AS Nomor " +
-                     "FROM users " +
-                     "WHERE user_id LIKE 'USR" + no + "%' " +
-                     "ORDER BY user_id DESC " +
+       
+        String sql = "SELECT RIGHT(ID_User, 3) AS Nomor " +
+                     "FROM user " +
+                     "WHERE ID_User LIKE 'USR" + no + "%' " +
+                     "ORDER BY ID_User DESC " +
                      "LIMIT 1";
-        
+       
         try (PreparedStatement st = conn.prepareStatement(sql)){
                 ResultSet rs = st.executeQuery();
-                
+               
             if (rs.next()) {
                 int nomor = Integer.parseInt(rs.getString("Nomor")) + 1;
                 urutan = "USR" + no + String.format("%03d", nomor);
             }else{
                 urutan = "USR" + no + "001";
             }
-            
+           
         } catch (SQLException e) {
             java.util.logging.Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE, null, e);
         }
-        
+       
         return urutan;
     }
-
     private void insertData() {
-       String userId = txtID.getText();
-    String fullName = txtNama.getText();
-    String username = txtUsername.getText();
-    String email = txtEmail.getText();
-    String password = txtPassword.getText();
-    String role = cbxLevel.getSelectedItem().toString();
-    
-    if(userId.isEmpty() || fullName.isEmpty() || username.isEmpty() || email.isEmpty() || password.isEmpty() || cbxLevel.getSelectedItem().toString().equals("Pilih Level")) {
-        JOptionPane.showMessageDialog(this, "Semua kolom harus diisi !", "Validasi", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
-    try {
-        String sql = "INSERT INTO users (user_id, full_name, username, email, password, role, created_at) VALUES (?,?,?,?,?,?,?)";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
-            st.setString(1, userId);
-            st.setString(2, fullName);
-            st.setString(3, username);
-            st.setString(4, email);
-            st.setString(5, password);
-            st.setString(6, role);
-            st.setString(7, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+      if (!isValidInput()) return;
 
-            int rowInserted = st.executeUpdate();
-            if(rowInserted > 0) {
-                JOptionPane.showMessageDialog(this, "Data Berhasil Ditambahkan");
+        String userId = txtID.getText();
+        String namaFull = txtNama.getText();
+        String namaUser = txtUsername.getText();
+        String email = txtEmail.getText();
+        String password = new String(txtPassword.getPassword());
+        String role = cbxLevel.getSelectedItem().toString();
+
+        try {
+            String sql = "INSERT INTO user (ID_User, Nama_Full, Nama_User, Password, Email, Role, Pegawai_ID_Pegawai) VALUES (?,?,?,?,?,?,?)";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, userId);
+            st.setString(2, namaFull);
+            st.setString(3, namaUser);
+            st.setString(4, password);
+            st.setString(5, email);
+            st.setString(6, role);
+            if (selectedPegawaiID != null) {
+                st.setString(7, selectedPegawaiID);
+            } else {
+                st.setNull(7, java.sql.Types.CHAR);
+            }
+
+            if (st.executeUpdate() > 0) {
+                JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
                 resetForm();
-                loadData();
                 showPanel();
             }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal menyimpan: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE, null, e);
         }
-    } catch (SQLException e) {
-        Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE, null, e);
-    }
-    }
-
-    private void dataTabel() {
-        panelView.setVisible(false);
-        panelAdd.setVisible(true);
-        
-        int row = tblData.getSelectedRow();
-        jLabel5.setText("Perbarui Data Petugas Perpustakaan");
-        
-        txtID.setEnabled(false);
-        lbPassword.setVisible(false);
-        txtPassword.setVisible(false);
-        
-        txtID.setText(tblData.getValueAt(row, 1).toString());
-        txtNama.setText(tblData.getValueAt(row, 2).toString());
-        txtUsername.setText(tblData.getValueAt(row, 3).toString());
-        txtEmail.setText(tblData.getValueAt(row, 4).toString());
-        cbxLevel.setSelectedItem(tblData.getValueAt(row, 5).toString());
     }
     
+    private boolean isValidInput() {
+        String id = txtID.getText().trim();
+        String nama = txtNama.getText().trim();
+        String username = txtUsername.getText().trim();
+        String email = txtEmail.getText().trim();
+        String password = new String(txtPassword.getPassword()).trim();
+        String role = cbxLevel.getSelectedItem().toString();
+
+        if (id.isEmpty() || nama.isEmpty() || username.isEmpty() || email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "ID, Nama, Username, dan Email harus diisi!", "Validasi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        if (btnSave.getText().equals("SIMPAN") && password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Password wajib diisi saat menambah data!", "Validasi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        if (role.equals("Pilih Role")) {
+            JOptionPane.showMessageDialog(this, "Pilih Role terlebih dahulu!", "Validasi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+
+        return true;
+    }
+   
     private void updateData() {
+     if (!isValidInput()) return;
+
         String userId = txtID.getText();
-        String fullName = txtNama.getText();
-        String username = txtUsername.getText();
+        String namaFull = txtNama.getText();
+        String namaUser = txtUsername.getText();
         String email = txtEmail.getText();
         String role = cbxLevel.getSelectedItem().toString();
-        
-        if(userId.isEmpty() || fullName.isEmpty() || username.isEmpty() || email.isEmpty() || cbxLevel.getSelectedItem().toString().equals("Pilih Level")){
-            JOptionPane.showMessageDialog(this, "Semua kolom harus diisi !", "Validasi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
+
         try {
-            String sql = "UPDATE users SET full_name=?, username=?, email=?, role=? WHERE user_id=?";
-            try(PreparedStatement st = conn.prepareStatement(sql)){
-                st.setString(1, fullName);
-                st.setString(2, username);
-                st.setString(3, email);
-                st.setString(4, role);
-                st.setString(5, userId);
-                
-                int rowUpdated = st.executeUpdate();
-                if(rowUpdated > 0){
-                    JOptionPane.showMessageDialog(this, "Data Berhasil Diperbarui");
-                    resetForm();
-                    loadData();
-                    showPanel();
-                }
+            String sql = "UPDATE user SET Nama_Full=?, Nama_User=?, Email=?, Role=?, Pegawai_ID_Pegawai=? WHERE ID_User=?";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, namaFull);
+            st.setString(2, namaUser);
+            st.setString(3, email);
+            st.setString(4, role);
+            if (selectedPegawaiID != null) {
+                st.setString(5, selectedPegawaiID);
+            } else {
+                st.setNull(5, java.sql.Types.CHAR);
+            }
+            st.setString(6, userId);
+
+            if (st.executeUpdate() > 0) {
+                JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!");
+                resetForm();
+                showPanel();
             }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE,null,e);
+            JOptionPane.showMessageDialog(this, "Gagal update: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE, null, e);
         }
     }
-
     private void deleteData() {
         int selectedRow = tblData.getSelectedRow();
-        int confirm = JOptionPane.showConfirmDialog(this, 
+        int confirm = JOptionPane.showConfirmDialog(this,
                 "Apakah yakin ingin menghapus data ini ?",
-                "Konfirmasi Hapus Data", 
+                "Konfirmasi Hapus Data",
                 JOptionPane.YES_NO_OPTION);
-        
+       
         if(confirm == JOptionPane.YES_OPTION){
             String id = tblData.getValueAt(selectedRow, 1).toString();
             try {
-                String sql =  "DELETE FROM users WHERE user_id=?";
+                String sql = "DELETE FROM user WHERE ID_User=?";
                 try(PreparedStatement st = conn.prepareStatement(sql)){
                     st.setString(1, id);
-                    
+                   
                     int rowDeleted = st.executeUpdate();
                     if(rowDeleted > 0){
                         JOptionPane.showMessageDialog(this, "Data Berhasil Dihapus");
-                        
+                       
                     }else{
                         JOptionPane.showMessageDialog(this, "Data Gagal Dihapus");
                     }
@@ -845,35 +920,34 @@ private String setIDUser(){
         loadData();
         showPanel();
     }
-
     private void searchData() {
         String kataKunci = txtSearch.getText();
-        
+       
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
-        
+       
         try {
-            String sql = "SELECT * FROM users WHERE full_name LIKE ? OR email LIKE ?";
+            String sql = "SELECT ID_User, Nama_Full, Nama_User, Email, Role FROM user WHERE Nama_Full LIKE ? OR Email LIKE ?";
             try (PreparedStatement st = conn.prepareStatement(sql)){
                 st.setString(1, "%" + kataKunci + "%");
                 st.setString(2, "%" + kataKunci + "%");
                 ResultSet rs = st.executeQuery();
-                
+               
                 int no = 1;
-                
+               
                 while (rs.next()) {
-                    String userId = rs.getString("user_id");
-                    String fullName = rs.getString("full_name");
-                    String username = rs.getString("username");
-                    String email = rs.getString("email");
-                    String role = rs.getString("role");
-                    
-                    Object[] rowData = {"   " + no++, userId, fullName, username, email, role};
+                    String userId = rs.getString("ID_User");
+                    String namaFull = rs.getString("Nama_Full");
+                    String namaUser = rs.getString("Nama_User");
+                    String email = rs.getString("Email");
+                    String role = rs.getString("Role");
+                   
+                    Object[] rowData = {" " + no++, userId, namaFull, namaUser, email, role};
                     model.addRow(rowData);
                 }
-            } 
+            }
         } catch (SQLException e) {
             Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE,null,e);
         }
-    }    
+    }
 }

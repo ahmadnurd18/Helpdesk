@@ -6,7 +6,6 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.perpus.config.Koneksi;
 import com.perpus.main.MenuUtama;
-import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,33 +20,32 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 public class FormLogin extends javax.swing.JFrame {
-
     private Connection conn;
-    
+
     public FormLogin() {
         initComponents();
         conn = Koneksi.getConnection();
-        
+
         setLayoutForm();
     }
-    
-    private void setLayoutForm(){
+
+    private void setLayoutForm() {
         setIconImage(new ImageIcon(getClass().getResource("/com/perpus/icon/LogoITHelpdesk.png")).getImage());
-        
+
         txtUsername.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
         txtPassword.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
-        
-        txtUsername.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, 
+
+        txtUsername.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON,
                 new FlatSVGIcon("com/perpus/icon/username.svg", 0.80f));
-        txtPassword.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, 
+        txtPassword.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON,
                 new FlatSVGIcon("com/perpus/icon/password.svg", 0.80f));
-        
-        txtPassword.putClientProperty(FlatClientProperties.STYLE, ""
-                + "showRevealButton:true;showCapsLock:true");
-        txtUsername.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, ""
-                + "Masukkan username");
-        txtPassword.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, ""
-                + "Masukkan password");
+
+        txtPassword.putClientProperty(FlatClientProperties.STYLE,
+                "showRevealButton:true;showCapsLock:true");
+        txtUsername.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,
+                "Masukkan username");
+        txtPassword.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,
+                "Masukkan password");
     }
 
     @SuppressWarnings("unchecked")
@@ -164,7 +162,7 @@ public class FormLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+      if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             prosesLogin();
         }
     }//GEN-LAST:event_txtPasswordKeyPressed
@@ -174,14 +172,11 @@ public class FormLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLoginActionPerformed
 
     public static void main(String args[]) {
-        FlatLaf.registerCustomDefaultsSource("com.perpus.theme");
+       FlatLaf.registerCustomDefaultsSource("com.perpus.theme");
         FlatLightLaf.setup();
-        
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FormLogin().setVisible(true);
-            }
+
+        java.awt.EventQueue.invokeLater(() -> {
+            new FormLogin().setVisible(true);
         });
     }
 
@@ -197,67 +192,64 @@ public class FormLogin extends javax.swing.JFrame {
     private javax.swing.JLabel welcome1;
     // End of variables declaration//GEN-END:variables
 
-    private boolean validasiInput(){
-        boolean valid = false;
-        if(txtUsername.getText().trim().isEmpty()){
-            JOptionPane.showMessageDialog(this, "Username tidak boleh kosong");
-        }else if(txtPassword.getText().trim().isEmpty()){
-            JOptionPane.showMessageDialog(this, "Password tidak boleh kosong");
-        }else{
-            valid = true;
+   private boolean validasiInput() {
+        if (txtUsername.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Username tidak boleh kosong", "Validasi", JOptionPane.WARNING_MESSAGE);
+            return false;
         }
-        return valid;
+        if (new String(txtPassword.getPassword()).trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Password tidak boleh kosong", "Validasi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
     }
-    
 
-    
-    private Map<String, String> checkLogin(String username, String password){
+    private Map<String, String> checkLogin(String namaUser, String password) {
         Map<String, String> result = new HashMap<>();
-        
-        if(conn != null){
-            try {
-               String sql = "SELECT * FROM users WHERE username = ? AND password = ?"; 
-               PreparedStatement st = conn.prepareStatement(sql);
-               st.setString(1, username);
-               st.setString(2, password);
 
-               ResultSet rs = st.executeQuery();
-               if(rs.next()){
-                   result.put("user_id", rs.getString("user_id"));
-                   result.put("username", rs.getString("username"));
-                   result.put("role", rs.getString("role"));
-                   return result;
-               }
+        if (conn != null) {
+            try {
+                String sql = "SELECT ID_User, Nama_User, Role FROM user WHERE Nama_User = ? AND Password = ?";
+                PreparedStatement st = conn.prepareStatement(sql);
+                st.setString(1, namaUser);
+                st.setString(2, password);
+                ResultSet rs = st.executeQuery();
+
+                if (rs.next()) {
+                    result.put("ID_User", rs.getString("ID_User"));
+                    result.put("Nama_User", rs.getString("Nama_User"));
+                    result.put("Role", rs.getString("Role"));
+                    return result;
+                }
             } catch (SQLException e) {
-                e.printStackTrace();
+                Logger.getLogger(FormLogin.class.getName()).log(Level.SEVERE, null, e);
             }
         }
         return null;
     }
-    
-     private void prosesLogin(){
-        if(validasiInput()){
-            String username = txtUsername.getText();
+
+    private void prosesLogin() {
+        if (validasiInput()) {
+            String namaUser = txtUsername.getText().trim();
             String password = new String(txtPassword.getPassword());
 
-            Map<String, String> loginResult = checkLogin(username, password);
+            Map<String, String> loginResult = checkLogin(namaUser, password);
 
-            if(loginResult != null){
-                String userID       = loginResult.get("user_id");
-                String namaUser     = loginResult.get("username");
-                String levelUser    = loginResult.get("role");
-                
-                MenuUtama mn = new MenuUtama(userID, namaUser, levelUser);
-                mn.setVisible(true);
-                mn.revalidate();
+            if (loginResult != null) {
+                String userID = loginResult.get("ID_User");
+                String namaUserLogin = loginResult.get("Nama_User");
+                String role = loginResult.get("Role");
 
-                dispose();
+                // Buka Menu Utama dengan data user
+                MenuUtama menuUtama = new MenuUtama(userID, namaUserLogin, role);
+                menuUtama.setVisible(true);
+                this.dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Username dan Password Salah",
-                        "Pesan",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Username atau Password salah!",
+                        "Login Gagal",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-    
-    
 }

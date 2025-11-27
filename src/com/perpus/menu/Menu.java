@@ -26,11 +26,9 @@ public class Menu extends javax.swing.JPanel {
         if(levelUser != null && levelUser.equals("admin")){
             listMenu.addItem(new ModelMenu("dashboard_white", "Dashboard", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("", "Master", ModelMenu.MenuType.TITLE));
-            listMenu.addItem(new ModelMenu("anggota_white", "Pegawaii", ModelMenu.MenuType.MENU));
-            listMenu.addItem(new ModelMenu("kategori_white", "Kategori", ModelMenu.MenuType.MENU));
+            listMenu.addItem(new ModelMenu("anggota_white", "Pegawai", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("book_white", "Perangkat", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("petugas_white", "Pengguna", ModelMenu.MenuType.MENU));
-            //listMenu1.addItem(new ModelMenu("", " ", ModelMenu.MenuType.EMPTY));
             listMenu.addItem(new ModelMenu("", " ", ModelMenu.MenuType.TITLE));
 
             listMenu.addItem(new ModelMenu("", "Transaksi", ModelMenu.MenuType.TITLE));
@@ -47,7 +45,7 @@ public class Menu extends javax.swing.JPanel {
         }else{
             listMenu.addItem(new ModelMenu("dashboard_white", "Dashboard", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("", "Transaksi", ModelMenu.MenuType.TITLE));
-                     listMenu.addItem(new ModelMenu("peminjaman_white", "Tiket", ModelMenu.MenuType.MENU));
+            listMenu.addItem(new ModelMenu("peminjaman_white", "Tiket", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("peminjaman_white", "Peminjaman", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("pengembalian_white", "Pengembalian", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("", " ", ModelMenu.MenuType.TITLE));

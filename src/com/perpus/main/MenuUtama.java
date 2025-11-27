@@ -49,16 +49,14 @@ public class MenuUtama extends javax.swing.JFrame {
                     } else if (index == 2){
                         setForm(new MasterPegawai());
                     } else if (index == 3){
-                        setForm(new MasterKategori());
-                    } else if (index == 4){
                         setForm(new MasterPerangkatIT());
-                    } else if (index == 5){
+                    } else if (index == 4){
                         setForm(new MasterPengguna());
+                    } else if (index == 7){
+                        setForm(new TransaksiTiket(userID, levelUser));
                     } else if (index == 8){
-                        setForm(new TransaksiTiket(userID));
-                    } else if (index == 9){
                         setForm(new TransaksiPeminjaman(userID));
-                    } else if (index == 10){
+                    } else if (index == 9){
                         setForm(new TransaksiPengembalian(userID));
                     } else if (index == 13){
                         setForm(new LaporanPeminjaman());
@@ -71,7 +69,7 @@ public class MenuUtama extends javax.swing.JFrame {
                     if(index == 0){
                         setForm(new MasterDashboard());
                            } else if (index == 2){
-                        setForm(new TransaksiTiket(userID));
+                        setForm(new TransaksiTiket(userID, levelUser));
                     } else if (index == 3){
                         setForm(new TransaksiPeminjaman(userID));
                     } else if (index == 3){

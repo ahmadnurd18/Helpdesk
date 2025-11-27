@@ -30,7 +30,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-62,0,0,3,-26"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-62,0,0,3,-12"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
@@ -83,7 +83,7 @@
                               <Component id="iconJudul" min="-2" pref="30" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="297" max="32767" attributes="0"/>
+                              <EmptySpace pref="625" max="32767" attributes="0"/>
                               <Component id="iconDashboard" min="-2" pref="30" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
@@ -120,7 +120,7 @@
                           <Component id="txtSearch" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="197" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="127" max="32767" attributes="0"/>
                       <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                       <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -139,7 +139,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Data Peminjaman Buku Perpustakaan"/>
+                <Property name="text" type="java.lang.String" value="Peminjaman Perangkat IT"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
@@ -308,7 +308,7 @@
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="66" green="66" red="66" type="rgb"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Data Detail Peminjaman Buku Perpustakaan"/>
+                    <Property name="text" type="java.lang.String" value="Detail Peminjaman Perangkat"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="iconJudul3">
@@ -486,24 +486,25 @@
                                           <Component id="jLabel17" alignment="0" max="32767" attributes="0"/>
                                           <Component id="jLabel16" alignment="0" max="32767" attributes="0"/>
                                           <Component id="jLabel19" max="32767" attributes="0"/>
+                                          <Component id="jLabel21" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" attributes="0">
-                                              <Component id="txtIdPerangkat" max="32767" attributes="0"/>
+                                              <Component id="txtIDPerangkat" max="32767" attributes="0"/>
                                               <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                                               <Component id="btnSetPerangkat" min="-2" pref="38" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" attributes="0">
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="txtNamaPerangkat" alignment="0" max="32767" attributes="0"/>
-                                                  <Component id="txtKondisi" alignment="0" max="32767" attributes="0"/>
-                                                  <Component id="txtStatus" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="txtMrkPerangkat" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="txtSerialPerangkat" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="txtModelPerangkat" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="txtJnsPerangkat" max="32767" attributes="0"/>
                                               </Group>
                                               <EmptySpace min="56" pref="56" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -561,17 +562,22 @@
                                   <Component id="jLabel19" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                   <Component id="btnSetPerangkat" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                                   <Component id="txtIdPegawai" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                  <Component id="txtIdPerangkat" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="txtIDPerangkat" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel21" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="txtJnsPerangkat" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel18" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                  <Component id="txtNamaPerangkat" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="txtMrkPerangkat" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel17" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                  <Component id="txtKondisi" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <Component id="txtSerialPerangkat" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -579,7 +585,7 @@
                       <Group type="103" groupAlignment="2" attributes="0">
                           <Component id="jLabel15" alignment="2" min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="jLabel16" alignment="2" min="-2" pref="30" max="-2" attributes="0"/>
-                          <Component id="txtStatus" alignment="2" min="-2" pref="30" max="-2" attributes="0"/>
+                          <Component id="txtModelPerangkat" alignment="2" min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="txtTelepon" alignment="2" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="63" max="-2" attributes="0"/>
@@ -589,7 +595,7 @@
                           <Component id="btnCancelSementara" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                      <Component id="jScrollPane3" pref="226" max="32767" attributes="0"/>
+                      <Component id="jScrollPane3" pref="171" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -614,7 +620,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Tambah Data Peminjaman Perangkat IT"/>
+                <Property name="text" type="java.lang.String" value="Tambah Peminjaman Perangkat IT"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="iconDashboard2">
@@ -774,7 +780,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Status"/>
+                <Property name="text" type="java.lang.String" value="Model"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel17">
@@ -785,7 +791,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Kondisi"/>
+                <Property name="text" type="java.lang.String" value="No Serial"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel18">
@@ -796,7 +802,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Nama Perangkat"/>
+                <Property name="text" type="java.lang.String" value="Merek"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel19">
@@ -807,7 +813,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Jenis Perangkat"/>
+                <Property name="text" type="java.lang.String" value="ID Perangkat"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="btnSetPerangkat">
@@ -833,13 +839,13 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtTelepon">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtIdPerangkat">
+            <Component class="javax.swing.JTextField" name="txtIDPerangkat">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtNamaPerangkat">
+            <Component class="javax.swing.JTextField" name="txtMrkPerangkat">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtKondisi">
+            <Component class="javax.swing.JTextField" name="txtSerialPerangkat">
             </Component>
-            <Component class="javax.swing.JTextField" name="txtStatus">
+            <Component class="javax.swing.JTextField" name="txtModelPerangkat">
             </Component>
             <Component class="javax.swing.JButton" name="btnUbah">
               <Properties>
@@ -873,6 +879,19 @@
                 </Component>
               </SubComponents>
             </Container>
+            <Component class="javax.swing.JLabel" name="jLabel21">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="SansSerif" size="14" style="1"/>
+                </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="66" green="66" red="66" type="rgb"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Jenis Perangkat"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtJnsPerangkat">
+            </Component>
           </SubComponents>
         </Container>
       </SubComponents>

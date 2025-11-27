@@ -331,13 +331,15 @@
                               <Component id="iconJudul2" min="-2" pref="30" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="550" max="32767" attributes="0"/>
+                              <EmptySpace pref="632" max="32767" attributes="0"/>
                               <Component id="iconDashboard2" min="-2" pref="30" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="txtPassword" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtEmail" alignment="0" max="32767" attributes="0"/>
+                          <Component id="txtUsername" alignment="0" max="32767" attributes="0"/>
+                          <Component id="txtNama" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -350,12 +352,12 @@
                                       <Component id="btnSave" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Component id="btnCancel2" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="btnPegawai" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="txtUsername" alignment="0" max="32767" attributes="0"/>
-                          <Component id="txtNama" alignment="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="20" pref="20" max="-2" attributes="0"/>
                   </Group>
@@ -384,8 +386,9 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btnSave" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="btnCancel2" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                          <Component id="btnPegawai" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel9" min="-2" pref="30" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="txtID" min="-2" pref="30" max="-2" attributes="0"/>
@@ -409,7 +412,7 @@
                       <Component id="jLabel14" min="-2" pref="30" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="cbxLevel" min="-2" pref="35" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="104" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -423,7 +426,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Tambah Data Petugas Perpustakaan"/>
+                <Property name="text" type="java.lang.String" value="Tambah Data Pengguna "/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel6">
@@ -434,7 +437,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Master Data &gt; Petugas"/>
+                <Property name="text" type="java.lang.String" value="Master Data &gt; Pengguna"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="iconDashboard2">
@@ -525,9 +528,9 @@
                 </Property>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="3">
-                    <StringItem index="0" value="Pilih Level"/>
-                    <StringItem index="1" value="Admin"/>
-                    <StringItem index="2" value="User"/>
+                    <StringItem index="0" value="Pilih Role"/>
+                    <StringItem index="1" value="admin"/>
+                    <StringItem index="2" value="user"/>
                   </StringArray>
                 </Property>
               </Properties>
@@ -560,6 +563,14 @@
             <Component class="javax.swing.JTextField" name="txtEmail">
             </Component>
             <Component class="javax.swing.JPasswordField" name="txtPassword">
+            </Component>
+            <Component class="javax.swing.JButton" name="btnPegawai">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="PEGAWAI"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPegawaiActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

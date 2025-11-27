@@ -5,22 +5,14 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.perpus.jdialog.DataPegawai;
 import com.perpus.jdialog.DataPerangkatIT;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.awt.event.*;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
@@ -36,6 +28,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         initComponents();
         conn = Koneksi.getConnection();
         this.userID = userID;
+
         setTabelModel();
         setTabelModelDetail();
         setTabelModelSementara();
@@ -45,24 +38,20 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         actionButton();
         setColumnWidth();
         setLayoutForm();
+        txtTanggalPinjam.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         hitungTanggalKembali();
+        pnDetail.setVisible(false);
     }
 
     private void setColumnWidth() {
         TableColumnModel columnModel = tblData.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(40);
-        columnModel.getColumn(0).setMaxWidth(40);
-        columnModel.getColumn(0).setMinWidth(40);
+        columnModel.getColumn(0).setPreferredWidth(40); columnModel.getColumn(0).setMaxWidth(40); columnModel.getColumn(0).setMinWidth(40);
 
         TableColumnModel columnModel2 = tblDataDetail.getColumnModel();
-        columnModel2.getColumn(0).setPreferredWidth(40);
-        columnModel2.getColumn(0).setMaxWidth(40);
-        columnModel2.getColumn(0).setMinWidth(40);
+        columnModel2.getColumn(0).setPreferredWidth(40); columnModel2.getColumn(0).setMaxWidth(40); columnModel2.getColumn(0).setMinWidth(40);
 
         TableColumnModel columnModel3 = tblDataSementara.getColumnModel();
-        columnModel3.getColumn(0).setPreferredWidth(40);
-        columnModel3.getColumn(0).setMaxWidth(40);
-        columnModel3.getColumn(0).setMinWidth(40);
+        columnModel3.getColumn(0).setPreferredWidth(40); columnModel3.getColumn(0).setMaxWidth(40); columnModel3.getColumn(0).setMinWidth(40);
     }
 
     private void setLayoutForm() {
@@ -71,47 +60,40 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         iconJudul3.setIcon(new FlatSVGIcon("com/perpus/icon/peminjaman.svg", 1f));
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
         iconDashboard2.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
-
         btnAdd.setIcon(new FlatSVGIcon("com/perpus/icon/add_white.svg", 1f));
         btnSave.setIcon(new FlatSVGIcon("com/perpus/icon/save_white.svg", 1f));
         btnCancelAdd.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
-        btnUbah.setIcon(new FlatSVGIcon("com/perpus/icon/save_white.svg", 1f));
-        btnDelete.setIcon(new FlatSVGIcon("com/perpus/icon/delete_white.svg", 1f));
-        btnCancelSementara.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
 
-        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON, 
+        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
                 new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
         txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pencarian");
+
         txtID.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ID Peminjaman");
-        txtIdPegawai.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pilih Pegawai");
+        txtIdPegawai.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ID Pegawai");
         txtPegawai.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nama Pegawai");
-        txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Email Pegawai");
-        txtTelepon.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Telepon Pegawai");
-        txtIdPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pilih Perangkat IT");
-        txtNamaPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nama Perangkat");
-        txtKondisi.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Kondisi Perangkat");
-        txtStatus.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Status Perangkat");
+        txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Email");
+        txtTelepon.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Telepon");
+        txtIDPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ID Perangkat");
+        txtJnsPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Jenis Perangkat");
+        txtMrkPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Merek");
+        txtSerialPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Serial");
+        txtModelPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Model");
     }
 
     private void hitungTanggalKembali() {
         String tanggalPinjam = txtTanggalPinjam.getText();
+        if (tanggalPinjam == null || tanggalPinjam.isEmpty()) return;
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date tglPinjam = dateFormat.parse(tanggalPinjam);
-
-            if (tanggalPinjam != null) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(tglPinjam);
-                cal.add(Calendar.DATE, 7);
-                Date tglKembali = cal.getTime();
-                String tanggalKembali = dateFormat.format(tglKembali);
-                txtTanggalKembali.setText(tanggalKembali);
-            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date tglPinjam = sdf.parse(tanggalPinjam);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(tglPinjam);
+            cal.add(Calendar.DATE, 7);
+            txtTanggalKembali.setText(sdf.format(cal.getTime()));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -169,15 +151,17 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         txtPegawai = new javax.swing.JTextField();
         txtEmail = new javax.swing.JTextField();
         txtTelepon = new javax.swing.JTextField();
-        txtIdPerangkat = new javax.swing.JTextField();
-        txtNamaPerangkat = new javax.swing.JTextField();
-        txtKondisi = new javax.swing.JTextField();
-        txtStatus = new javax.swing.JTextField();
+        txtIDPerangkat = new javax.swing.JTextField();
+        txtMrkPerangkat = new javax.swing.JTextField();
+        txtSerialPerangkat = new javax.swing.JTextField();
+        txtModelPerangkat = new javax.swing.JTextField();
         btnUbah = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnCancelSementara = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblDataSementara = new javax.swing.JTable();
+        jLabel21 = new javax.swing.JLabel();
+        txtJnsPerangkat = new javax.swing.JTextField();
 
         dateChooser1.setTextRefernce(txtTanggalPinjam);
         dateChooser1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -199,7 +183,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel1.setText("Data Peminjaman Buku Perpustakaan");
+        jLabel1.setText("Peminjaman Perangkat IT");
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(102, 102, 102));
@@ -262,7 +246,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
 
         jLabel22.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel22.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel22.setText("Data Detail Peminjaman Buku Perpustakaan");
+        jLabel22.setText("Detail Peminjaman Perangkat");
 
         iconJudul3.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         iconJudul3.setForeground(new java.awt.Color(102, 102, 102));
@@ -321,7 +305,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                         .addComponent(iconJudul, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 297, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 625, Short.MAX_VALUE)
                         .addComponent(iconDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2))
@@ -348,7 +332,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -366,7 +350,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
 
         jLabel5.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel5.setText("Tambah Data Peminjaman Perangkat IT");
+        jLabel5.setText("Tambah Peminjaman Perangkat IT");
 
         jLabel6.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(102, 102, 102));
@@ -440,19 +424,19 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
 
         jLabel16.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel16.setText("Status");
+        jLabel16.setText("Model");
 
         jLabel17.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel17.setText("Kondisi");
+        jLabel17.setText("No Serial");
 
         jLabel18.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel18.setText("Nama Perangkat");
+        jLabel18.setText("Merek");
 
         jLabel19.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel19.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel19.setText("Jenis Perangkat");
+        jLabel19.setText("ID Perangkat");
 
         btnSetPerangkat.setText("...");
 
@@ -468,6 +452,10 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
 
         tblDataSementara.setRowHeight(30);
         jScrollPane3.setViewportView(tblDataSementara);
+
+        jLabel21.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel21.setText("Jenis Perangkat");
 
         javax.swing.GroupLayout panelAddLayout = new javax.swing.GroupLayout(panelAdd);
         panelAdd.setLayout(panelAddLayout);
@@ -529,20 +517,21 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                                     .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jLabel17, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(panelAddLayout.createSequentialGroup()
-                                        .addComponent(txtIdPerangkat)
+                                        .addComponent(txtIDPerangkat)
                                         .addGap(18, 18, 18)
                                         .addComponent(btnSetPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(panelAddLayout.createSequentialGroup()
                                         .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtNamaPerangkat)
-                                            .addComponent(txtKondisi)
-                                            .addComponent(txtStatus))
-                                        .addGap(56, 56, 56)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                            .addComponent(txtMrkPerangkat)
+                                            .addComponent(txtSerialPerangkat)
+                                            .addComponent(txtModelPerangkat)
+                                            .addComponent(txtJnsPerangkat))
+                                        .addGap(56, 56, 56)))))
                         .addGap(20, 20, 20))))
         );
         panelAddLayout.setVerticalGroup(
@@ -584,20 +573,24 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                             .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnSetPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtIdPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtIdPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtIDPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtJnsPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNamaPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtMrkPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtKondisi, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(txtSerialPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtModelPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtTelepon, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(63, 63, 63)
                 .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -605,7 +598,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancelSementara, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -651,6 +644,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
@@ -672,13 +666,14 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
     private javax.swing.JTable tblDataSementara;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtID;
+    private javax.swing.JTextField txtIDPerangkat;
     private javax.swing.JTextField txtIdPegawai;
-    private javax.swing.JTextField txtIdPerangkat;
-    private javax.swing.JTextField txtKondisi;
-    private javax.swing.JTextField txtNamaPerangkat;
+    private javax.swing.JTextField txtJnsPerangkat;
+    private javax.swing.JTextField txtModelPerangkat;
+    private javax.swing.JTextField txtMrkPerangkat;
     private javax.swing.JTextField txtPegawai;
     private javax.swing.JTextField txtSearch;
-    private javax.swing.JTextField txtStatus;
+    private javax.swing.JTextField txtSerialPerangkat;
     private javax.swing.JTextField txtTanggalKembali;
     private javax.swing.JTextField txtTanggalPinjam;
     private javax.swing.JTextField txtTelepon;
@@ -687,666 +682,402 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
     
     // Button Halaman 
  private void paginationPerangkat() {
-        btn_first.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = 1;
-                loadData();
-            }
-            
-        });
-        
-        btn_before.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni > 1)
-                {
-                    halamanSaatIni--;
-                    loadData();
-                }
-            }
-            
-        });
-        
-        cbx_data.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString());
-                halamanSaatIni = 1;
-                loadData();
-            }
-            
-        });
-        
-        btn_next.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni < totalPages) {
-                    halamanSaatIni++;
-                    loadData();
-                }
-            }
-            
-        });
-        
-        btn_last.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = totalPages;
-                loadData();
-            }
-            
-        });
+        btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
+        btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
+        cbx_data.addActionListener(e -> { dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString()); halamanSaatIni = 1; loadData(); });
+        btn_next.addActionListener(e -> { if (halamanSaatIni < totalPages) { halamanSaatIni++; loadData(); } });
+        btn_last.addActionListener(e -> { halamanSaatIni = totalPages; loadData(); });
     }
-    
-    // Button Add, Save, Delete, Cancel, Search, TableMouseClick
-      private void actionButton() {
-        btnAdd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                panelMain.removeAll();
-                panelMain.add(panelAdd);
-                panelMain.repaint();
-                panelMain.revalidate();
 
-                txtID.setText(setIdPeminjaman());
-                txtID.setEnabled(false);
-                btnSave.setEnabled(false);
-                btnUbah.setText("TAMBAH");
+    // ================== ACTION BUTTONS ==================
+    private void actionButton() {
+        btnAdd.addActionListener(e -> {
+            panelMain.removeAll();
+            panelMain.add(panelAdd);
+            panelMain.repaint();
+            panelMain.revalidate();
+            txtID.setText(generateID());
+            txtID.setEnabled(false);
+            clearForm();
+            clearSementara();
+            loadDataSementara();
+            btnUbah.setEnabled(false);
+            btnDelete.setEnabled(false);
+        });
+
+        btnSave.addActionListener(e -> {
+            if (validateInput()) {
+                insertData();
             }
         });
 
-        btnSave.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (btnSave.getText().equals("TAMBAH")) {
-                    btnSave.setText("SIMPAN");
-                } else if (btnSave.getText().equals("SIMPAN")) {
-                    insertData();
-                } else if (btnSave.getText().equals("PERBARUI")) {
-                    updateData();
-                    resetForm();
-                    loadData();
-                    showPanel();
-                }
-            }
-        });
+        btnCancelAdd.addActionListener(e -> showPanel());
 
-        btnUbah.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (btnUbah.getText().equals("TAMBAH")) {
-                    insertDataSementara();
-                } else if (btnUbah.getText().equals("UBAH")) {
-                    updateData();
-                }
-            }
-        });
-
-        btnDelete.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteData();
-            }
-        });
-
-        btnCancelSementara.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                loadDataSementara();
-                resetFormPerangkat();
-                btnUbah.setText("TAMBAH");
-            }
-        });
-
-        btnCancelAdd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showPanel();
-                loadData();
-            }
-        });
-
-        btnCloseDetail.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showPanel();
-                loadData();
-            }
-        });
+        btnCloseDetail.addActionListener(e -> pnDetail.setVisible(false));
 
         txtSearch.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                searchData();
-            }
+            public void keyReleased(KeyEvent e) { searchData(); }
         });
 
         tblData.addMouseListener(new MouseAdapter() {
-            @Override
             public void mouseClicked(MouseEvent e) {
-                pnDetail.setVisible(true);
                 int row = tblData.getSelectedRow();
-                String id = tblData.getValueAt(row, 1).toString();
-                getDataDetail((DefaultTableModel) tblDataDetail.getModel(), id);
-            }
-        });
-
-        tblDataSementara.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                btnUbah.setText("UBAH");
-                btnDelete.setVisible(true);
-                btnCancelSementara.setVisible(true);
-                dataTabelSementara();
-            }
-        });
-
-        btnSetPegawai.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setPegawai();
-            }
-        });
-
-        btnSetPerangkat.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setPerangkatIT();
-            }
-        });
-
-    }
-
-    private int getTotalData() {
-        int totalData = 0;
-        try {
-            String sql = "SELECT COUNT(*) AS total FROM perangkat_it";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                ResultSet rs = st.executeQuery();
-                if (rs.next()) {
-                    totalData = rs.getInt("total");
+                if (row != -1) {
+                    String id = tblData.getValueAt(row, 1).toString();
+                    getDataDetail(id);
+                    pnDetail.setVisible(true);
                 }
             }
-        } catch (Exception e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-        }
-        return totalData;
+        });
+
+        btnSetPegawai.addActionListener(e -> setPegawai());
+        btnSetPerangkat.addActionListener(e -> setPerangkatIT());
+
+        tblDataSementara.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                int row = tblDataSementara.getSelectedRow();
+                if (row != -1 && e.getClickCount() == 1) {
+                    txtIDPerangkat.setText(tblDataSementara.getValueAt(row, 1).toString());
+                    txtJnsPerangkat.setText(tblDataSementara.getValueAt(row, 2).toString());
+                    txtMrkPerangkat.setText(tblDataSementara.getValueAt(row, 3).toString());
+                    txtSerialPerangkat.setText(tblDataSementara.getValueAt(row, 4).toString());
+                    txtModelPerangkat.setText(tblDataSementara.getValueAt(row, 5).toString());
+                    btnUbah.setEnabled(true);
+                    btnDelete.setEnabled(true);
+                }
+            }
+        });
+
+        btnUbah.addActionListener(e -> updateSementara());
+        btnDelete.addActionListener(e -> deleteSementara());
+        btnCancelSementara.addActionListener(e -> clearFormPerangkat());
     }
 
-    private void calculateTotalPages() {
-        int totalData = getTotalData();
-        totalPages = (int) Math.ceil((double) totalData / dataPerHalaman);
+    // ================== TABEL MODEL ==================
+    private void setTabelModel() {
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override public boolean isCellEditable(int row, int column) { return false; }
+        };
+        model.setColumnIdentifiers(new Object[]{"No", "ID", "Tgl Pinjam", "Tgl Kembali", "Status", "Pegawai"});
+        tblData.setModel(model);
+    }
+
+    private void setTabelModelDetail() {
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override public boolean isCellEditable(int row, int column) { return false; }
+        };
+        model.setColumnIdentifiers(new Object[]{"No", "ID Perangkat", "Jenis", "Merek", "Serial", "Model"});
+        tblDataDetail.setModel(model);
+    }
+
+    private void setTabelModelSementara() {
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override public boolean isCellEditable(int row, int column) { return false; }
+        };
+        model.setColumnIdentifiers(new Object[]{"No", "ID Perangkat", "Jenis", "Merek", "Serial", "Model"});
+        tblDataSementara.setModel(model);
+    }
+
+    // ================== GENERATE ID (PM25110001) ==================
+    private String generateID() {
+       String prefix = "PM" + new SimpleDateFormat("yyMM").format(new Date());
+    String sql = "SELECT RIGHT(ID_Peminjaman, 4) AS nomor FROM peminjaman WHERE ID_Peminjaman LIKE ? ORDER BY ID_Peminjaman DESC LIMIT 1";
+    try (PreparedStatement st = conn.prepareStatement(sql)) {
+        st.setString(1, prefix + "%");
+        try (ResultSet rs = st.executeQuery()) {
+            if (rs.next()) {
+                int nomor = Integer.parseInt(rs.getString("nomor")) + 1;
+                return prefix + String.format("%04d", nomor);
+            } else {
+                return prefix + "0001";
+            }
+        }
+    } catch (SQLException e) { e.printStackTrace(); }
+    return prefix + "0001";
+    }
+
+    // ================== PEGAWAI & PERANGKAT ==================
+    private void setPegawai() {
+        DataPegawai dialog = new DataPegawai(null, true);
+        dialog.setVisible(true);
+        if (dialog.getIdPegawai() != null) {
+            txtIdPegawai.setText(dialog.getIdPegawai());
+            txtPegawai.setText(dialog.getNamaPegawai());
+            txtEmail.setText(dialog.getEmailPegawai());
+            txtTelepon.setText(dialog.getTeleponPegawai());
+            txtIdPegawai.setEnabled(false);
+            txtPegawai.setEnabled(false);
+            txtEmail.setEnabled(false);
+            txtTelepon.setEnabled(false);
+        }
+    }
+
+    private void setPerangkatIT() {
+       DataPerangkatIT dialog = new DataPerangkatIT(null, true);
+    dialog.setVisible(true);
+    if (dialog.getIdPerangkat() != null) {
+        String id = dialog.getIdPerangkat();
+        if (cekPerangkatTersedia(id)) {
+            insertSementara(id);
+            JOptionPane.showMessageDialog(this, "Perangkat ditambahkan ke daftar!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Perangkat sedang dipinjam!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    }
+
+   private boolean cekPerangkatTersedia(String id) {
+    String sql = "SELECT COUNT(*) FROM detail_peminjaman dp " +
+                 "JOIN peminjaman p ON dp.Peminjaman_ID_Peminjaman = p.ID_Peminjaman " +
+                 "WHERE dp.Perangkat_ID_Perangkat = ? AND p.Status_Peminjaman = 'Dipinjam'";
+    try (PreparedStatement st = conn.prepareStatement(sql)) {
+        st.setString(1, id);
+        try (ResultSet rs = st.executeQuery()) {
+            if (rs.next()) return rs.getInt(1) == 0;
+        }
+    } catch (SQLException e) { e.printStackTrace(); }
+    return false;
+}
+
+    private void insertSementara(String idPerangkat) {
+        try {
+            String sql = "INSERT IGNORE INTO sementara (Perangkat_ID_Perangkat) VALUES (?)";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, idPerangkat);
+            st.executeUpdate();
+            loadDataSementara();
+            clearFormPerangkat();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Perangkat sudah ada di daftar!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void updateSementara() {
+        String id = txtIDPerangkat.getText().trim();
+        if (id.isEmpty()) return;
+        if (!cekPerangkatTersedia(id)) {
+            JOptionPane.showMessageDialog(this, "Perangkat tidak tersedia!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        insertSementara(id);
+    }
+
+    private void deleteSementara() {
+        int row = tblDataSementara.getSelectedRow();
+        if (row == -1) return;
+        String id = tblDataSementara.getValueAt(row, 1).toString();
+        try {
+            String sql = "DELETE FROM sementara WHERE Perangkat_ID_Perangkat = ?";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, id);
+            st.executeUpdate();
+            loadDataSementara();
+            clearFormPerangkat();
+        } catch (SQLException e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    private void clearFormPerangkat() {
+        txtIDPerangkat.setText("");
+        txtJnsPerangkat.setText("");
+        txtMrkPerangkat.setText("");
+        txtSerialPerangkat.setText("");
+        txtModelPerangkat.setText("");
+        btnUbah.setEnabled(false);
+        btnDelete.setEnabled(false);
+    }
+
+    private void clearForm() {
+        txtIdPegawai.setText(""); txtPegawai.setText(""); txtEmail.setText(""); txtTelepon.setText("");
+        txtIdPegawai.setEnabled(true); txtPegawai.setEnabled(true); txtEmail.setEnabled(true); txtTelepon.setEnabled(true);
+        clearFormPerangkat();
+    }
+
+    private void clearSementara() {
+        try {
+            String sql = "DELETE FROM sementara";
+            conn.prepareStatement(sql).executeUpdate();
+        } catch (SQLException e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    private boolean validateInput() {
+        if (txtIdPegawai.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Pilih pegawai terlebih dahulu!", "Validasi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        if (getSementaraCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Pilih minimal 1 perangkat!", "Validasi", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private int getSementaraCount() {
+        int count = 0;
+        try {
+            String sql = "SELECT COUNT(*) FROM sementara";
+            ResultSet rs = conn.prepareStatement(sql).executeQuery();
+            if (rs.next()) count = rs.getInt(1);
+        } catch (SQLException e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+        }
+        return count;
+    }
+
+    // ================== INSERT DATA ==================
+    private void insertData() {
+       String id = txtID.getText();
+    String tglPinjam = txtTanggalPinjam.getText();
+    String tglKembali = txtTanggalKembali.getText();
+    String idPegawai = txtIdPegawai.getText();
+
+    try {
+        conn.setAutoCommit(false);
+
+        // 1. Insert ke peminjaman
+        String sql = "INSERT INTO peminjaman (ID_Peminjaman, Tanggal_Peminjaman, Tanggal_Pengembalian, Status_Peminjaman, User_ID_User, Pegawai_ID_Pegawai) " +
+                     "VALUES (?, ?, ?, 'Dipinjam', ?, ?)";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setString(1, id);
+            st.setString(2, tglPinjam);
+            st.setString(3, tglKembali);
+            st.setString(4, userID);
+            st.setString(5, idPegawai);
+            st.executeUpdate();
+        }
+
+        // 2. Insert ke detail_peminjaman
+        String sqlDetail = "INSERT INTO detail_peminjaman (Peminjaman_ID_Peminjaman, Perangkat_ID_Perangkat) " +
+                           "SELECT ?, Perangkat_ID_Perangkat FROM sementara";
+        try (PreparedStatement st = conn.prepareStatement(sqlDetail)) {
+            st.setString(1, id);
+            st.executeUpdate();
+        }
+
+        conn.commit();
+        JOptionPane.showMessageDialog(this, "Peminjaman berhasil!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+        showPanel();
+    } catch (SQLException e) {
+        try { conn.rollback(); } catch (SQLException ex) {}
+        JOptionPane.showMessageDialog(this, "Gagal: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        try { conn.setAutoCommit(true); } catch (SQLException ex) {}
+    }
+    }
+
+    // ================== LOAD DATA ==================
+    private void getDataDetail(String idPeminjaman) {
+        DefaultTableModel model = (DefaultTableModel) tblDataDetail.getModel();
+        model.setRowCount(0);
+        try {
+            String sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat FROM detail_peminjaman dp JOIN perangkat p ON dp.Perangkat_ID_Perangkat = p.ID_Perangkat WHERE dp.Peminjaman_ID_Peminjaman = ?";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, idPeminjaman);
+            ResultSet rs = st.executeQuery();
+            int no = 1;
+            while (rs.next()) {
+                model.addRow(new Object[]{no++, rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)});
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    private void loadDataSementara() {
+        DefaultTableModel model = (DefaultTableModel) tblDataSementara.getModel();
+        model.setRowCount(0);
+        try {
+            String sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat FROM sementara s JOIN perangkat p ON s.Perangkat_ID_Perangkat = p.ID_Perangkat";
+            ResultSet rs = conn.prepareStatement(sql).executeQuery();
+            int no = 1;
+            while (rs.next()) {
+                model.addRow(new Object[]{no++, rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)});
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+        }
     }
 
     private void loadData() {
         calculateTotalPages();
-        int totalData = getTotalData();
-        lb_halaman.setText(String.valueOf("Halaman " + halamanSaatIni + " dari Total Data " + totalData));
-
-        int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
-        getData(startIndex, dataPerHalaman, (DefaultTableModel) tblData.getModel());
-        btnDelete.setVisible(false);
-        pnDetail.setVisible(false);
-    }
-
-    private void loadDataSementara() {
-        getDataSementara((DefaultTableModel) tblDataSementara.getModel());
-        btnUbah.setText("TAMBAH");
-        btnDelete.setVisible(false);
-        btnCancelSementara.setVisible(false);
-    }
-
-    private void showPanel() {
-        panelMain.removeAll();
-        panelMain.add(new TransaksiPeminjaman(userID));
-        panelMain.repaint();
-        panelMain.revalidate();
-    }
-
-    private void resetForm() {
-        txtID.setText("");
-        txtIdPegawai.setText("");
-        txtPegawai.setText("");
-        txtEmail.setText("");
-        txtTelepon.setText("");
-    }
-
-    private void resetFormPerangkat() {
-        txtIdPerangkat.setText("");
-        txtNamaPerangkat.setText("");
-        txtKondisi.setText("");
-        txtStatus.setText("");
-    }
-
-    private void aktifPerangkat() {
-        btnSetPerangkat.setEnabled(true);
-        txtIdPerangkat.setEnabled(true);
-        txtNamaPerangkat.setEnabled(true);
-        txtKondisi.setEnabled(true);
-        txtStatus.setEnabled(true);
-    }
-
-    private void nonAktifPerangkat() {
-        btnSetPerangkat.setEnabled(false);
-        txtIdPerangkat.setEnabled(false);
-        txtNamaPerangkat.setEnabled(false);
-        txtKondisi.setEnabled(false);
-        txtStatus.setEnabled(false);
-    }
-
-    private void setTabelModel() {
+        int start = (halamanSaatIni - 1) * dataPerHalaman;
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.addColumn("No");
-        model.addColumn("ID");
-        model.addColumn("Tanggal Pinjam");
-        model.addColumn("Tanggal Kembali");
-        model.addColumn("Status");
-        model.addColumn("Nama Pegawai");
-    }
-
-    public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
         model.setRowCount(0);
-
         try {
-            String sql = "SELECT pm.id_peminjaman, pm.tanggal_peminjaman, pm.Tanggal_Pengembalian, pm.status, p.nama " +
-                         "FROM peminjaman pm " +
-                         "INNER JOIN pegawaii p ON p.ID_Pegawai = pm.id_pegawai " +
-                         "ORDER BY pm.id_peminjaman ASC LIMIT ?, ?";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setInt(1, startIndex);
-                st.setInt(2, entriesPage);
-                ResultSet rs = st.executeQuery();
-
-                int no = startIndex + 1;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-                while (rs.next()) {
-                    String idPeminjaman = rs.getString("id_peminjaman");
-                    String tanggalPinjam = rs.getString("tanggal_peminjaman") != null ? sdf.format(rs.getDate("tanggal_peminjaman")) : "";
-                    String tanggalKembali = rs.getString("Tanggal_Pengembalian") != null ? sdf.format(rs.getDate("Tanggal_Pengembalian")) : "";
-                    String status = rs.getString("status");
-                    String namaPegawai = rs.getString("nama");
-
-                    Object[] rowData = {"   " + no++, idPeminjaman, tanggalPinjam, tanggalKembali, status, namaPegawai};
-                    model.addRow(rowData);
-                }
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
-
-    private void setTabelModelDetail() {
-        DefaultTableModel model = (DefaultTableModel) tblDataDetail.getModel();
-        model.addColumn("No");
-        model.addColumn("ID Peminjaman");
-        model.addColumn("ID Perangkat");
-        model.addColumn("Nama Perangkat");
-        model.addColumn("Status Peminjaman");
-    }
-
-    public void getDataDetail(DefaultTableModel model, String id) {
-        model.setRowCount(0);
-
-        try {
-            String sql = "SELECT dp.id_peminjaman, dp.id_perangkat, pi.nama_perangkat, dp.status_peminjaman " +
-                         "FROM detail_peminjaman dp " +
-                         "INNER JOIN perangkat_it pi ON pi.id_perangkat = dp.id_perangkat " +
-                         "WHERE dp.id_peminjaman = ? " +
-                         "ORDER BY dp.id_peminjaman ASC";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, id);
-                ResultSet rs = st.executeQuery();
-
-                int no = 1;
-
-                while (rs.next()) {
-                    String idPeminjaman = rs.getString("id_peminjaman");
-                    String idPerangkat = rs.getString("id_perangkat");
-                    String namaPerangkat = rs.getString("nama_perangkat");
-                    String statusPeminjaman = rs.getString("status_peminjaman");
-
-                    Object[] rowData = {"   " + no++, idPeminjaman, idPerangkat, namaPerangkat, statusPeminjaman};
-                    model.addRow(rowData);
-                }
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
-
-    private void setTabelModelSementara() {
-        DefaultTableModel model = (DefaultTableModel) tblDataSementara.getModel();
-        model.addColumn("No");
-        model.addColumn("ID Perangkat");
-        model.addColumn("Nama Perangkat");
-        model.addColumn("Jenis");
-        model.addColumn("Kondisi");
-    }
-
-    public void getDataSementara(DefaultTableModel model) {
-        model.setRowCount(0);
-
-        try {
-            String sql = "SELECT * FROM peminjaman_sementara";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                ResultSet rs = st.executeQuery();
-
-                int no = 1;
-
-                while (rs.next()) {
-                    String idPerangkat = rs.getString("id_perangkat");
-                    String namaPerangkat = rs.getString("nama_perangkat");
-                    String jenisPerangkat = rs.getString("jenis_perangkat");
-                    String kondisi = rs.getString("kondisi");
-
-                    Object[] rowData = {"   " + no++, idPerangkat, namaPerangkat, jenisPerangkat, kondisi};
-                    model.addRow(rowData);
-                }
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
-
-    private String setIdPeminjaman() {
-        String urutan = null;
-        Date now = new Date();
-        SimpleDateFormat noFormat = new SimpleDateFormat("yyMM");
-        String no = noFormat.format(now);
-
-        String sql = "SELECT RIGHT(id_peminjaman, 4) AS Nomor " +
-                     "FROM peminjaman " +
-                     "WHERE id_peminjaman LIKE 'PM" + no + "%' " +
-                     "ORDER BY id_peminjaman DESC " +
-                     "LIMIT 1";
-
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            String sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1, start);
+            st.setInt(2, dataPerHalaman);
             ResultSet rs = st.executeQuery();
+            int no = start + 1;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    no++,
+                    rs.getString(1),
+                    rs.getDate(2) != null ? sdf.format(rs.getDate(2)) : "",
+                    rs.getDate(3) != null ? sdf.format(rs.getDate(3)) : "",
+                    rs.getString(4),
+                    rs.getString(5)
+                });
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+        }
+        lb_halaman.setText("Halaman " + halamanSaatIni + " / " + totalPages);
+    }
 
+    private void calculateTotalPages() {
+        try {
+            String sql = "SELECT COUNT(*) FROM peminjaman";
+            ResultSet rs = conn.prepareStatement(sql).executeQuery();
             if (rs.next()) {
-                int nomor = Integer.parseInt(rs.getString("Nomor")) + 1;
-                urutan = "PM" + no + String.format("%04d", nomor);
-            } else {
-                urutan = "PM" + no + "0001";
+                int total = rs.getInt(1);
+                totalPages = (int) Math.ceil(total / (double) dataPerHalaman);
+                if (totalPages == 0) totalPages = 1;
             }
         } catch (SQLException e) {
-            java.util.logging.Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-        }
-
-        return urutan;
-    }
-
-    private void setPegawai() {
-        boolean closable = true;
-        DataPegawai pegawai = new DataPegawai(null, closable);
-        pegawai.setVisible(true);
-
-        txtIdPegawai.setText(pegawai.getIdPegawai());
-        txtPegawai.setText(pegawai.getNamaPegawai());
-        txtEmail.setText(pegawai.getEmailPegawai());
-        txtTelepon.setText(pegawai.getTeleponPegawai());
-
-        txtIdPegawai.setEnabled(false);
-        txtPegawai.setEnabled(false);
-        txtEmail.setEnabled(false);
-        txtTelepon.setEnabled(false);
-    }
-
-    private void setPerangkatIT() {
-        boolean closable = true;
-        DataPerangkatIT perangkat = new DataPerangkatIT(null, closable);
-        perangkat.setVisible(true);
-
-        txtIdPerangkat.setText(perangkat.getIdPerangkat());
-        txtNamaPerangkat.setText(perangkat.getNamaPerangkat());
-        txtKondisi.setText(perangkat.getKondisi());
-        txtStatus.setText(perangkat.getStatus());
-
-        txtIdPerangkat.setEnabled(false);
-        txtNamaPerangkat.setEnabled(false);
-        txtKondisi.setEnabled(false);
-        txtStatus.setEnabled(false);
-    }
-
-    private boolean cekStatusTersedia(String idPerangkat) {
-        try {
-            String sql = "SELECT status FROM perangkat_it WHERE id_perangkat = ?";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, idPerangkat);
-                ResultSet rs = st.executeQuery();
-
-                if (rs.next()) {
-                    String status = rs.getString("status");
-                    return "Tersedia".equals(status);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private void insertDataSementara() {
-        String idPerangkat = txtIdPerangkat.getText();
-        String namaPerangkat = txtNamaPerangkat.getText();
-        String jenisPerangkat = txtKondisi.getText();
-        String kondisi = txtStatus.getText();
-
-        if (idPerangkat.isEmpty() || namaPerangkat.isEmpty() || jenisPerangkat.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Semua kolom harus diisi !", "Validasi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (!cekStatusTersedia(idPerangkat)) {
-            JOptionPane.showMessageDialog(this, "Perangkat tidak tersedia untuk dipinjam!", "Validasi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            String sql = "INSERT INTO peminjaman_sementara (id_perangkat, nama_perangkat, jenis_perangkat, kondisi, status) VALUES (?,?,?,?,?)";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, idPerangkat);
-                st.setString(2, namaPerangkat);
-                st.setString(3, jenisPerangkat);
-                st.setString(4, kondisi);
-                st.setString(5, "Dipinjam");
-
-                st.executeUpdate();
-
-                loadDataSementara();
-
-                if (JOptionPane.showConfirmDialog(this, "Mau Tambah Perangkat?",
-                        "Konfirmasi", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    resetFormPerangkat();
-                    btnSetPerangkat.requestFocus();
-                } else {
-                    resetFormPerangkat();
-                    btnSave.requestFocus();
-                    btnSave.setEnabled(true);
-                }
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
-
-    private void insertData() {
-        String idPeminjaman = txtID.getText();
-        String tglPinjam = txtTanggalPinjam.getText();
-        String tglKembali = txtTanggalKembali.getText();
-        String idPegawai = txtIdPegawai.getText();
-
-        if (idPeminjaman.isEmpty() || tglPinjam.isEmpty() || tglKembali.isEmpty() || idPegawai.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Semua kolom harus diisi !", "Validasi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            String sql = "INSERT INTO peminjaman (id_peminjaman, tanggal_peminjaman, Tanggal_Pengembalian, status, ID_Pegawai, ID_User) VALUES (?,?,?,?,?,?)";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, idPeminjaman);
-                st.setString(2, tglPinjam);
-                st.setString(3, tglKembali);
-                st.setString(4, "Dipinjam");
-                st.setString(5, idPegawai);
-                st.setString(6, userID);
-
-                int rowInserted = st.executeUpdate();
-                if (rowInserted > 0) {
-                    JOptionPane.showMessageDialog(this, "Data Berhasil Ditambahkan");
-                }
-
-                insertDataDetail();
-                deleteDataSementara();
-                resetForm();
-                loadData();
-                showPanel();
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
-
-    private void insertDataDetail() {
-        String idPeminjaman = txtID.getText();
-
-        try {
-            String sql = "INSERT INTO detail_peminjaman (id_peminjaman, id_perangkat, status_peminjaman) " +
-                         "SELECT ?, id_perangkat, status FROM peminjaman_sementara";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, idPeminjaman);
-                st.executeUpdate();
-
-                String updateSql = "UPDATE perangkat_it pi " +
-                                 "INNER JOIN peminjaman_sementara ps ON pi.id_perangkat = ps.id_perangkat " +
-                                 "SET pi.status = 'Dipinjam' " +
-                                 "WHERE pi.status = 'Tersedia'";
-                try (PreparedStatement updateSt = conn.prepareStatement(updateSql)) {
-                    updateSt.executeUpdate();
-                }
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
-
-    private void dataTabelSementara() {
-        int row = tblDataSementara.getSelectedRow();
-        if (row != -1) {
-            nonAktifPerangkat();
-
-            String id = tblDataSementara.getValueAt(row, 1).toString();
-            txtIdPerangkat.setText(tblDataSementara.getValueAt(row, 1).toString());
-            txtNamaPerangkat.setText(tblDataSementara.getValueAt(row, 2).toString());
-            txtKondisi.setText(tblDataSementara.getValueAt(row, 3).toString());
-            txtStatus.setText(tblDataSementara.getValueAt(row, 4).toString());
-        }
-    }
-
-    private void updateData() {
-        String idPerangkat = txtIdPerangkat.getText();
-
-        if (idPerangkat.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Semua kolom harus dipilih dan diisi !", "Validasi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            String sql = "UPDATE peminjaman_sementara SET status = ? WHERE id_perangkat = ?";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, "Dipinjam");
-                st.setString(2, idPerangkat);
-                int rowUpdated = st.executeUpdate();
-
-                if (rowUpdated > 0) {
-                    JOptionPane.showMessageDialog(this, "Data Berhasil Diperbarui");
-                    resetFormPerangkat();
-                    loadDataSementara();
-                    aktifPerangkat();
-                    btnSave.setEnabled(true);
-                }
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
-
-    private void deleteData() {
-        int selectedRow = tblDataSementara.getSelectedRow();
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Apakah yakin ingin menghapus data ini ?",
-                "Konfirmasi Hapus Data",
-                JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            String id = tblDataSementara.getValueAt(selectedRow, 1).toString();
-            try {
-                String sql = "DELETE FROM peminjaman_sementara WHERE id_perangkat = ?";
-                try (PreparedStatement st = conn.prepareStatement(sql)) {
-                    st.setString(1, id);
-                    int rowDeleted = st.executeUpdate();
-
-                    if (rowDeleted > 0) {
-                        JOptionPane.showMessageDialog(this, "Data Berhasil Dihapus");
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Data Gagal Dihapus");
-                    }
-
-                    btnUbah.setText("TAMBAH");
-                    aktifPerangkat();
-                }
-            } catch (SQLException e) {
-                Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
-            }
-        }
-        resetFormPerangkat();
-        loadDataSementara();
-    }
-
-    private void deleteDataSementara() {
-        try {
-            String sql = "DELETE FROM peminjaman_sementara";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.executeUpdate();
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
         }
     }
 
     private void searchData() {
-        String kataKunci = txtSearch.getText();
-
+        String key = txtSearch.getText().trim();
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
-
         try {
-            String sql = "SELECT pm.id_peminjaman, pm.tanggal_peminjaman, pm.Tanggal_Pengembalian, pm.status, p.nama " +
-                         "FROM peminjaman pm " +
-                         "INNER JOIN pegawaii p ON p.ID_Pegawai = pm.id_pegawai " +
-                         "WHERE pm.id_peminjaman LIKE ? OR p.nama LIKE ?";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, "%" + kataKunci + "%");
-                st.setString(2, "%" + kataKunci + "%");
-                ResultSet rs = st.executeQuery();
-
-                int no = 1;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-                while (rs.next()) {
-                    String idPeminjaman = rs.getString("id_peminjaman");
-                    String tanggalPinjam = rs.getString("tanggal_peminjaman") != null ? sdf.format(rs.getDate("tanggal_peminjaman")) : "";
-                    String tanggalKembali = rs.getString("Tanggal_Pengembalian") != null ? sdf.format(rs.getDate("Tanggal_Pengembalian")) : "";
-                    String status = rs.getString("status");
-                    String namaPegawai = rs.getString("nama");
-
-                    Object[] rowData = {"   " + no++, idPeminjaman, tanggalPinjam, tanggalKembali, status, namaPegawai};
-                    model.addRow(rowData);
-                }
+            String sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai WHERE p.ID_Peminjaman LIKE ? OR g.Nama_Pegawai LIKE ? ORDER BY p.ID_Peminjaman DESC";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setString(1, "%" + key + "%");
+            st.setString(2, "%" + key + "%");
+            ResultSet rs = st.executeQuery();
+            int no = 1;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    no++,
+                    rs.getString(1),
+                    rs.getDate(2) != null ? sdf.format(rs.getDate(2)) : "",
+                    rs.getDate(3) != null ? sdf.format(rs.getDate(3)) : "",
+                    rs.getString(4),
+                    rs.getString(5)
+                });
             }
         } catch (SQLException e) {
-            Logger.getLogger(TransaksiPeminjaman.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
         }
-    }    }
+    }
+
+    private void showPanel() {
+        panelMain.removeAll();
+        panelMain.add(panelView);
+        panelMain.repaint();
+        panelMain.revalidate();
+        loadData();
+        pnDetail.setVisible(false);
+        clearSementara();
+    }
+}
