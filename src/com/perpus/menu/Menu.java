@@ -32,28 +32,28 @@ public class Menu extends javax.swing.JPanel {
             listMenu.addItem(new ModelMenu("", " ", ModelMenu.MenuType.TITLE));
 
             listMenu.addItem(new ModelMenu("", "Transaksi", ModelMenu.MenuType.TITLE));
-            listMenu.addItem(new ModelMenu("peminjaman_white", "Tiket", ModelMenu.MenuType.MENU));
+            listMenu.addItem(new ModelMenu("ticket_white", "Tiket", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("peminjaman_white", "Peminjaman", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("pengembalian_white", "Pengembalian", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("", " ", ModelMenu.MenuType.TITLE));
 
             listMenu.addItem(new ModelMenu("", "Laporan", ModelMenu.MenuType.TITLE));
-            listMenu.addItem(new ModelMenu("peminjaman_white", "Peminjaman", ModelMenu.MenuType.MENU));
-            listMenu.addItem(new ModelMenu("anggota_white", "Anggota", ModelMenu.MenuType.MENU));
-            listMenu.addItem(new ModelMenu("book_white", "Buku", ModelMenu.MenuType.MENU));
+            listMenu.addItem(new ModelMenu("anggota_white", "Pegawai", ModelMenu.MenuType.MENU));
+            listMenu.addItem(new ModelMenu("ticket_white", "Tiket", ModelMenu.MenuType.MENU));
+            listMenu.addItem(new ModelMenu("peminjaman_white", "Peminjaman", ModelMenu.MenuType.MENU));            
+            listMenu.addItem(new ModelMenu("book_white", "Perangkat", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("", "", ModelMenu.MenuType.EMPTY));
         }else{
             listMenu.addItem(new ModelMenu("dashboard_white", "Dashboard", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("", "Transaksi", ModelMenu.MenuType.TITLE));
-            listMenu.addItem(new ModelMenu("peminjaman_white", "Tiket", ModelMenu.MenuType.MENU));
+            listMenu.addItem(new ModelMenu("ticket_white", "Tiket", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("peminjaman_white", "Peminjaman", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("pengembalian_white", "Pengembalian", ModelMenu.MenuType.MENU));
             listMenu.addItem(new ModelMenu("", " ", ModelMenu.MenuType.TITLE));
 
             listMenu.addItem(new ModelMenu("", "Laporan", ModelMenu.MenuType.TITLE));
             listMenu.addItem(new ModelMenu("peminjaman_white", "Peminjaman", ModelMenu.MenuType.MENU));
-            listMenu.addItem(new ModelMenu("anggota_white", "Anggota", ModelMenu.MenuType.MENU));
-            listMenu.addItem(new ModelMenu("book_white", "Buku", ModelMenu.MenuType.MENU));
+            listMenu.addItem(new ModelMenu("ticket_white", "Tiket", ModelMenu.MenuType.MENU));     
             listMenu.addItem(new ModelMenu("", "", ModelMenu.MenuType.EMPTY));
         }
     }
@@ -87,11 +87,11 @@ public class Menu extends javax.swing.JPanel {
         title.setFont(new java.awt.Font("SansSerif", 1, 20)); // NOI18N
         title.setForeground(new java.awt.Color(255, 255, 255));
         title.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        title.setText("AppPerpus");
+        title.setText("AppHelpdesk");
 
         logo.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         logo.setForeground(new java.awt.Color(102, 102, 102));
-        logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/perpus/icon/LogoAppPerpus.png"))); // NOI18N
+        logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/perpus/icon/LogoITHelpdesk.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -102,7 +102,7 @@ public class Menu extends javax.swing.JPanel {
                 .addComponent(logo, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(title)
-                .addContainerGap(59, Short.MAX_VALUE))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -117,7 +117,7 @@ public class Menu extends javax.swing.JPanel {
         jLabel3.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(153, 153, 153));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("AppPerpustakaan v3.0.0");
+        jLabel3.setText("AppHelpdesk");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

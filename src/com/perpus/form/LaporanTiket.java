@@ -11,40 +11,40 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
 
-public class LaporanPeminjaman extends javax.swing.JPanel {
+public class LaporanTiket extends javax.swing.JPanel {
     private int halamanSaatIni = 1;
     private int dataPerHalaman = 14;
     private int totalPages;
-
     private final Connection conn;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private Date tanggalMulai;
     private Date tanggalAkhir;
 
-    private final String userID;   // ID user login
+    private final String userID;   // ID user yang login
     private final String userRole; // "admin" atau "user"
 
-    public LaporanPeminjaman(String userID, String userRole) {
+    public LaporanTiket(String userID, String userRole) {
         initComponents();
         conn = Koneksi.getConnection();
         this.userID = userID;
         this.userRole = userRole != null ? userRole.toLowerCase() : "user";
 
         setTabelModel();
-        loadData();
-        paginationPeminjaman();
+        loadData(); // otomatis load saat buka form
+        paginationTiket();
         actionButton();
         setColumnWidth();
         setLayoutForm();
@@ -58,13 +58,13 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
     }
 
     private void setLayoutForm() {
-        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/peminjaman.svg", 1f));
+        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/ticket.svg", 1f));
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
-        btnTampilkan.setIcon(new FlatSVGIcon("com/perpus/icon/add_white.svg", 1f));
+        btnTampilkan.setIcon(new FlatSVGIcon("com/perpus/icon/search_white.svg", 1f));
         btnCancel.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
         btnPrint.setIcon(new FlatSVGIcon("com/perpus/icon/print_white.svg", 1f));
 
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Cari ID / Pegawai / Perangkat");
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Cari ID / Judul / User");
         txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
                 new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
     }
@@ -114,11 +114,11 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel1.setText("Laporan Peminjaman Perangkat");
+        jLabel1.setText("Laporan Tiket Helpdesk");
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setText("Laporan > Peminjaman");
+        jLabel2.setText("Laporan > Tiket");
 
         jPanel2.setBackground(new java.awt.Color(250, 250, 250));
 
@@ -305,7 +305,7 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     // Button Halaman
-  private void paginationPeminjaman() {
+    private void paginationTiket() {
         btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
         btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
         cbx_data.addActionListener(e -> {
@@ -319,7 +319,7 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
 
     private void actionButton() {
         btnTampilkan.addActionListener(e -> loadData());
-        btnCancel.addActionListener(e -> clearFilter());
+        btnCancel.addActionListener(e -> clearForm());
         btnPrint.addActionListener(e -> cetakLaporan());
 
         txtSearch.addKeyListener(new KeyAdapter() {
@@ -330,7 +330,7 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
         });
     }
 
-    private void clearFilter() {
+    private void clearForm() {
         txtTanggalMulai.setText("");
         txtTanggalAkhir.setText("");
         txtSearch.setText("");
@@ -344,18 +344,18 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
         if (mulai.isEmpty() || akhir.isEmpty()) {
             tanggalMulai = null;
             tanggalAkhir = null;
-            return true;
+            return true; // jika kosong → tampilkan semua (sesuai role)
         }
 
         try {
-            tanggalMulai = sdf.parse(mulai);
-            tanggalAkhir = sdf.parse(akhir);
+            tanggalMulai = dateFormat.parse(mulai);
+            tanggalAkhir = dateFormat.parse(akhir);
             if (tanggalMulai.after(tanggalAkhir)) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Tanggal mulai tidak boleh lebih besar dari tanggal akhir!");
+                JOptionPane.showMessageDialog(this, "Tanggal mulai tidak boleh lebih besar dari tanggal akhir!", "Validasi", JOptionPane.WARNING_MESSAGE);
                 return false;
             }
-        } catch (java.text.ParseException ex) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Format tanggal salah (yyyy-MM-dd)");
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(this, "Format tanggal salah (yyyy-MM-dd)", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -365,12 +365,8 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
         if (!validasiTanggal()) return 0;
 
         String sql = "admin".equals(userRole)
-                ? "SELECT COUNT(*) FROM peminjaman p "
-                + "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman "
-                + "WHERE (? IS NULL OR p.Tanggal_Peminjaman >= ?) AND (? IS NULL OR p.Tanggal_Peminjaman <= ?)"
-                : "SELECT COUNT(*) FROM peminjaman p "
-                + "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman "
-                + "WHERE p.User_ID_User = ? AND (? IS NULL OR p.Tanggal_Peminjaman >= ?) AND (? IS NULL OR p.Tanggal_Peminjaman <= ?)";
+                ? "SELECT COUNT(*) FROM tiket WHERE (? IS NULL OR StartDate >= ?) AND (? IS NULL OR StartDate <= ?)"
+                : "SELECT COUNT(*) FROM tiket WHERE User_ID_User = ? AND (? IS NULL OR StartDate >= ?) AND (? IS NULL OR StartDate <= ?)";
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             int idx = 1;
@@ -384,7 +380,7 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
                 if (rs.next()) return rs.getInt(1);
             }
         } catch (SQLException e) {
-            Logger.getLogger(LaporanPeminjaman.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(LaporanTiket.class.getName()).log(Level.SEVERE, null, e);
         }
         return 0;
     }
@@ -404,22 +400,22 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
         model.setRowCount(0);
 
         String sql = "admin".equals(userRole)
-                ? "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, "
-                + "pg.Nama_Pegawai, pr.ID_Perangkat, pr.Jenis_Perangkat, pr.Merek, pr.No_Serial, pr.Model_Perangkat "
-                + "FROM peminjaman p "
-                + "JOIN pegawai pg ON p.Pegawai_ID_Pegawai = pg.ID_Pegawai "
-                + "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman "
-                + "JOIN perangkat pr ON dp.Perangkat_ID_Perangkat = pr.ID_Perangkat "
-                + "WHERE (? IS NULL OR p.Tanggal_Peminjaman >= ?) AND (? IS NULL OR p.Tanggal_Peminjaman <= ?) "
-                + "ORDER BY p.Tanggal_Peminjaman DESC, p.ID_Peminjaman, pr.ID_Perangkat LIMIT ?, ?"
-                : "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, "
-                + "pg.Nama_Pegawai, pr.ID_Perangkat, pr.Jenis_Perangkat, pr.Merek, pr.No_Serial, pr.Model_Perangkat "
-                + "FROM peminjaman p "
-                + "JOIN pegawai pg ON p.Pegawai_ID_Pegawai = pg.ID_Pegawai "
-                + "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman "
-                + "JOIN perangkat pr ON dp.Perangkat_ID_Perangkat = pr.ID_Perangkat "
-                + "WHERE p.User_ID_User = ? AND (? IS NULL OR p.Tanggal_Peminjaman >= ?) AND (? IS NULL OR p.Tanggal_Peminjaman <= ?) "
-                + "ORDER BY p.Tanggal_Peminjaman DESC, p.ID_Peminjaman, pr.ID_Perangkat LIMIT ?, ?";
+                ? "SELECT t.ID_Tiket, t.Judul_Tiket, t.Deskripsi_Tiket, t.Prioritas_Tiket, "
+                + "t.StartDate, t.EndDate, t.Status_Tiket, u.Nama_Full AS Nama_User, "
+                + "p.Nama_Pegawai AS Nama_Pegawai "
+                + "FROM tiket t "
+                + "JOIN user u ON t.User_ID_User = u.ID_User "
+                + "LEFT JOIN pegawai p ON t.Pegawai_ID_Pegawai = p.ID_Pegawai "
+                + "WHERE (? IS NULL OR t.StartDate >= ?) AND (? IS NULL OR t.StartDate <= ?) "
+                + "ORDER BY t.StartDate DESC LIMIT ?, ?"
+                : "SELECT t.ID_Tiket, t.Judul_Tiket, t.Deskripsi_Tiket, t.Prioritas_Tiket, "
+                + "t.StartDate, t.EndDate, t.Status_Tiket, u.Nama_Full AS Nama_User, "
+                + "p.Nama_Pegawai AS Nama_Pegawai "
+                + "FROM tiket t "
+                + "JOIN user u ON t.User_ID_User = u.ID_User "
+                + "LEFT JOIN pegawai p ON t.Pegawai_ID_Pegawai = p.ID_Pegawai "
+                + "WHERE t.User_ID_User = ? AND (? IS NULL OR t.StartDate >= ?) AND (? IS NULL OR t.StartDate <= ?) "
+                + "ORDER BY t.StartDate DESC LIMIT ?, ?";
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             int idx = 1;
@@ -436,16 +432,15 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
                 while (rs.next()) {
                     model.addRow(new Object[]{
                         no++,
-                        rs.getString("ID_Peminjaman"),
-                        rs.getDate("Tanggal_Peminjaman") != null ? sdf.format(rs.getDate("Tanggal_Peminjaman")) : "",
-                        rs.getDate("Tanggal_Pengembalian") != null ? sdf.format(rs.getDate("Tanggal_Pengembalian")) : "",
-                        rs.getString("Status_Peminjaman"),
-                        rs.getString("Nama_Pegawai"),
-                        rs.getString("ID_Perangkat"),
-                        rs.getString("Jenis_Perangkat"),
-                        rs.getString("Merek"),
-                        rs.getString("No_Serial"),
-                        rs.getString("Model_Perangkat")
+                        rs.getString("ID_Tiket"),
+                        rs.getString("Judul_Tiket"),
+                        rs.getString("Deskripsi_Tiket"),
+                        rs.getString("Prioritas_Tiket"),
+                        rs.getDate("StartDate") != null ? new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("StartDate")) : "-",
+                        rs.getDate("EndDate") != null ? new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("EndDate")) : "-",
+                        rs.getString("Status_Tiket"),
+                        rs.getString("Nama_User"),
+                        rs.getString("Nama_Pegawai") != null ? rs.getString("Nama_Pegawai") : "-"
                     });
                 }
             }
@@ -458,30 +453,30 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
 
     private void searchData() {
         if (!validasiTanggal()) return;
-        String key = "%" + txtSearch.getText().trim() + "%";
+        String keyword = "%" + txtSearch.getText().trim() + "%";
 
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
 
         String sql = "admin".equals(userRole)
-                ? "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, "
-                + "pg.Nama_Pegawai, pr.ID_Perangkat, pr.Jenis_Perangkat, pr.Merek, pr.No_Serial, pr.Model_Perangkat "
-                + "FROM peminjaman p "
-                + "JOIN pegawai pg ON p.Pegawai_ID_Pegawai = pg.ID_Pegawai "
-                + "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman "
-                + "JOIN perangkat pr ON dp.Perangkat_ID_Perangkat = pr.ID_Perangkat "
-                + "WHERE (? IS NULL OR p.Tanggal_Peminjaman >= ?) AND (? IS NULL OR p.Tanggal_Peminjaman <= ?) "
-                + "AND (p.ID_Peminjaman LIKE ? OR pg.Nama_Pegawai LIKE ? OR pr.ID_Perangkat LIKE ? OR pr.Jenis_Perangkat LIKE ? OR pr.Merek LIKE ? OR pr.No_Serial LIKE ?) "
-                + "ORDER BY p.Tanggal_Peminjaman DESC"
-                : "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, "
-                + "pg.Nama_Pegawai, pr.ID_Perangkat, pr.Jenis_Perangkat, pr.Merek, pr.No_Serial, pr.Model_Perangkat "
-                + "FROM peminjaman p "
-                + "JOIN pegawai pg ON p.Pegawai_ID_Pegawai = pg.ID_Pegawai "
-                + "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman "
-                + "JOIN perangkat pr ON dp.Perangkat_ID_Perangkat = pr.ID_Perangkat "
-                + "WHERE p.User_ID_User = ? AND (? IS NULL OR p.Tanggal_Peminjaman >= ?) AND (? IS NULL OR p.Tanggal_Peminjaman <= ?) "
-                + "AND (p.ID_Peminjaman LIKE ? OR pg.Nama_Pegawai LIKE ? OR pr.ID_Perangkat LIKE ? OR pr.Jenis_Perangkat LIKE ? OR pr.Merek LIKE ? OR pr.No_Serial LIKE ?) "
-                + "ORDER BY p.Tanggal_Peminjaman DESC";
+                ? "SELECT t.ID_Tiket, t.Judul_Tiket, t.Deskripsi_Tiket, t.Prioritas_Tiket, "
+                + "t.StartDate, t.EndDate, t.Status_Tiket, u.Nama_Full AS Nama_User, "
+                + "p.Nama_Pegawai AS Nama_Pegawai "
+                + "FROM tiket t "
+                + "JOIN user u ON t.User_ID_User = u.ID_User "
+                + "LEFT JOIN pegawai p ON t.Pegawai_ID_Pegawai = p.ID_Pegawai "
+                + "WHERE (? IS NULL OR t.StartDate >= ?) AND (? IS NULL OR t.StartDate <= ?) "
+                + "AND (t.ID_Tiket LIKE ? OR t.Judul_Tiket LIKE ? OR u.Nama_Full LIKE ?) "
+                + "ORDER BY t.StartDate DESC"
+                : "SELECT t.ID_Tiket, t.Judul_Tiket, t.Deskripsi_Tiket, t.Prioritas_Tiket, "
+                + "t.StartDate, t.EndDate, t.Status_Tiket, u.Nama_Full AS Nama_User, "
+                + "p.Nama_Pegawai AS Nama_Pegawai "
+                + "FROM tiket t "
+                + "JOIN user u ON t.User_ID_User = u.ID_User "
+                + "LEFT JOIN pegawai p ON t.Pegawai_ID_Pegawai = p.ID_Pegawai "
+                + "WHERE t.User_ID_User = ? AND (? IS NULL OR t.StartDate >= ?) AND (? IS NULL OR t.StartDate <= ?) "
+                + "AND (t.ID_Tiket LIKE ? OR t.Judul_Tiket LIKE ? OR u.Nama_Full LIKE ?) "
+                + "ORDER BY t.StartDate DESC";
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             int idx = 1;
@@ -490,23 +485,24 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
             st.setDate(idx++, tanggalMulai == null ? null : new java.sql.Date(tanggalMulai.getTime()));
             st.setDate(idx++, tanggalAkhir == null ? null : new java.sql.Date(tanggalAkhir.getTime()));
             st.setDate(idx++, tanggalAkhir == null ? null : new java.sql.Date(tanggalAkhir.getTime()));
-            for (int i = 0; i < 6; i++) st.setString(idx++, key);
+            st.setString(idx++, keyword);
+            st.setString(idx++, keyword);
+            st.setString(idx++, keyword);
 
             try (ResultSet rs = st.executeQuery()) {
                 int no = 1;
                 while (rs.next()) {
                     model.addRow(new Object[]{
                         no++,
-                        rs.getString("ID_Peminjaman"),
-                        rs.getDate("Tanggal_Peminjaman") != null ? sdf.format(rs.getDate("Tanggal_Peminjaman")) : "",
-                        rs.getDate("Tanggal_Pengembalian") != null ? sdf.format(rs.getDate("Tanggal_Pengembalian")) : "",
-                        rs.getString("Status_Peminjaman"),
-                        rs.getString("Nama_Pegawai"),
-                        rs.getString("ID_Perangkat"),
-                        rs.getString("Jenis_Perangkat"),
-                        rs.getString("Merek"),
-                        rs.getString("No_Serial"),
-                        rs.getString("Model_Perangkat")
+                        rs.getString("ID_Tiket"),
+                        rs.getString("Judul_Tiket"),
+                        rs.getString("Deskripsi_Tiket"),
+                        rs.getString("Prioritas_Tiket"),
+                        rs.getDate("StartDate") != null ? new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("StartDate")) : "-",
+                        rs.getDate("EndDate") != null ? new SimpleDateFormat("dd/MM/yyyy").format(rs.getDate("EndDate")) : "-",
+                        rs.getString("Status_Tiket"),
+                        rs.getString("Nama_User"),
+                        rs.getString("Nama_Pegawai") != null ? rs.getString("Nama_Pegawai") : "-"
                     });
                 }
             }
@@ -523,16 +519,15 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
             }
         };
         model.addColumn("No");
-        model.addColumn("ID Peminjaman");
-        model.addColumn("Tanggal Pinjam");
-        model.addColumn("Tanggal Kembali");
+        model.addColumn("ID Tiket");
+        model.addColumn("Judul Tiket");
+        model.addColumn("Deskripsi");
+        model.addColumn("Prioritas");
+        model.addColumn("Start Date");
+        model.addColumn("End Date");
         model.addColumn("Status");
-        model.addColumn("Nama Pegawai");
-        model.addColumn("ID Perangkat");
-        model.addColumn("Jenis");
-        model.addColumn("Merek");
-        model.addColumn("No Serial");
-        model.addColumn("Model");
+        model.addColumn("User");
+        model.addColumn("Petugas");
         tblData.setModel(model);
     }
 
@@ -540,21 +535,20 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
         if (!validasiTanggal()) return;
 
         try {
-            String reportPath = "src/com/perpus/reports/LaporanPeminjaman.jasper";
+            String reportPath = "src/com/perpus/reports/LaporanTiket.jasper";
 
             HashMap<String, Object> parameters = new HashMap<>();
             if (tanggalMulai != null) parameters.put("tanggalMulai", new java.sql.Date(tanggalMulai.getTime()));
             if (tanggalAkhir != null) parameters.put("tanggalAkhir", new java.sql.Date(tanggalAkhir.getTime()));
-            parameters.put("userID", userID);
-            parameters.put("userRole", userRole);
+            if (!"admin".equals(userRole)) parameters.put("userID", userID); // jika Jasper perlu filter user
 
             JasperPrint print = JasperFillManager.fillReport(reportPath, parameters, conn);
             JasperViewer viewer = new JasperViewer(print, false);
+            viewer.setTitle("Laporan Tiket Helpdesk");
             viewer.setExtendedState(JasperViewer.MAXIMIZED_BOTH);
             viewer.setVisible(true);
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal mencetak laporan: " + e.getMessage());
             e.printStackTrace();
-            javax.swing.JOptionPane.showMessageDialog(this, "Gagal cetak laporan: " + e.getMessage());
         }
-    }
-}
+    }}

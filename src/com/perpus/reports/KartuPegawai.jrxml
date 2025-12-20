@@ -7,12 +7,12 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT * FROM anggota where ID_Anggota = $P{id}]]>
+		<![CDATA[SELECT * FROM pegawai where ID_pegawai = $P{id}]]>
 	</queryString>
-	<field name="ID_Anggota" class="java.lang.String">
+	<field name="ID_Pegawai" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="Nama_Anggota" class="java.lang.String">
+	<field name="Nama_Pegawai" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="Email" class="java.lang.String">
@@ -39,14 +39,14 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="8" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Kartu Anggota Perpustakaan]]></text>
+					<text><![CDATA[Kartu Pegawai Perusahaan]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="44" y="17" width="160" height="12" forecolor="#FFFFFF" uuid="73e5cd25-9c1c-4b50-bc9e-1710b1df71f9"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="6" isBold="false"/>
 					</textElement>
-					<text><![CDATA[Sekolah Uhnuy Tech Development]]></text>
+					<text><![CDATA[PT. MACRO TREND TECHNOLOGY]]></text>
 				</staticText>
 				<image>
 					<reportElement x="12" y="2" width="32" height="27" uuid="dbac035a-36d5-49a8-95f2-e9d139942620"/>
@@ -62,14 +62,14 @@
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ID_Anggota}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ID_Pegawai}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="147" y="13" width="88" height="10" uuid="8eccb0a4-1f1b-491b-8ad3-20dc64217fad"/>
 				<textElement verticalAlignment="Middle">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{Nama_Anggota}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{Nama_Pegawai}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="147" y="23" width="88" height="10" uuid="4404038a-f1ef-4950-8d07-657f5f433d2f"/>
@@ -97,7 +97,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="6" isBold="true"/>
 				</textElement>
-				<text><![CDATA[ID Anggota]]></text>
+				<text><![CDATA[ID Pegawai]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Transparent" x="76" y="13" width="59" height="10" forecolor="#009999" backcolor="#E6E6E6" uuid="1104bd89-428c-42e0-be73-851ca30d02a1"/>
@@ -171,7 +171,7 @@
 			<componentElement>
 				<reportElement x="4" y="76" width="76" height="26" uuid="b003af6d-1a05-4340-a570-b5440380e420"/>
 				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false" barHeight="80">
-					<jr:codeExpression><![CDATA[$F{ID_Anggota}]]></jr:codeExpression>
+					<jr:codeExpression><![CDATA[$F{ID_Pegawai}]]></jr:codeExpression>
 				</jr:barbecue>
 			</componentElement>
 			<staticText>
@@ -179,14 +179,14 @@
 				<textElement verticalAlignment="Middle">
 					<font size="5"/>
 				</textElement>
-				<text><![CDATA[Tegal, ]]></text>
+				<text><![CDATA[Jakarta, ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="172" y="93" width="63" height="10" uuid="3525e5ad-b92f-49bb-b5cc-8a283fda182e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="5"/>
 				</textElement>
-				<text><![CDATA[CEO Uhnuy Tech Development]]></text>
+				<text><![CDATA[Director]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="190" y="56" width="45" height="10" uuid="683b3896-077a-476e-8965-2e90f9789447"/>
@@ -200,7 +200,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="5"/>
 				</textElement>
-				<text><![CDATA[Teguh Julianto]]></text>
+				<text><![CDATA[Martin Marta]]></text>
 			</staticText>
 		</band>
 	</detail>

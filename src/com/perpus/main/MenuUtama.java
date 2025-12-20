@@ -2,9 +2,11 @@ package com.perpus.main;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.perpus.form.FormProfile;
-import com.perpus.form.LaporanAnggota;
-import com.perpus.form.LaporanBuku;
+
+import com.perpus.form.LaporanPerangkat;
+import com.perpus.form.LaporanPegawai;
 import com.perpus.form.LaporanPeminjaman;
+import com.perpus.form.LaporanTiket;
 import com.perpus.form.MasterPegawai;
 import com.perpus.form.MasterPerangkatIT;
 import com.perpus.form.MasterDashboard;
@@ -45,7 +47,7 @@ public class MenuUtama extends javax.swing.JFrame {
             public void selected(int index) {
                 if(levelUser != null && levelUser.equals("admin")){
                     if (index == 0){
-                        setForm(new MasterDashboard());
+                        setForm(new MasterDashboard(userID, levelUser));
                     } else if (index == 2){
                         setForm(new MasterPegawai());
                     } else if (index == 3){
@@ -55,37 +57,38 @@ public class MenuUtama extends javax.swing.JFrame {
                     } else if (index == 7){
                         setForm(new TransaksiTiket(userID, levelUser));
                     } else if (index == 8){
-                        setForm(new TransaksiPeminjaman(userID));
+                        setForm(new TransaksiPeminjaman(userID, levelUser));
                     } else if (index == 9){
-                        setForm(new TransaksiPengembalian(userID));
+                        setForm(new TransaksiPengembalian(userID, levelUser));
+                    } else if (index == 12){
+                        setForm(new LaporanPegawai());
                     } else if (index == 13){
-                        setForm(new LaporanPeminjaman());
-                    } else if (index == 14){
-                        setForm(new LaporanAnggota());
-                    } else if (index == 15){
-                        setForm(new LaporanBuku());
+                        setForm(new LaporanTiket(userID, levelUser));
+                    }   else if (index == 14){
+                        setForm(new LaporanPeminjaman(userID, levelUser));
+                    }
+                    else if (index == 15){
+                        setForm(new LaporanPerangkat());
                     }  
                 } else {
                     if(index == 0){
-                        setForm(new MasterDashboard());
+                        setForm(new MasterDashboard(userID, levelUser));
                            } else if (index == 2){
                         setForm(new TransaksiTiket(userID, levelUser));
                     } else if (index == 3){
-                        setForm(new TransaksiPeminjaman(userID));
-                    } else if (index == 3){
-                        setForm(new TransaksiPengembalian(userID));
-                    } else if (index == 6){
-                        setForm(new LaporanPeminjaman());
+                        setForm(new TransaksiPeminjaman(userID, levelUser));
+                    } else if (index == 4){
+                        setForm(new TransaksiPengembalian(userID, levelUser));
                     } else if (index == 7){
-                        setForm(new LaporanAnggota());
+                        setForm(new LaporanPeminjaman(userID, levelUser));
                     } else if (index == 8){
-                        setForm(new LaporanBuku());
-                    }
+                        setForm(new LaporanTiket(userID, levelUser));
+                    } 
                 }
             }
         });
         
-        setForm(new MasterDashboard());
+        setForm(new MasterDashboard(userID, levelUser));
         setLayoutForm();
         setDate();
     }

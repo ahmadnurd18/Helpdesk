@@ -43,6 +43,8 @@ public class TransaksiTiket extends javax.swing.JPanel {
         columnModel.getColumn(0).setPreferredWidth(40);
         columnModel.getColumn(0).setMaxWidth(40);
         columnModel.getColumn(0).setMinWidth(40);
+        columnModel.getColumn(9).setPreferredWidth(120); // kolom Petugas (indeks 9)
+columnModel.getColumn(9).setMinWidth(100);
     }
     
     private void resetButtonState() {
@@ -54,8 +56,8 @@ public class TransaksiTiket extends javax.swing.JPanel {
     
 
     private void setLayoutForm() {
-        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/tiket.svg", 1f));
-        iconJudul2.setIcon(new FlatSVGIcon("com/perpus/icon/tiket.svg", 1f));
+        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/ticket.svg", 1f));
+        iconJudul2.setIcon(new FlatSVGIcon("com/perpus/icon/ticket.svg", 1f));
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
         iconDashboard2.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
         btnAdd.setIcon(new FlatSVGIcon("com/perpus/icon/add_white.svg", 1f));
@@ -312,6 +314,7 @@ public class TransaksiTiket extends javax.swing.JPanel {
 
         iconJudul2.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         iconJudul2.setForeground(new java.awt.Color(102, 102, 102));
+        iconJudul2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/perpus/icon/tiket.png"))); // NOI18N
 
         jLabel9.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(102, 102, 102));
@@ -658,48 +661,61 @@ private void insertTiket() {
     }
 
     private void updateTiket() {
-        try {
-            String status = "OPEN";
-            if ("admin".equals(currentRole) && EndDate.getDate() != null) {
-                status = "ON PROGRESS";
-            }
-            String sql = "UPDATE tiket SET " +
-                "Judul_Tiket = ?, Deskripsi_Tiket = ?, Prioritas_Tiket = ?, " +
-                "StartDate = ?, EndDate = ?, Status_Tiket = ? " +
-                "WHERE ID_Tiket = ?";
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1, txtJudulTiket.getText());
-            st.setString(2, TxtDesk.getText());
-            st.setString(3, cbxPrioritas.getSelectedItem().toString());
-            st.setDate(4, new java.sql.Date(StartDate.getDate().getTime()));
-            st.setDate(5, EndDate.getDate() != null ? new java.sql.Date(EndDate.getDate().getTime()) : null);
-            st.setString(6, status);
-            st.setString(7, selectedTiketID);
+    try {
+        String status = "OPEN";
+        String pegawaiID = null;
 
-            if (st.executeUpdate() > 0) {
-                updateDetailTiket(status);
-                JOptionPane.showMessageDialog(this, "Tiket diperbarui! Status: " + status);
-                showPanel();
+        if ("admin".equals(currentRole)) {
+            if (EndDate.getDate() != null) {
+                status = "ON PROGRESS";
+                pegawaiID = getCurrentPegawaiID(); // admin yang sedang login
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        String sql = "UPDATE tiket SET " +
+            "Judul_Tiket = ?, Deskripsi_Tiket = ?, Prioritas_Tiket = ?, " +
+            "StartDate = ?, EndDate = ?, Status_Tiket = ?, Pegawai_ID_Pegawai = ? " +
+            "WHERE ID_Tiket = ?";
+
+        PreparedStatement st = conn.prepareStatement(sql);
+        st.setString(1, txtJudulTiket.getText());
+        st.setString(2, TxtDesk.getText());
+        st.setString(3, cbxPrioritas.getSelectedItem().toString());
+        st.setDate(4, new java.sql.Date(StartDate.getDate().getTime()));
+        st.setDate(5, EndDate.getDate() != null ? new java.sql.Date(EndDate.getDate().getTime()) : null);
+        st.setString(6, status);
+        st.setString(7, pegawaiID);
+        st.setString(8, selectedTiketID);
+
+        if (st.executeUpdate() > 0) {
+            updateDetailTiket(status);
+            JOptionPane.showMessageDialog(this, "Tiket diperbarui! Status: " + status);
+            showPanel();
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
 
     private void closeTiket() {
-        try {
-            String sql = "UPDATE tiket SET Status_Tiket = 'CLOSED' WHERE ID_Tiket = ?";
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1, selectedTiketID);
-            if (st.executeUpdate() > 0) {
-                updateDetailTiket("CLOSED");
-                JOptionPane.showMessageDialog(this, "Tiket selesai!");
-                showPanel();
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal: " + e.getMessage());
+    try {
+        String pegawaiID = getCurrentPegawaiID();
+
+        String sql = "UPDATE tiket SET Status_Tiket = 'CLOSED', Pegawai_ID_Pegawai = COALESCE(Pegawai_ID_Pegawai, ?) " +
+                     "WHERE ID_Tiket = ?";
+        PreparedStatement st = conn.prepareStatement(sql);
+        st.setString(1, pegawaiID);
+        st.setString(2, selectedTiketID);
+
+        if (st.executeUpdate() > 0) {
+            updateDetailTiket("CLOSED");
+            JOptionPane.showMessageDialog(this, "Tiket selesai!");
+            showPanel();
         }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal: " + e.getMessage());
     }
+}
 
     private void insertDetailTiket(String status) throws SQLException {
         String sql = "INSERT INTO detail_tiket (Tiket_ID_Tiket, Status_Tiket) VALUES (?, ?)";
@@ -779,10 +795,10 @@ private void insertTiket() {
 
     private void setTabelModel() {
         DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[]{
-            "No", "ID Tiket", "Judul", "Deskripsi", "Prioritas", "Start", "End", "Status", "User"
-        });
-        tblData.setModel(model);
+    model.setColumnIdentifiers(new Object[]{
+        "No", "ID Tiket", "Judul", "Deskripsi", "Prioritas", "Start", "End", "Status", "User", "Petugas"
+    });
+    tblData.setModel(model);
     }
 
     private void loadData() {
@@ -795,52 +811,61 @@ private void insertTiket() {
         btnCancel.setVisible(false);
     }
 
-    public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
-        model.setRowCount(0);
-        try {
-            String sql;
-            PreparedStatement st;
-
-            if ("admin".equals(currentRole)) {
-                sql = "SELECT t.*, u.Nama_Full AS User_Name " +
-                      "FROM tiket t JOIN user u ON t.User_ID_User = u.ID_User " +
-                      "ORDER BY t.StartDate DESC LIMIT ?, ?";
-                st = conn.prepareStatement(sql);
-                st.setInt(1, startIndex);
-                st.setInt(2, entriesPage);
-            } else {
-                sql = "SELECT t.*, u.Nama_Full AS User_Name " +
-                      "FROM tiket t JOIN user u ON t.User_ID_User = u.ID_User " +
-                      "WHERE t.User_ID_User = ? " +
-                      "ORDER BY t.StartDate DESC LIMIT ?, ?";
-                st = conn.prepareStatement(sql);
-                st.setString(1, currentUserID);
-                st.setInt(2, startIndex);
-                st.setInt(3, entriesPage);
-            }
-
-            ResultSet rs = st.executeQuery();
-            int no = startIndex + 1;
-            while (rs.next()) {
-                String status = rs.getString("Status_Tiket");
-                if (status == null) status = "OPEN";
-
-                model.addRow(new Object[]{
-                    no++,
-                    rs.getString("ID_Tiket"),
-                    rs.getString("Judul_Tiket"),
-                    rs.getString("Deskripsi_Tiket"),
-                    rs.getString("Prioritas_Tiket"),
-                    rs.getDate("StartDate"),
-                    rs.getDate("EndDate"),
-                    status,
-                    rs.getString("User_Name")
-                });
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error load data: " + e.getMessage());
+   public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
+    model.setRowCount(0);
+    try {
+        String sql;
+        PreparedStatement st;
+        if ("admin".equals(currentRole)) {
+            sql = "SELECT t.*, u.Nama_Full AS User_Name, p.Nama_Pegawai AS Petugas_Name " +
+                  "FROM tiket t " +
+                  "JOIN user u ON t.User_ID_User = u.ID_User " +
+                  "LEFT JOIN pegawai p ON t.Pegawai_ID_Pegawai = p.ID_Pegawai " +
+                  "ORDER BY t.StartDate DESC LIMIT ?, ?";
+            st = conn.prepareStatement(sql);
+            st.setInt(1, startIndex);
+            st.setInt(2, entriesPage);
+        } else {
+            sql = "SELECT t.*, u.Nama_Full AS User_Name, p.Nama_Pegawai AS Petugas_Name " +
+                  "FROM tiket t " +
+                  "JOIN user u ON t.User_ID_User = u.ID_User " +
+                  "LEFT JOIN pegawai p ON t.Pegawai_ID_Pegawai = p.ID_Pegawai " +
+                  "WHERE t.User_ID_User = ? " +
+                  "ORDER BY t.StartDate DESC LIMIT ?, ?";
+            st = conn.prepareStatement(sql);
+            st.setString(1, currentUserID);
+            st.setInt(2, startIndex);
+            st.setInt(3, entriesPage);
         }
+
+        ResultSet rs = st.executeQuery();
+        int no = startIndex + 1;
+        while (rs.next()) {
+            String status = rs.getString("Status_Tiket");
+            if (status == null) status = "OPEN";
+
+            String petugas = rs.getString("Petugas_Name");
+            if (petugas == null || status.equals("OPEN")) {
+                petugas = "-"; // atau "" jika ingin kosong
+            }
+
+            model.addRow(new Object[]{
+                no++,
+                rs.getString("ID_Tiket"),
+                rs.getString("Judul_Tiket"),
+                rs.getString("Deskripsi_Tiket"),
+                rs.getString("Prioritas_Tiket"),
+                rs.getDate("StartDate"),
+                rs.getDate("EndDate"),
+                status,
+                rs.getString("User_Name"),
+                petugas
+            });
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error load data: " + e.getMessage());
     }
+}
 
    private int getTotalData() {
         int total = 0;
@@ -926,55 +951,79 @@ private void insertTiket() {
         }
     }
 
-    private void searchData() {
-       String keyword = txtSearch.getText().trim();
-        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.setRowCount(0);
+   private void searchData() {
+    String keyword = txtSearch.getText().trim();
+    DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+    model.setRowCount(0);
+    try {
+        String sql;
+        PreparedStatement st;
 
-        try {
-            String sql;
-            PreparedStatement st;
-
-            if ("admin".equals(currentRole)) {
-                sql = "SELECT t.*, u.Nama_Full FROM tiket t JOIN user u ON t.User_ID_User = u.ID_User " +
-                      "WHERE t.ID_Tiket LIKE ? OR t.Judul_Tiket LIKE ? OR u.Nama_Full LIKE ?";
-            } else {
-                sql = "SELECT t.*, u.Nama_Full FROM tiket t JOIN user u ON t.User_ID_User = u.ID_User " +
-                      "WHERE t.User_ID_User = ? AND (t.ID_Tiket LIKE ? OR t.Judul_Tiket LIKE ?)";
-                st = conn.prepareStatement(sql);
-                st.setString(1, currentUserID);
-                st.setString(2, "%" + keyword + "%");
-                st.setString(3, "%" + keyword + "%");
-                ResultSet rs = st.executeQuery();
-                int no = 1;
-                while (rs.next()) {
-                    model.addRow(new Object[]{
-                        no++, rs.getString("ID_Tiket"), rs.getString("Judul_Tiket"),
-                        rs.getString("Deskripsi_Tiket"), rs.getString("Prioritas_Tiket"),
-                        rs.getDate("StartDate"), rs.getDate("EndDate"),
-                        rs.getString("Status_Tiket"), rs.getString("Nama_Full")
-                    });
-                }
-                return;
-            }
-
+        if ("admin".equals(currentRole)) {
+            sql = "SELECT t.*, u.Nama_Full AS User_Name, p.Nama_Pegawai AS Petugas_Name " +
+                  "FROM tiket t " +
+                  "JOIN user u ON t.User_ID_User = u.ID_User " +
+                  "LEFT JOIN pegawai p ON t.Pegawai_ID_Pegawai = p.ID_Pegawai " +
+                  "WHERE t.ID_Tiket LIKE ? OR t.Judul_Tiket LIKE ? " +
+                  "OR u.Nama_Full LIKE ? OR p.Nama_Pegawai LIKE ?";
             st = conn.prepareStatement(sql);
-            st.setString(1, "%" + keyword + "%");
+            String like = "%" + keyword + "%";
+            st.setString(1, like);
+            st.setString(2, like);
+            st.setString(3, like);
+            st.setString(4, like);
+        } else {
+            sql = "SELECT t.*, u.Nama_Full AS User_Name, p.Nama_Pegawai AS Petugas_Name " +
+                  "FROM tiket t " +
+                  "JOIN user u ON t.User_ID_User = u.ID_User " +
+                  "LEFT JOIN pegawai p ON t.Pegawai_ID_Pegawai = p.ID_Pegawai " +
+                  "WHERE t.User_ID_User = ? AND (t.ID_Tiket LIKE ? OR t.Judul_Tiket LIKE ?)";
+            st = conn.prepareStatement(sql);
+            st.setString(1, currentUserID);
             st.setString(2, "%" + keyword + "%");
             st.setString(3, "%" + keyword + "%");
-
-            ResultSet rs = st.executeQuery();
-            int no = 1;
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    no++, rs.getString("ID_Tiket"), rs.getString("Judul_Tiket"),
-                    rs.getString("Deskripsi_Tiket"), rs.getString("Prioritas_Tiket"),
-                    rs.getDate("StartDate"), rs.getDate("EndDate"),
-                    rs.getString("Status_Tiket"), rs.getString("Nama_Full")
-                });
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+
+        ResultSet rs = st.executeQuery();
+        int no = 1;
+        while (rs.next()) {
+            String status = rs.getString("Status_Tiket");
+            if (status == null) status = "OPEN";
+
+            String petugas = rs.getString("Petugas_Name");
+            if (petugas == null || status.equals("OPEN")) petugas = "-";
+
+            model.addRow(new Object[]{
+                no++,
+                rs.getString("ID_Tiket"),
+                rs.getString("Judul_Tiket"),
+                rs.getString("Deskripsi_Tiket"),
+                rs.getString("Prioritas_Tiket"),
+                rs.getDate("StartDate"),
+                rs.getDate("EndDate"),
+                status,
+                rs.getString("User_Name"),
+                petugas
+            });
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
+   
+   private String getCurrentPegawaiID() {
+    String pegawaiID = null;
+    try {
+        String sql = "SELECT Pegawai_ID_Pegawai FROM user WHERE ID_User = ?";
+        PreparedStatement st = conn.prepareStatement(sql);
+        st.setString(1, currentUserID);
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+            pegawaiID = rs.getString("Pegawai_ID_Pegawai");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return pegawaiID;
+}
 }

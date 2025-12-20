@@ -14,27 +14,27 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
 
-public class LaporanAnggota extends javax.swing.JPanel {
-
+public class LaporanPegawai extends javax.swing.JPanel {
     private int halamanSaatIni = 1;
     private int dataPerHalaman = 14;
     private int totalPages;
-    
+
     private final Connection conn;
-    
-    public LaporanAnggota() {
+
+    public LaporanPegawai() {
         initComponents();
-        
+
         conn = Koneksi.getConnection();
         setTabelModel();
         loadData();
-        paginationAnggota();
+        paginationPegawai();
         actionButton();
         setColumnWidth();
         setLayoutForm();
@@ -47,13 +47,13 @@ public class LaporanAnggota extends javax.swing.JPanel {
         columnModel.getColumn(0).setMinWidth(40);
     }
 
-    private void setLayoutForm(){
+    private void setLayoutForm() {
         iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/anggota.svg", 1f));
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
         btnPrint.setIcon(new FlatSVGIcon("com/perpus/icon/print_white.svg", 1f));
-        
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pencarian");
-        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON, 
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Cari Nama / Email");
+        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
                 new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
     }
 
@@ -92,11 +92,11 @@ public class LaporanAnggota extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel1.setText("Laporan Anggota Perpustakaan");
+        jLabel1.setText("Laporan Pegawai Perusahaan");
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setText("Laporan > Anggota");
+        jLabel2.setText("Laporan > Pegawai");
 
         jPanel2.setBackground(new java.awt.Color(250, 250, 250));
 
@@ -172,7 +172,7 @@ public class LaporanAnggota extends javax.swing.JPanel {
                         .addComponent(iconJudul, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 617, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 626, Short.MAX_VALUE)
                         .addComponent(iconDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2))
@@ -233,206 +233,150 @@ public class LaporanAnggota extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     // Button Halaman
-    private void paginationAnggota() {
-        btn_first.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = 1;
-                loadData();
-            }
-            
+   private void paginationPegawai() {
+        btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
+        btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
+        cbx_data.addActionListener(e -> {
+            dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString());
+            halamanSaatIni = 1;
+            loadData();
         });
-        
-        btn_before.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni > 1)
-                {
-                    halamanSaatIni--;
-                    loadData();
-                }
-            }
-            
-        });
-        
-        cbx_data.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString());
-                halamanSaatIni = 1;
-                loadData();
-            }
-            
-        });
-        
-        btn_next.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni < totalPages) {
-                    halamanSaatIni++;
-                    loadData();
-                }
-            }
-            
-        });
-        
-        btn_last.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = totalPages;
-                loadData();
-            }
-            
-        });
+        btn_next.addActionListener(e -> { if (halamanSaatIni < totalPages) { halamanSaatIni++; loadData(); } });
+        btn_last.addActionListener(e -> { halamanSaatIni = totalPages; loadData(); });
     }
-    
-    // Button Halaman
-    
-    // Button Action
-    private void actionButton(){
-        btnPrint.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cetakLaporan();
-            }
-        });
-        
-        txtSearch.addKeyListener(new KeyAdapter(){
+
+    private void actionButton() {
+        btnPrint.addActionListener(e -> cetakLaporan());
+
+        txtSearch.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 searchData();
             }
         });
     }
-    
-    private int getTotalData(){
+
+    private int getTotalData() {
         int totalData = 0;
-        
         try {
-            String sql = "SELECT COUNT(*) AS total FROM anggota";
-            try (PreparedStatement st = conn.prepareStatement(sql)){
+            String sql = "SELECT COUNT(*) AS total FROM pegawai";
+            try (PreparedStatement st = conn.prepareStatement(sql)) {
                 ResultSet rs = st.executeQuery();
-                if(rs.next()){
+                if (rs.next()) {
                     totalData = rs.getInt("total");
                 }
-            } 
+            }
         } catch (Exception e) {
-            Logger.getLogger(LaporanAnggota.class.getName()).log(Level.SEVERE,null,e);
+            Logger.getLogger(LaporanPegawai.class.getName()).log(Level.SEVERE, null, e);
         }
-        
         return totalData;
     }
-    
-    private void calculateTotalPages(){
+
+    private void calculateTotalPages() {
         int totalData = getTotalData();
-        totalPages = (int) Math.ceil((double) totalData / dataPerHalaman );
+        totalPages = (int) Math.ceil((double) totalData / dataPerHalaman);
     }
-    
+
     private void loadData() {
         calculateTotalPages();
         int totalData = getTotalData();
-        lb_halaman.setText(String.valueOf("Halaman "+ halamanSaatIni + " dari Total Data " + totalData));
-        
+        lb_halaman.setText("Halaman " + halamanSaatIni + " dari Total Data " + totalData);
+
         int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
-        getData(startIndex, dataPerHalaman,(DefaultTableModel) tblData.getModel());
+        getData(startIndex, dataPerHalaman, (DefaultTableModel) tblData.getModel());
     }
-    
-    private void showPanel(){
-        panelMain.removeAll();
-        panelMain.add(new LaporanAnggota());
-        panelMain.repaint();
-        panelMain.revalidate();
-    }
-    
-    private void resetForm() {
-        
-    }
-    
+
     private void setTabelModel() {
-        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         model.addColumn("No");
-        model.addColumn("ID");
+        model.addColumn("ID Pegawai");
         model.addColumn("Nama");
         model.addColumn("Email");
         model.addColumn("Telepon");
         model.addColumn("Jenis Kelamin");
         model.addColumn("Tanggal Bergabung");
+        tblData.setModel(model);
     }
 
     public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
         model.setRowCount(0);
-
         try {
-            String sql = "SELECT * FROM anggota LIMIT ?,?";
+            String sql = "SELECT ID_Pegawai, Nama_Pegawai, Email, Telepon, Jenis_Kelamin, Tanggal_Bergabung " +
+                         "FROM pegawai ORDER BY ID_Pegawai LIMIT ?, ?";
             try (PreparedStatement st = conn.prepareStatement(sql)) {
                 st.setInt(1, startIndex);
                 st.setInt(2, entriesPage);
                 ResultSet rs = st.executeQuery();
-
                 int no = startIndex + 1;
-                
-                while (rs.next()) {
-                    String idAnggota = rs.getString("ID_Anggota");
-                    String namaAnggota = rs.getString("Nama_Anggota");
-                    String emailAnggota = rs.getString("Email");
-                    String teleponAnggota = rs.getString("Telepon");
-                    String jenisKelamin = rs.getString("Jenis_Kelamin");
-                    String tanggalJoin = rs.getString("Tanggal_Bergabung");
 
-                    Object[] rowData = {"   " + no++, idAnggota, namaAnggota, emailAnggota, teleponAnggota, jenisKelamin, tanggalJoin};
+                while (rs.next()) {
+                    String id = rs.getString("ID_Pegawai");
+                    String nama = rs.getString("Nama_Pegawai");
+                    String email = rs.getString("Email");
+                    String telepon = rs.getString("Telepon") != null ? rs.getString("Telepon") : "";
+                    String jk = rs.getString("Jenis_Kelamin");
+                    String tgl = rs.getDate("Tanggal_Bergabung") != null ? rs.getDate("Tanggal_Bergabung").toString() : "";
+
+                    Object[] rowData = { " " + no++, id, nama, email, telepon, jk, tgl };
                     model.addRow(rowData);
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPegawai.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(LaporanPegawai.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
     private void searchData() {
         String kataKunci = txtSearch.getText();
-        
+
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
-        
+
         try {
-            String sql = "SELECT * FROM anggota WHERE Nama_Anggota LIKE ? OR Email LIKE ?";
-            try (PreparedStatement st = conn.prepareStatement(sql)){
+            String sql = "SELECT ID_Pegawai, Nama_Pegawai, Email, Telepon, Jenis_Kelamin, Tanggal_Bergabung " +
+                         "FROM pegawai " +
+                         "WHERE Nama_Pegawai LIKE ? OR Email LIKE ? " +
+                         "ORDER BY ID_Pegawai";
+            try (PreparedStatement st = conn.prepareStatement(sql)) {
                 st.setString(1, "%" + kataKunci + "%");
                 st.setString(2, "%" + kataKunci + "%");
                 ResultSet rs = st.executeQuery();
-                
+
                 int no = 1;
-                
                 while (rs.next()) {
-                    String idAnggota        = rs.getString("ID_Anggota");
-                    String namaAnggota      = rs.getString("Nama_Anggota");
-                    String emailAnggota     = rs.getString("Email");
-                    String teleponAnggota   = rs.getString("Telepon");
-                    String jenisKelamin     = rs.getString("Jenis_Kelamin");
-                    String tanggalBergabung = rs.getString("Tanggal_Bergabung");
-                    
-                    Object[] rowData = {"   " + no++, idAnggota,namaAnggota,emailAnggota,teleponAnggota,jenisKelamin,tanggalBergabung};
+                    String id = rs.getString("ID_Pegawai");
+                    String nama = rs.getString("Nama_Pegawai");
+                    String email = rs.getString("Email");
+                    String telepon = rs.getString("Telepon") != null ? rs.getString("Telepon") : "";
+                    String jk = rs.getString("Jenis_Kelamin");
+                    String tgl = rs.getDate("Tanggal_Bergabung") != null ? rs.getDate("Tanggal_Bergabung").toString() : "";
+
+                    Object[] rowData = { " " + no++, id, nama, email, telepon, jk, tgl };
                     model.addRow(rowData);
                 }
-            } 
+            }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPegawai.class.getName()).log(Level.SEVERE,null,e);
+            Logger.getLogger(LaporanPegawai.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
-    private void cetakLaporan(){
+    private void cetakLaporan() {
         try {
-            String reportPath = "src/com/perpus/reports/LaporanAnggota.jasper";
-            
+            String reportPath = "src/com/perpus/reports/LaporanPegawai.jasper";
+
             HashMap<String, Object> parameters = new HashMap<>();
-            
+
             JasperPrint print = JasperFillManager.fillReport(reportPath, parameters, conn);
             JasperViewer viewer = new JasperViewer(print, false);
             viewer.setExtendedState(JasperViewer.MAXIMIZED_BOTH);
             viewer.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Gagal cetak laporan: " + e.getMessage());
         }
-    }
-    
-}
+    }}

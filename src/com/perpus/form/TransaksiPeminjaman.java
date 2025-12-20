@@ -16,32 +16,34 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+
 public class TransaksiPeminjaman extends javax.swing.JPanel {
 
+    private String userRole; // tambahkan ini
     private int halamanSaatIni = 1;
     private int dataPerHalaman = 14;
     private int totalPages;
     private final Connection conn;
     private String userID;
 
-    public TransaksiPeminjaman(String userID) {
-        initComponents();
-        conn = Koneksi.getConnection();
-        this.userID = userID;
-
-        setTabelModel();
-        setTabelModelDetail();
-        setTabelModelSementara();
-        loadData();
-        loadDataSementara();
-        paginationPerangkat();
-        actionButton();
-        setColumnWidth();
-        setLayoutForm();
-        txtTanggalPinjam.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        hitungTanggalKembali();
-        pnDetail.setVisible(false);
-    }
+  public TransaksiPeminjaman(String userID, String userRole) { // tambahkan parameter role
+    initComponents();
+    conn = Koneksi.getConnection();
+    this.userID = userID;
+    this.userRole = userRole != null ? userRole.toLowerCase() : "user"; // default user
+    setTabelModel();
+    setTabelModelDetail();
+    setTabelModelSementara();
+    loadData(); // otomatis difilter berdasarkan role
+    loadDataSementara();
+    paginationPerangkat();
+    actionButton();
+    setColumnWidth();
+    setLayoutForm();
+    txtTanggalPinjam.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+    hitungTanggalKembali();
+    pnDetail.setVisible(false);
+}
 
     private void setColumnWidth() {
         TableColumnModel columnModel = tblData.getColumnModel();
@@ -1002,16 +1004,32 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
     }
 
     private void loadData() {
-        calculateTotalPages();
-        int start = (halamanSaatIni - 1) * dataPerHalaman;
-        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.setRowCount(0);
-        try {
-            String sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1, start);
-            st.setInt(2, dataPerHalaman);
-            ResultSet rs = st.executeQuery();
+       calculateTotalPages();
+    int start = (halamanSaatIni - 1) * dataPerHalaman;
+    DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+    model.setRowCount(0);
+
+    String sql;
+    if ("admin".equals(userRole)) {
+        sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
+              "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
+              "ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
+    } else {
+        sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
+              "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
+              "WHERE p.User_ID_User = ? " +
+              "ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
+    }
+
+    try (PreparedStatement st = conn.prepareStatement(sql)) {
+        int idx = 1;
+        if (!"admin".equals(userRole)) {
+            st.setString(idx++, userID);
+        }
+        st.setInt(idx++, start);
+        st.setInt(idx++, dataPerHalaman);
+
+        try (ResultSet rs = st.executeQuery()) {
             int no = start + 1;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             while (rs.next()) {
@@ -1024,36 +1042,66 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                     rs.getString(5)
                 });
             }
-        } catch (SQLException e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
         }
-        lb_halaman.setText("Halaman " + halamanSaatIni + " / " + totalPages);
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
     }
 
     private void calculateTotalPages() {
-        try {
-            String sql = "SELECT COUNT(*) FROM peminjaman";
-            ResultSet rs = conn.prepareStatement(sql).executeQuery();
-            if (rs.next()) {
-                int total = rs.getInt(1);
-                totalPages = (int) Math.ceil(total / (double) dataPerHalaman);
-                if (totalPages == 0) totalPages = 1;
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+       try {
+        String sql;
+        if ("admin".equals(userRole)) {
+            sql = "SELECT COUNT(*) FROM peminjaman";
+        } else {
+            sql = "SELECT COUNT(*) FROM peminjaman WHERE User_ID_User = ?";
         }
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            if (!"admin".equals(userRole)) {
+                st.setString(1, userID);
+            }
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    int total = rs.getInt(1);
+                    totalPages = (int) Math.ceil(total / (double) dataPerHalaman);
+                    if (totalPages == 0) totalPages = 1;
+                }
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
     }
 
     private void searchData() {
         String key = txtSearch.getText().trim();
-        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.setRowCount(0);
-        try {
-            String sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai WHERE p.ID_Peminjaman LIKE ? OR g.Nama_Pegawai LIKE ? ORDER BY p.ID_Peminjaman DESC";
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1, "%" + key + "%");
-            st.setString(2, "%" + key + "%");
-            ResultSet rs = st.executeQuery();
+    DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+    model.setRowCount(0);
+
+    String sql;
+    if ("admin".equals(userRole)) {
+        sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
+              "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
+              "WHERE p.ID_Peminjaman LIKE ? OR g.Nama_Pegawai LIKE ? " +
+              "ORDER BY p.ID_Peminjaman DESC";
+    } else {
+        sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
+              "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
+              "WHERE p.User_ID_User = ? AND (p.ID_Peminjaman LIKE ? OR g.Nama_Pegawai LIKE ?) " +
+              "ORDER BY p.ID_Peminjaman DESC";
+    }
+
+    try (PreparedStatement st = conn.prepareStatement(sql)) {
+        int idx = 1;
+        String like = "%" + key + "%";
+        if (!"admin".equals(userRole)) {
+            st.setString(idx++, userID);
+        }
+        st.setString(idx++, like);
+        st.setString(idx++, like);
+
+        try (ResultSet rs = st.executeQuery()) {
             int no = 1;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             while (rs.next()) {
@@ -1066,10 +1114,24 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                     rs.getString(5)
                 });
             }
-        } catch (SQLException e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    }
+    private String getUserRole() {
+    String sql = "SELECT Role FROM user WHERE ID_User = ?";
+    try (PreparedStatement st = conn.prepareStatement(sql)) {
+        st.setString(1, userID);
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+            return rs.getString("Role");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return "user";
+}
 
     private void showPanel() {
         panelMain.removeAll();

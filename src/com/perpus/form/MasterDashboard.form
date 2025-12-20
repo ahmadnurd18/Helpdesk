@@ -46,15 +46,15 @@
                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jScrollPane2" alignment="1" max="32767" attributes="0"/>
-                              <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="riwayat" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="cardAnggota" max="32767" attributes="0"/>
+                                  <Component id="cardPegawai" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
-                                  <Component id="cardBuku" max="32767" attributes="0"/>
+                                  <Component id="cardPerangkat" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
                                   <Component id="cardPeminjaman" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                                  <Component id="cardPengembalian" max="32767" attributes="0"/>
+                                  <Component id="cardTiket" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -75,15 +75,15 @@
                           </Group>
                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="cardAnggota" min="-2" max="-2" attributes="0"/>
-                              <Component id="cardBuku" min="-2" max="-2" attributes="0"/>
+                              <Component id="cardPegawai" min="-2" max="-2" attributes="0"/>
+                              <Component id="cardPerangkat" min="-2" max="-2" attributes="0"/>
                               <Component id="cardPeminjaman" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <Component id="cardPengembalian" min="-2" max="-2" attributes="0"/>
+                      <Component id="cardTiket" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                  <Component id="riwayat" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                   <Component id="jScrollPane2" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
@@ -92,7 +92,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="jLabel1">
+        <Component class="javax.swing.JLabel" name="riwayat">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="SansSerif" size="18" style="1"/>
@@ -100,7 +100,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="66" green="66" red="66" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Riwayat Peminjaman Buku"/>
+            <Property name="text" type="java.lang.String" value="Lorem Ipsum"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel2">
@@ -137,7 +137,7 @@
             </Component>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="cardAnggota">
+        <Container class="javax.swing.JPanel" name="cardPegawai">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="99" green="99" red="0" type="rgb"/>
@@ -150,11 +150,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lbJumlahAnggota" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbJumlahPegawai" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lb_anggota" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="32767" attributes="0"/>
-                      <Component id="iconAnggota" min="-2" pref="70" max="-2" attributes="0"/>
+                      <Component id="iconPegawai" min="-2" pref="70" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -164,11 +164,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="iconAnggota" alignment="0" min="-2" pref="70" max="-2" attributes="0"/>
+                          <Component id="iconPegawai" alignment="0" min="-2" pref="70" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="lb_anggota" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                              <Component id="lbJumlahAnggota" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbJumlahPegawai" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -177,7 +177,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="iconAnggota">
+            <Component class="javax.swing.JLabel" name="iconPegawai">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="SansSerif" size="36" style="1"/>
@@ -187,7 +187,7 @@
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="lbJumlahAnggota">
+            <Component class="javax.swing.JLabel" name="lbJumlahPegawai">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="SansSerif" size="36" style="1"/>
@@ -206,12 +206,12 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="cc" green="cc" red="cc" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="ANGGOTA"/>
+                <Property name="text" type="java.lang.String" value="PEGAWAI"/>
               </Properties>
             </Component>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="cardBuku">
+        <Container class="javax.swing.JPanel" name="cardPerangkat">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="99" green="99" red="0" type="rgb"/>
@@ -224,11 +224,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lbJumlahBuku" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbJumlahPerangkat" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lb_anggota1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="32767" attributes="0"/>
-                      <Component id="iconBuku" min="-2" pref="70" max="-2" attributes="0"/>
+                      <Component id="iconPerangkat" min="-2" pref="70" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -238,11 +238,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="iconBuku" alignment="0" min="-2" pref="70" max="-2" attributes="0"/>
+                          <Component id="iconPerangkat" alignment="0" min="-2" pref="70" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="lb_anggota1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                              <Component id="lbJumlahBuku" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbJumlahPerangkat" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -251,7 +251,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="lbJumlahBuku">
+            <Component class="javax.swing.JLabel" name="lbJumlahPerangkat">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="SansSerif" size="36" style="1"/>
@@ -270,10 +270,10 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="cc" green="cc" red="cc" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="BUKU"/>
+                <Property name="text" type="java.lang.String" value="PERANGKAT"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="iconBuku">
+            <Component class="javax.swing.JLabel" name="iconPerangkat">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="SansSerif" size="36" style="1"/>
@@ -359,7 +359,7 @@
             </Component>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="cardPengembalian">
+        <Container class="javax.swing.JPanel" name="cardTiket">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="99" green="99" red="0" type="rgb"/>
@@ -372,11 +372,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lbJumlahPengembalian" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbJumlahTiket" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lb_anggota3" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="32767" attributes="0"/>
-                      <Component id="iconPengembalian" min="-2" pref="70" max="-2" attributes="0"/>
+                      <Component id="iconTiket" min="-2" pref="70" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -386,11 +386,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="iconPengembalian" alignment="0" min="-2" pref="70" max="-2" attributes="0"/>
+                          <Component id="iconTiket" alignment="0" min="-2" pref="70" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="lb_anggota3" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                              <Component id="lbJumlahPengembalian" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbJumlahTiket" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -399,7 +399,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="lbJumlahPengembalian">
+            <Component class="javax.swing.JLabel" name="lbJumlahTiket">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="SansSerif" size="36" style="1"/>
@@ -418,10 +418,10 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="cc" green="cc" red="cc" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="PENGEMBALIAN"/>
+                <Property name="text" type="java.lang.String" value="TIKET"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="iconPengembalian">
+            <Component class="javax.swing.JLabel" name="iconTiket">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="SansSerif" size="36" style="1"/>

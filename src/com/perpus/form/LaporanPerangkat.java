@@ -3,8 +3,6 @@ package com.perpus.form;
 import com.perpus.config.Koneksi;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import java.awt.Component;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -16,33 +14,27 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.view.JasperViewer;
 
-public class LaporanBuku extends javax.swing.JPanel {
-
+public class LaporanPerangkat extends javax.swing.JPanel {
     private int halamanSaatIni = 1;
     private int dataPerHalaman = 14;
     private int totalPages;
-    
+
     private final Connection conn;
-    
-    public LaporanBuku() {
+
+    public LaporanPerangkat() {
         initComponents();
-        
+
         conn = Koneksi.getConnection();
         setTabelModel();
         loadData();
-        paginationAnggota();
+        paginationPerangkat();
         actionButton();
-        setTableRenderer();
         setColumnWidth();
         setLayoutForm();
     }
@@ -54,14 +46,13 @@ public class LaporanBuku extends javax.swing.JPanel {
         columnModel.getColumn(0).setMinWidth(40);
     }
 
-    private void setLayoutForm(){
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pencarian");
-        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/book.svg", 1f));
+    private void setLayoutForm() {
+        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/perangkat.svg", 1f)); // ganti icon jika ada
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
         btnPrint.setIcon(new FlatSVGIcon("com/perpus/icon/print_white.svg", 1f));
-        
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pencarian");
-        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON, 
+
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Cari ID / Jenis / Merek / Serial");
+        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
                 new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
     }
 
@@ -103,11 +94,11 @@ public class LaporanBuku extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel1.setText("Laporan Buku Perpustakaan");
+        jLabel1.setText("Laporan Perangkat");
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setText("Laporan > Buku");
+        jLabel2.setText("Laporan > Perangkat");
 
         jPanel2.setBackground(new java.awt.Color(250, 250, 250));
 
@@ -175,7 +166,7 @@ public class LaporanBuku extends javax.swing.JPanel {
                         .addComponent(iconJudul, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 667, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 707, Short.MAX_VALUE)
                         .addComponent(iconDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2))
@@ -241,276 +232,144 @@ public class LaporanBuku extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     // Button Halaman
-    private void paginationAnggota() {
-        btn_first.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = 1;
-                loadData();
-            }
-            
+    private void paginationPerangkat() {
+        btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
+        btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
+        cbx_data.addActionListener(e -> {
+            dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString());
+            halamanSaatIni = 1;
+            loadData();
         });
-        
-        btn_before.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni > 1)
-                {
-                    halamanSaatIni--;
-                    loadData();
-                }
-            }
-            
-        });
-        
-        cbx_data.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString());
-                halamanSaatIni = 1;
-                loadData();
-            }
-            
-        });
-        
-        btn_next.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni < totalPages) {
-                    halamanSaatIni++;
-                    loadData();
-                }
-            }
-            
-        });
-        
-        btn_last.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = totalPages;
-                loadData();
-            }
-            
-        });
+        btn_next.addActionListener(e -> { if (halamanSaatIni < totalPages) { halamanSaatIni++; loadData(); } });
+        btn_last.addActionListener(e -> { halamanSaatIni = totalPages; loadData(); });
     }
-    
-    // Button Halaman
-    
-    // Button Action
-    private void actionButton(){
-        btnPrint.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cetakLaporan();
-            }
-        });
-        
-        txtSearch.addKeyListener(new KeyAdapter(){
+
+    private void actionButton() {
+        btnPrint.addActionListener(e -> cetakLaporan());
+
+        txtSearch.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 searchData();
             }
         });
     }
-    
-    private int getTotalData(){
-        int totalData = 0;
-        
+
+    private int getTotalData() {
+        int total = 0;
         try {
-            String sql = "SELECT COUNT(*) AS total FROM buku";
-            try (PreparedStatement st = conn.prepareStatement(sql)){
-                ResultSet rs = st.executeQuery();
-                if(rs.next()){
-                    totalData = rs.getInt("total");
-                }
-            } 
-        } catch (Exception e) {
-            Logger.getLogger(LaporanBuku.class.getName()).log(Level.SEVERE,null,e);
+            String sql = "SELECT COUNT(*) FROM perangkat";
+            try (PreparedStatement st = conn.prepareStatement(sql);
+                 ResultSet rs = st.executeQuery()) {
+                if (rs.next()) total = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(LaporanPerangkat.class.getName()).log(Level.SEVERE, null, e);
         }
-        
-        return totalData;
+        return total;
     }
-    
-    private void calculateTotalPages(){
+
+    private void calculateTotalPages() {
         int totalData = getTotalData();
-        totalPages = (int) Math.ceil((double) totalData / dataPerHalaman );
+        totalPages = (int) Math.ceil((double) totalData / dataPerHalaman);
+        if (totalPages == 0) totalPages = 1;
     }
-    
+
     private void loadData() {
         calculateTotalPages();
-        int totalData = getTotalData();
-        lb_halaman.setText(String.valueOf("Halaman "+ halamanSaatIni + " dari Total Data " + totalData));
-        
-        int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
-        getData(startIndex, dataPerHalaman,(DefaultTableModel) tblData.getModel());
-    }
-    
-    private void showPanel(){
-        panelMain.removeAll();
-        panelMain.add(new LaporanBuku());
-        panelMain.repaint();
-        panelMain.revalidate();
-    }
-    
-    private void resetForm() {
-        
-    }
-    
-    private void setTabelModel() {
+        int start = (halamanSaatIni - 1) * dataPerHalaman;
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.addColumn("No");
-        model.addColumn("ID Buku");
-        model.addColumn("Judul");
-        model.addColumn("Pengarang");
-        model.addColumn("Tahun Terbit");
-        model.addColumn("ID Kategori");
-        model.addColumn("Nama Kategori");
-        model.addColumn("ID Penerbit");
-        model.addColumn("Nama Penerbit");
-        model.addColumn("Stok");
-        model.addColumn("Gambar");
-    }
-
-    public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
         model.setRowCount(0);
 
-        try {
-            String sql = "SELECT bk.ID_Buku, bk.Judul_Buku, bk.Pengarang_Buku, bk.Tahun_Terbit, \n" +
-                        "ktg.ID_Kategori, ktg.Nama_Kategori, \n" +
-                        "pnb.ID_Penerbit, pnb.Nama_Penerbit,bk.Stok, bk.Gambar\n" +
-                        "FROM buku bk \n" +
-                        "INNER JOIN kategori ktg ON ktg.ID_Kategori = bk.ID_Kategori\n" +
-                        "INNER JOIN penerbit pnb ON pnb.ID_Penerbit = bk.ID_Penerbit ORDER BY bk.ID_Buku ASC LIMIT ?,?";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setInt(1, startIndex);
-                st.setInt(2, entriesPage);
-                ResultSet rs = st.executeQuery();
+        String sql = "SELECT ID_Perangkat, Jenis_Perangkat, Merek, No_Serial, Model_Perangkat, status "
+                   + "FROM perangkat ORDER BY ID_Perangkat ASC LIMIT ?, ?";
 
-                int no = startIndex + 1;
-                
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setInt(1, start);
+            st.setInt(2, dataPerHalaman);
+            try (ResultSet rs = st.executeQuery()) {
+                int no = start + 1;
                 while (rs.next()) {
-                    String idBuku       = rs.getString("ID_Buku");
-                    String judulBuku    = rs.getString("Judul_Buku");
-                    String pengarangBuku = rs.getString("Pengarang_Buku");
-                    String tahunTerbit  = rs.getString("Tahun_Terbit");
-                    String idKategori   = rs.getString("ID_Kategori");
-                    String namaKategori   = rs.getString("Nama_Kategori");
-                    String idPenerbit   = rs.getString("ID_Penerbit");
-                    String namaPenerbit   = rs.getString("Nama_Penerbit");
-                    int stokBuku     = rs.getInt("Stok");
-                    
-                    byte[] imageData = rs.getBytes("Gambar");
-                    ImageIcon imageIcon = new ImageIcon(imageData);
-
-                    Object[] rowData = {"   " + no++, idBuku, judulBuku, pengarangBuku, tahunTerbit, idKategori,namaKategori, idPenerbit, namaPenerbit,stokBuku, imageIcon};
-                    model.addRow(rowData);
+                    model.addRow(new Object[]{
+                        no++,
+                        rs.getString("ID_Perangkat"),
+                        rs.getString("Jenis_Perangkat"),
+                        rs.getString("Merek"),
+                        rs.getString("No_Serial"),
+                        rs.getString("Model_Perangkat"),
+                        rs.getString("status")
+                    });
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
+
+        lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
     }
 
-    private void setTableRenderer(){
-        
-        class CustomRenderer extends DefaultTableCellRenderer{
-
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                if(value instanceof ImageIcon){
-                    ImageIcon icon = (ImageIcon) value;
-                    Image originalImage = icon.getImage();
-                    
-                    int desireWidth = 40;
-                    int desireHeight = 60;
-                    
-                    Image resizedImage =  originalImage.getScaledInstance(desireWidth, desireHeight, Image.SCALE_SMOOTH);
-                    ImageIcon resizedIcon = new ImageIcon(resizedImage);
-                    
-                    JLabel label = new JLabel(resizedIcon);
-                    label.setHorizontalAlignment(JLabel.CENTER);
-                    
-                    return label;
-                }
-                return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            }
-        }
-        
-        tblData.getColumnModel().getColumn(10).setCellRenderer(new CustomRenderer());
-    }
-    
-    class ImageRender extends DefaultTableCellRenderer{
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            if(value instanceof ImageIcon){
-                ImageIcon icon = (ImageIcon) value;
-                JLabel label = new JLabel(icon);
-                label.setHorizontalAlignment(JLabel.CENTER);
-                return label;
-            }
-            
-            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        }
-        
-    }
-    
     private void searchData() {
-        String kataKunci = txtSearch.getText();
-        
+        String key = "%" + txtSearch.getText().trim() + "%";
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
-        
-        try {
-            String sql = "SELECT bk.ID_Buku, bk.Judul_Buku, bk.Pengarang_Buku, bk.Tahun_Terbit, ktg.ID_Kategori, "
-                    + "ktg.Nama_Kategori, pnb.ID_Penerbit, pnb.Nama_Penerbit,bk.Stok, bk.Gambar \n" +
-                            "FROM buku bk \n" +
-                            "INNER JOIN kategori ktg ON ktg.ID_Kategori = bk.ID_Kategori\n" +
-                            "INNER JOIN penerbit pnb ON pnb.ID_Penerbit = bk.ID_Penerbit\n" +
-                            "WHERE bk.Judul_Buku LIKE ? OR bk.Pengarang_Buku LIKE ?";
-            try (PreparedStatement st = conn.prepareStatement(sql)){
-                st.setString(1, "%" + kataKunci + "%");
-                st.setString(2, "%" + kataKunci + "%");
-                ResultSet rs = st.executeQuery();
-                
-                int no = 1;
-                
-                while (rs.next()) {
-                    String idBuku       = rs.getString("ID_Buku");
-                    String judulBuku    = rs.getString("Judul_Buku");
-                    String pengarangBuku = rs.getString("Pengarang_Buku");
-                    String tahunTerbit  = rs.getString("Tahun_Terbit");
-                    String idKategori   = rs.getString("ID_Kategori");
-                    String namaKategori   = rs.getString("Nama_Kategori");
-                    String idPenerbit   = rs.getString("ID_Penerbit");
-                    String namaPenerbit   = rs.getString("Nama_Penerbit");
-                    String stokBuku     = rs.getString("Stok");
-                    
-                    byte[] imageData = rs.getBytes("Gambar");
-                    ImageIcon imageIcon = new ImageIcon(imageData);
 
-                    Object[] rowData = {"   " + no++, idBuku, judulBuku, pengarangBuku, tahunTerbit, idKategori,namaKategori, idPenerbit, namaPenerbit,stokBuku, imageIcon};
-                    model.addRow(rowData);
+        String sql = "SELECT ID_Perangkat, Jenis_Perangkat, Merek, No_Serial, Model_Perangkat, status "
+                   + "FROM perangkat "
+                   + "WHERE ID_Perangkat LIKE ? OR Jenis_Perangkat LIKE ? OR Merek LIKE ? OR No_Serial LIKE ? "
+                   + "ORDER BY ID_Perangkat ASC";
+
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            for (int i = 1; i <= 4; i++) st.setString(i, key);
+            try (ResultSet rs = st.executeQuery()) {
+                int no = 1;
+                while (rs.next()) {
+                    model.addRow(new Object[]{
+                        no++,
+                        rs.getString("ID_Perangkat"),
+                        rs.getString("Jenis_Perangkat"),
+                        rs.getString("Merek"),
+                        rs.getString("No_Serial"),
+                        rs.getString("Model_Perangkat"),
+                        rs.getString("status")
+                    });
                 }
-            } 
+            }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE,null,e);
+            e.printStackTrace();
         }
     }
 
-    private void cetakLaporan(){
+    private void setTabelModel() {
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        model.addColumn("No");
+        model.addColumn("ID Perangkat");
+        model.addColumn("Jenis Perangkat");
+        model.addColumn("Merek");
+        model.addColumn("No Serial");
+        model.addColumn("Model");
+        model.addColumn("Status");
+        tblData.setModel(model);
+    }
+
+    private void cetakLaporan() {
         try {
-            String reportPath = "src/com/perpus/reports/LaporanBuku.jasper";
-            
+            String reportPath = "src/com/perpus/reports/LaporanPerangkat.jasper";
+
             HashMap<String, Object> parameters = new HashMap<>();
-            
+            // Jika nanti mau filter, tambahkan parameter di sini
+
             JasperPrint print = JasperFillManager.fillReport(reportPath, parameters, conn);
             JasperViewer viewer = new JasperViewer(print, false);
             viewer.setExtendedState(JasperViewer.MAXIMIZED_BOTH);
             viewer.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this, "Gagal cetak laporan: " + e.getMessage());
         }
-    }
-    
+    }    
 }

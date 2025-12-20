@@ -13,24 +13,28 @@ public class DataPeminjaman extends javax.swing.JDialog {
     private int dataPerHalaman = 14;
     private int totalPages;
     private Connection conn;
+    private String userID;
+private String userRole;
 
     // Hanya ID Peminjaman yang diperlukan
     private String idPeminjaman;
 
     public String getIdPeminjaman() { return idPeminjaman; }
 
-    public DataPeminjaman(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
-        initComponents();
-        conn = Koneksi.getConnection();
-        setTabelModel();
-        loadData();
-        pagination();
-        actionButton();
-        setColumnWidth();
-        setLayoutForm();
-        setLocationRelativeTo(null);
-    }
+   public DataPeminjaman(java.awt.Frame parent, boolean modal, String userID, String userRole) {
+    super(parent, modal);
+    initComponents();
+    conn = Koneksi.getConnection();
+    this.userID = userID;
+    this.userRole = userRole != null ? userRole.toLowerCase() : "user";
+    setTabelModel();
+    loadData();
+    pagination();
+    actionButton();
+    setColumnWidth();
+    setLayoutForm();
+    setLocationRelativeTo(null);
+}
 
     private void setLayoutForm() {
         iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/peminjaman.svg", 1f));
@@ -70,7 +74,7 @@ public class DataPeminjaman extends javax.swing.JDialog {
 
         lbJudul.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         lbJudul.setForeground(new java.awt.Color(102, 102, 102));
-        lbJudul.setText("Data Peminjaman Buku Perpustakaan");
+        lbJudul.setText("Data Peminjaman Perangkat");
 
         tblData.setRowHeight(100);
         jScrollPane1.setViewportView(tblData);
@@ -174,53 +178,39 @@ public class DataPeminjaman extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    public DataPeminjaman(java.awt.Frame parent, boolean modal) {
+    this(parent, modal, "USR2511001", "admin");   // ganti dengan userID & role yang kamu mau
+    // atau pakai null, null kalau kamu ingin mengetes sebagai user biasa:
+    // this(parent, modal, null, "user");
+}
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+       /* Set the Nimbus look and feel */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DataPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DataPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DataPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DataPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
+    } catch (Exception ex) {
+        java.util.logging.Logger.getLogger(DataPeminjaman.class.getName())
+                .log(java.util.logging.Level.SEVERE, null, ex);
+    }
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DataPeminjaman dialog = new DataPeminjaman(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+    /* Create and display the dialog */
+    java.awt.EventQueue.invokeLater(() -> {
+        DataPeminjaman dialog = new DataPeminjaman(new javax.swing.JFrame(), true);
+        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                System.exit(0);
             }
         });
+        dialog.setVisible(true);
+    });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -292,42 +282,42 @@ public class DataPeminjaman extends javax.swing.JDialog {
     }
 
     private void loadData() {
-        calculateTotalPages();
-        int start = (halamanSaatIni - 1) * dataPerHalaman;
-        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.setRowCount(0);
+       calculateTotalPages();
+    int start = (halamanSaatIni - 1) * dataPerHalaman;
+    DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+    model.setRowCount(0);
 
-        String sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, " +
-                     "pg.ID_Pegawai, pg.Nama_Pegawai, pr.ID_Perangkat, pr.Jenis_Perangkat, pr.Merek, pr.No_Serial " +
-                     "FROM peminjaman p " +
-                     "JOIN pegawai pg ON p.Pegawai_ID_Pegawai = pg.ID_Pegawai " +
-                     "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman " +
-                     "JOIN perangkat pr ON dp.Perangkat_ID_Perangkat = pr.ID_Perangkat " +
-                     "WHERE p.Status_Peminjaman = 'Dipinjam' " +
-                     "ORDER BY p.ID_Peminjaman ASC LIMIT ?, ?";
+    String sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, " +
+                 "pg.ID_Pegawai, pg.Nama_Pegawai, pr.ID_Perangkat, pr.Jenis_Perangkat, pr.Merek, pr.No_Serial " +
+                 "FROM peminjaman p " +
+                 "JOIN pegawai pg ON p.Pegawai_ID_Pegawai = pg.ID_Pegawai " +
+                 "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman " +
+                 "JOIN perangkat pr ON dp.Perangkat_ID_Perangkat = pr.ID_Perangkat " +
+                 "WHERE p.Status_Peminjaman = 'Dipinjam'";
 
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
-            st.setInt(1, start);
-            st.setInt(2, dataPerHalaman);
-            try (ResultSet rs = st.executeQuery()) {
-                int no = start + 1;
-                while (rs.next()) {
-                    model.addRow(new Object[]{
-                        no++,
-                        rs.getString("ID_Peminjaman"),
-                        rs.getString("Tanggal_Peminjaman"),
-                        rs.getString("Tanggal_Pengembalian"),
-                        rs.getString("ID_Pegawai"),
-                        rs.getString("Nama_Pegawai"),
-                        rs.getString("ID_Perangkat"),
-                        rs.getString("Jenis_Perangkat"),
-                        rs.getString("Merek"),
-                        rs.getString("No_Serial")
-                    });
-                }
+    if (!"admin".equals(userRole)) {
+        sql += " AND p.User_ID_User = ?";
+    }
+    sql += " ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
+
+    try (PreparedStatement st = conn.prepareStatement(sql)) {
+        int idx = 1;
+        if (!"admin".equals(userRole)) st.setString(idx++, userID);
+        st.setInt(idx++, start);
+        st.setInt(idx++, dataPerHalaman);
+
+        try (ResultSet rs = st.executeQuery()) {
+            int no = start + 1;
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    no++, rs.getString(1), rs.getString(2), rs.getString(3),
+                    rs.getString(4), rs.getString(5), rs.getString(6),
+                    rs.getString(7), rs.getString(8), rs.getString(9)
+                });
             }
-        } catch (SQLException e) { e.printStackTrace(); }
-        lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
+        }
+    } catch (SQLException e) { e.printStackTrace(); }
+    lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
     }
 
     private void searchData() {
