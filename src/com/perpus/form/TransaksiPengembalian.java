@@ -932,21 +932,21 @@ private void insertData() {
         }
 
         // 3. Update status perangkat jadi Tersedia
-        String sqlUpdatePerangkat = "UPDATE perangkat SET status = 'Tersedia' WHERE ID_Perangkat = ?";
+        String sqlUpdatePerangkat = "UPDATE perangkat p "
+                          + "JOIN detail_peminjaman dp ON p.ID_Perangkat = dp.Perangkat_ID_Perangkat "
+                          + "SET p.status = 'Tersedia' "
+                          + "WHERE dp.Peminjaman_ID_Peminjaman = ?";
 try (PreparedStatement st = conn.prepareStatement(sqlUpdatePerangkat)) {
-    for (int i = 0; i < model.getRowCount(); i++) {
-        st.setString(1, model.getValueAt(i, 1).toString());
-        st.addBatch();
-    }
-    st.executeBatch();
-        }
+    st.setString(1, idPeminjaman);
+    st.executeUpdate();
+}
 
         // 4. Update status peminjaman
         String sqlUpdatePeminjaman = "UPDATE peminjaman SET Status_Peminjaman = 'Dikembalikan' WHERE ID_Peminjaman = ?";
-        try (PreparedStatement st = conn.prepareStatement(sqlUpdatePeminjaman)) {
-            st.setString(1, idPeminjaman);
-            st.executeUpdate();
-        }
+try (PreparedStatement st = conn.prepareStatement(sqlUpdatePeminjaman)) {
+    st.setString(1, idPeminjaman);
+    st.executeUpdate();
+}
 
         conn.commit();
         JOptionPane.showMessageDialog(this, "Pengembalian berhasil!", "Sukses", JOptionPane.INFORMATION_MESSAGE);

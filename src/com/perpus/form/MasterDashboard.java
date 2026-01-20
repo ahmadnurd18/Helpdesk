@@ -55,10 +55,10 @@ public class MasterDashboard extends javax.swing.JPanel {
         cardTiket.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
 
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
-        iconPegawai.setIcon(new FlatSVGIcon("com/perpus/icon/pegawai_white.svg", 3f));
-        iconPerangkat.setIcon(new FlatSVGIcon("com/perpus/icon/perangkat_white.svg", 3f));
-        iconPeminjaman.setIcon(new FlatSVGIcon("com/perpus/icon/peminjaman_white.svg", 3f));
-        iconTiket.setIcon(new FlatSVGIcon("com/perpus/icon/tiket_white.svg", 3f));
+        iconPegawai.setIcon(new FlatSVGIcon("com/perpus/icon/anggota_white.svg", 2f));
+        iconPerangkat.setIcon(new FlatSVGIcon("com/perpus/icon/device-white.svg", 2f));
+        iconPeminjaman.setIcon(new FlatSVGIcon("com/perpus/icon/peminjaman_white.svg", 2f));
+        iconTiket.setIcon(new FlatSVGIcon("com/perpus/icon/ticket_white.svg", 2f));
     }
 
     @SuppressWarnings("unchecked")

@@ -60,7 +60,7 @@ public class LaporanPeminjaman extends javax.swing.JPanel {
     private void setLayoutForm() {
         iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/peminjaman.svg", 1f));
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
-        btnTampilkan.setIcon(new FlatSVGIcon("com/perpus/icon/add_white.svg", 1f));
+        btnTampilkan.setIcon(new FlatSVGIcon("com/perpus/icon/display.svg", 1f));
         btnCancel.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
         btnPrint.setIcon(new FlatSVGIcon("com/perpus/icon/print_white.svg", 1f));
 

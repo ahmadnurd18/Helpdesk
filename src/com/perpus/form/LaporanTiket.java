@@ -60,7 +60,7 @@ public class LaporanTiket extends javax.swing.JPanel {
     private void setLayoutForm() {
         iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/ticket.svg", 1f));
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
-        btnTampilkan.setIcon(new FlatSVGIcon("com/perpus/icon/search_white.svg", 1f));
+        btnTampilkan.setIcon(new FlatSVGIcon("com/perpus/icon/display.svg", 1f));
         btnCancel.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
         btnPrint.setIcon(new FlatSVGIcon("com/perpus/icon/print_white.svg", 1f));
 
@@ -532,23 +532,39 @@ public class LaporanTiket extends javax.swing.JPanel {
     }
 
     private void cetakLaporan() {
-        if (!validasiTanggal()) return;
+  if (!validasiTanggal()) {
+        JOptionPane.showMessageDialog(this, "Filter tanggal tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        try {
-            String reportPath = "src/com/perpus/reports/LaporanTiket.jasper";
+    try {
+        String reportPath = "src/com/perpus/reports/LaporanTiket.jasper"; // sesuaikan path kalau beda
 
-            HashMap<String, Object> parameters = new HashMap<>();
-            if (tanggalMulai != null) parameters.put("tanggalMulai", new java.sql.Date(tanggalMulai.getTime()));
-            if (tanggalAkhir != null) parameters.put("tanggalAkhir", new java.sql.Date(tanggalAkhir.getTime()));
-            if (!"admin".equals(userRole)) parameters.put("userID", userID); // jika Jasper perlu filter user
+        HashMap<String, Object> parameters = new HashMap<>();
 
-            JasperPrint print = JasperFillManager.fillReport(reportPath, parameters, conn);
-            JasperViewer viewer = new JasperViewer(print, false);
-            viewer.setTitle("Laporan Tiket Helpdesk");
-            viewer.setExtendedState(JasperViewer.MAXIMIZED_BOTH);
-            viewer.setVisible(true);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Gagal mencetak laporan: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Filter user: null = admin (lihat semua), String = user (lihat sendiri)
+        parameters.put("userID", "admin".equalsIgnoreCase(userRole) ? null : userID);
+
+        // Tanggal: null = tidak filter
+        parameters.put("tanggalMulai", tanggalMulai == null ? null : new java.sql.Date(tanggalMulai.getTime()));
+        parameters.put("tanggalAkhir", tanggalAkhir == null ? null : new java.sql.Date(tanggalAkhir.getTime()));
+
+        // Text periode untuk header (tampil rapi kalau kosong)
+        String periode = (tanggalMulai == null && tanggalAkhir == null) ? "Semua Tanggal" :
+                         (tanggalMulai == null ? "s.d. " + dateFormat.format(tanggalAkhir) :
+                          tanggalAkhir == null ? dateFormat.format(tanggalMulai) + " s.d. Sekarang" :
+                          dateFormat.format(tanggalMulai) + " s.d. " + dateFormat.format(tanggalAkhir));
+        parameters.put("periodeText", periode);
+
+        JasperPrint print = JasperFillManager.fillReport(reportPath, parameters, conn);
+        JasperViewer viewer = new JasperViewer(print, false);
+        viewer.setTitle("Laporan Tiket Helpdesk - PT. Macro Trend Technology");
+        viewer.setExtendedState(JasperViewer.MAXIMIZED_BOTH);
+        viewer.setVisible(true);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Gagal cetak laporan: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
     }}
+
+

@@ -65,7 +65,7 @@ columnModel.getColumn(9).setMinWidth(100);
         btnCancel.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
         btnSave.setIcon(new FlatSVGIcon("com/perpus/icon/save_white.svg", 1f));
         btnCancel2.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
-        btnDone.setIcon(new FlatSVGIcon("com/perpus/icon/check_white.svg", 1f));
+        btnDone.setIcon(new FlatSVGIcon("com/perpus/icon/done-white.svg", 1f));
 
         txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
                 new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
@@ -314,7 +314,6 @@ columnModel.getColumn(9).setMinWidth(100);
 
         iconJudul2.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         iconJudul2.setForeground(new java.awt.Color(102, 102, 102));
-        iconJudul2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/perpus/icon/tiket.png"))); // NOI18N
 
         jLabel9.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(102, 102, 102));

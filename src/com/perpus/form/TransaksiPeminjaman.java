@@ -3,55 +3,73 @@ package com.perpus.form;
 import com.perpus.config.Koneksi;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.perpus.jdialog.DataPegawai;
 import com.perpus.jdialog.DataPerangkatIT;
 import java.awt.event.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
-
 public class TransaksiPeminjaman extends javax.swing.JPanel {
-
-    private String userRole; // tambahkan ini
+    private String userRole;
     private int halamanSaatIni = 1;
     private int dataPerHalaman = 14;
     private int totalPages;
     private final Connection conn;
     private String userID;
+    private String pegawaiID; // ID Pegawai diambil otomatis dari user login
 
-  public TransaksiPeminjaman(String userID, String userRole) { // tambahkan parameter role
-    initComponents();
-    conn = Koneksi.getConnection();
-    this.userID = userID;
-    this.userRole = userRole != null ? userRole.toLowerCase() : "user"; // default user
-    setTabelModel();
-    setTabelModelDetail();
-    setTabelModelSementara();
-    loadData(); // otomatis difilter berdasarkan role
-    loadDataSementara();
-    paginationPerangkat();
-    actionButton();
-    setColumnWidth();
-    setLayoutForm();
-    txtTanggalPinjam.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-    hitungTanggalKembali();
-    pnDetail.setVisible(false);
-}
+    public TransaksiPeminjaman(String userID, String userRole) {
+        initComponents();
+        conn = Koneksi.getConnection();
+        this.userID = userID;
+        this.userRole = userRole != null ? userRole.toLowerCase() : "user";
+
+        // Ambil Pegawai_ID otomatis dari user login
+        pegawaiID = getPegawaiIdFromUser();
+        if (pegawaiID == null) {
+            JOptionPane.showMessageDialog(this, "User tidak terkait dengan pegawai! Transaksi tidak dapat dilanjutkan.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        setTabelModel();
+        setTabelModelDetail();
+        setTabelModelSementara();
+        loadData();
+        loadDataSementara();
+        paginationPerangkat();
+        actionButton();
+        setColumnWidth();
+        setLayoutForm();
+        txtTanggalPinjam.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        hitungTanggalKembali();
+        pnDetail.setVisible(false);
+    }
+
+    // Ambil Pegawai_ID dari tabel user
+    private String getPegawaiIdFromUser() {
+        String sql = "SELECT Pegawai_ID_Pegawai FROM user WHERE ID_User = ?";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setString(1, userID);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("Pegawai_ID_Pegawai");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private void setColumnWidth() {
         TableColumnModel columnModel = tblData.getColumnModel();
         columnModel.getColumn(0).setPreferredWidth(40); columnModel.getColumn(0).setMaxWidth(40); columnModel.getColumn(0).setMinWidth(40);
-
         TableColumnModel columnModel2 = tblDataDetail.getColumnModel();
         columnModel2.getColumn(0).setPreferredWidth(40); columnModel2.getColumn(0).setMaxWidth(40); columnModel2.getColumn(0).setMinWidth(40);
-
         TableColumnModel columnModel3 = tblDataSementara.getColumnModel();
         columnModel3.getColumn(0).setPreferredWidth(40); columnModel3.getColumn(0).setMaxWidth(40); columnModel3.getColumn(0).setMinWidth(40);
     }
@@ -65,16 +83,10 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         btnAdd.setIcon(new FlatSVGIcon("com/perpus/icon/add_white.svg", 1f));
         btnSave.setIcon(new FlatSVGIcon("com/perpus/icon/save_white.svg", 1f));
         btnCancelAdd.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
-
         txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
                 new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
         txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pencarian");
-
         txtID.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ID Peminjaman");
-        txtIdPegawai.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ID Pegawai");
-        txtPegawai.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nama Pegawai");
-        txtEmail.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Email");
-        txtTelepon.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Telepon");
         txtIDPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ID Perangkat");
         txtJnsPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Jenis Perangkat");
         txtMrkPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Merek");
@@ -137,11 +149,6 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         txtTanggalPinjam = new javax.swing.JTextField();
         jLabel26 = new javax.swing.JLabel();
         txtTanggalKembali = new javax.swing.JTextField();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        btnSetPegawai = new javax.swing.JButton();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
@@ -149,10 +156,6 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         btnSetPerangkat = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
         btnCancelAdd = new javax.swing.JButton();
-        txtIdPegawai = new javax.swing.JTextField();
-        txtPegawai = new javax.swing.JTextField();
-        txtEmail = new javax.swing.JTextField();
-        txtTelepon = new javax.swing.JTextField();
         txtIDPerangkat = new javax.swing.JTextField();
         txtMrkPerangkat = new javax.swing.JTextField();
         txtSerialPerangkat = new javax.swing.JTextField();
@@ -334,7 +337,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -406,24 +409,6 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel12.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel12.setText("Pegawai");
-
-        jLabel13.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel13.setText("Nama");
-
-        jLabel14.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel14.setText("Email");
-
-        jLabel15.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel15.setText("Telepon");
-
-        btnSetPegawai.setText("...");
-
         jLabel16.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(102, 102, 102));
         jLabel16.setText("Model");
@@ -464,6 +449,39 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         panelAddLayout.setHorizontalGroup(
             panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelAddLayout.createSequentialGroup()
+                .addGap(28, 28, 28)
+                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelAddLayout.createSequentialGroup()
+                        .addComponent(btnUbah)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCancelSementara)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelAddLayout.createSequentialGroup()
+                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelAddLayout.createSequentialGroup()
+                                .addGap(38, 38, 38)
+                                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel17)
+                                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(6, 6, 6)
+                                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtModelPerangkat)
+                                    .addComponent(txtSerialPerangkat)
+                                    .addComponent(txtMrkPerangkat)
+                                    .addComponent(txtIDPerangkat)
+                                    .addComponent(txtJnsPerangkat))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSetPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(9, 9, 9)))
+                        .addGap(20, 20, 20))))
+            .addGroup(panelAddLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelAddLayout.createSequentialGroup()
@@ -482,58 +500,6 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                                 .addComponent(iconDashboard2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel6)))
-                        .addGap(20, 20, 20))))
-            .addGroup(panelAddLayout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelAddLayout.createSequentialGroup()
-                        .addComponent(btnUbah)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCancelSementara)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelAddLayout.createSequentialGroup()
-                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelAddLayout.createSequentialGroup()
-                                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE))
-                                .addGap(18, 18, 18)
-                                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(panelAddLayout.createSequentialGroup()
-                                        .addComponent(txtIdPegawai)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnSetPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(panelAddLayout.createSequentialGroup()
-                                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtPegawai)
-                                            .addComponent(txtEmail)
-                                            .addComponent(txtTelepon))
-                                        .addGap(56, 56, 56)))
-                                .addGap(18, 18, 18)
-                                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel17, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(panelAddLayout.createSequentialGroup()
-                                        .addComponent(txtIDPerangkat)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnSetPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(panelAddLayout.createSequentialGroup()
-                                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtMrkPerangkat)
-                                            .addComponent(txtSerialPerangkat)
-                                            .addComponent(txtModelPerangkat)
-                                            .addComponent(txtJnsPerangkat))
-                                        .addGap(56, 56, 56)))))
                         .addGap(20, 20, 20))))
         );
         panelAddLayout.setVerticalGroup(
@@ -556,51 +522,34 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                     .addComponent(btnCancelAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelAddLayout.createSequentialGroup()
-                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSetPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(panelAddLayout.createSequentialGroup()
-                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSetPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtIdPegawai, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtIDPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtJnsPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtMrkPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtSerialPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(21, 21, 21)
+                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSetPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtIDPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtJnsPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtMrkPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSerialPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtModelPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtTelepon, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(63, 63, 63)
                 .addGroup(panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnUbah, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancelSementara, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -621,7 +570,6 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
     private javax.swing.JButton btnCloseDetail;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSave;
-    private javax.swing.JButton btnSetPegawai;
     private javax.swing.JButton btnSetPerangkat;
     private javax.swing.JButton btnUbah;
     private javax.swing.JButton btn_before;
@@ -637,10 +585,6 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
     private javax.swing.JLabel iconJudul2;
     private javax.swing.JLabel iconJudul3;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -666,33 +610,20 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
     private javax.swing.JTable tblData;
     private javax.swing.JTable tblDataDetail;
     private javax.swing.JTable tblDataSementara;
-    private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtID;
     private javax.swing.JTextField txtIDPerangkat;
-    private javax.swing.JTextField txtIdPegawai;
     private javax.swing.JTextField txtJnsPerangkat;
     private javax.swing.JTextField txtModelPerangkat;
     private javax.swing.JTextField txtMrkPerangkat;
-    private javax.swing.JTextField txtPegawai;
     private javax.swing.JTextField txtSearch;
     private javax.swing.JTextField txtSerialPerangkat;
     private javax.swing.JTextField txtTanggalKembali;
     private javax.swing.JTextField txtTanggalPinjam;
-    private javax.swing.JTextField txtTelepon;
     // End of variables declaration//GEN-END:variables
 
     
     // Button Halaman 
- private void paginationPerangkat() {
-        btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
-        btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
-        cbx_data.addActionListener(e -> { dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString()); halamanSaatIni = 1; loadData(); });
-        btn_next.addActionListener(e -> { if (halamanSaatIni < totalPages) { halamanSaatIni++; loadData(); } });
-        btn_last.addActionListener(e -> { halamanSaatIni = totalPages; loadData(); });
-    }
-
-    // ================== ACTION BUTTONS ==================
-    private void actionButton() {
+ private void actionButton() {
         btnAdd.addActionListener(e -> {
             panelMain.removeAll();
             panelMain.add(panelAdd);
@@ -700,7 +631,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
             panelMain.revalidate();
             txtID.setText(generateID());
             txtID.setEnabled(false);
-            clearForm();
+            clearFormPerangkat();
             clearSementara();
             loadDataSementara();
             btnUbah.setEnabled(false);
@@ -714,14 +645,17 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         });
 
         btnCancelAdd.addActionListener(e -> showPanel());
-
         btnCloseDetail.addActionListener(e -> pnDetail.setVisible(false));
 
         txtSearch.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) { searchData(); }
+            @Override
+            public void keyReleased(KeyEvent e) {
+                searchData();
+            }
         });
 
         tblData.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 int row = tblData.getSelectedRow();
                 if (row != -1) {
@@ -732,10 +666,10 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
             }
         });
 
-        btnSetPegawai.addActionListener(e -> setPegawai());
         btnSetPerangkat.addActionListener(e -> setPerangkatIT());
 
         tblDataSementara.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 int row = tblDataSementara.getSelectedRow();
                 if (row != -1 && e.getClickCount() == 1) {
@@ -755,7 +689,6 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         btnCancelSementara.addActionListener(e -> clearFormPerangkat());
     }
 
-    // ================== TABEL MODEL ==================
     private void setTabelModel() {
         DefaultTableModel model = new DefaultTableModel() {
             @Override public boolean isCellEditable(int row, int column) { return false; }
@@ -780,66 +713,53 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         tblDataSementara.setModel(model);
     }
 
-    // ================== GENERATE ID (PM25110001) ==================
     private String generateID() {
-       String prefix = "PM" + new SimpleDateFormat("yyMM").format(new Date());
-    String sql = "SELECT RIGHT(ID_Peminjaman, 4) AS nomor FROM peminjaman WHERE ID_Peminjaman LIKE ? ORDER BY ID_Peminjaman DESC LIMIT 1";
-    try (PreparedStatement st = conn.prepareStatement(sql)) {
-        st.setString(1, prefix + "%");
-        try (ResultSet rs = st.executeQuery()) {
-            if (rs.next()) {
-                int nomor = Integer.parseInt(rs.getString("nomor")) + 1;
-                return prefix + String.format("%04d", nomor);
-            } else {
-                return prefix + "0001";
+        String prefix = "PM" + new SimpleDateFormat("yyMM").format(new Date());
+        String sql = "SELECT RIGHT(ID_Peminjaman, 4) AS nomor FROM peminjaman WHERE ID_Peminjaman LIKE ? ORDER BY ID_Peminjaman DESC LIMIT 1";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setString(1, prefix + "%");
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    int nomor = Integer.parseInt(rs.getString("nomor")) + 1;
+                    return prefix + String.format("%04d", nomor);
+                } else {
+                    return prefix + "0001";
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) { e.printStackTrace(); }
-    return prefix + "0001";
-    }
-
-    // ================== PEGAWAI & PERANGKAT ==================
-    private void setPegawai() {
-        DataPegawai dialog = new DataPegawai(null, true);
-        dialog.setVisible(true);
-        if (dialog.getIdPegawai() != null) {
-            txtIdPegawai.setText(dialog.getIdPegawai());
-            txtPegawai.setText(dialog.getNamaPegawai());
-            txtEmail.setText(dialog.getEmailPegawai());
-            txtTelepon.setText(dialog.getTeleponPegawai());
-            txtIdPegawai.setEnabled(false);
-            txtPegawai.setEnabled(false);
-            txtEmail.setEnabled(false);
-            txtTelepon.setEnabled(false);
-        }
+        return prefix + "0001";
     }
 
     private void setPerangkatIT() {
-       DataPerangkatIT dialog = new DataPerangkatIT(null, true);
-    dialog.setVisible(true);
-    if (dialog.getIdPerangkat() != null) {
-        String id = dialog.getIdPerangkat();
-        if (cekPerangkatTersedia(id)) {
-            insertSementara(id);
-            JOptionPane.showMessageDialog(this, "Perangkat ditambahkan ke daftar!", "Info", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "Perangkat sedang dipinjam!", "Error", JOptionPane.ERROR_MESSAGE);
+        DataPerangkatIT dialog = new DataPerangkatIT(null, true);
+        dialog.setVisible(true);
+        if (dialog.getIdPerangkat() != null) {
+            String id = dialog.getIdPerangkat();
+            if (cekPerangkatTersedia(id)) {
+                insertSementara(id);
+                JOptionPane.showMessageDialog(this, "Perangkat ditambahkan ke daftar!", "Info", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Perangkat sedang dipinjam!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
-    }
     }
 
-   private boolean cekPerangkatTersedia(String id) {
-    String sql = "SELECT COUNT(*) FROM detail_peminjaman dp " +
-                 "JOIN peminjaman p ON dp.Peminjaman_ID_Peminjaman = p.ID_Peminjaman " +
-                 "WHERE dp.Perangkat_ID_Perangkat = ? AND p.Status_Peminjaman = 'Dipinjam'";
-    try (PreparedStatement st = conn.prepareStatement(sql)) {
-        st.setString(1, id);
-        try (ResultSet rs = st.executeQuery()) {
-            if (rs.next()) return rs.getInt(1) == 0;
+    private boolean cekPerangkatTersedia(String id) {
+        String sql = "SELECT COUNT(*) FROM detail_peminjaman dp " +
+                     "JOIN peminjaman p ON dp.Peminjaman_ID_Peminjaman = p.ID_Peminjaman " +
+                     "WHERE dp.Perangkat_ID_Perangkat = ? AND p.Status_Peminjaman = 'Dipinjam'";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setString(1, id);
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) return rs.getInt(1) == 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) { e.printStackTrace(); }
-    return false;
-}
+        return false;
+    }
 
     private void insertSementara(String idPerangkat) {
         try {
@@ -876,7 +796,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
             loadDataSementara();
             clearFormPerangkat();
         } catch (SQLException e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
     }
 
@@ -890,26 +810,16 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         btnDelete.setEnabled(false);
     }
 
-    private void clearForm() {
-        txtIdPegawai.setText(""); txtPegawai.setText(""); txtEmail.setText(""); txtTelepon.setText("");
-        txtIdPegawai.setEnabled(true); txtPegawai.setEnabled(true); txtEmail.setEnabled(true); txtTelepon.setEnabled(true);
-        clearFormPerangkat();
-    }
-
     private void clearSementara() {
         try {
             String sql = "DELETE FROM sementara";
             conn.prepareStatement(sql).executeUpdate();
         } catch (SQLException e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
     }
 
     private boolean validateInput() {
-        if (txtIdPegawai.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Pilih pegawai terlebih dahulu!", "Validasi", JOptionPane.WARNING_MESSAGE);
-            return false;
-        }
         if (getSementaraCount() == 0) {
             JOptionPane.showMessageDialog(this, "Pilih minimal 1 perangkat!", "Validasi", JOptionPane.WARNING_MESSAGE);
             return false;
@@ -924,58 +834,65 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
             ResultSet rs = conn.prepareStatement(sql).executeQuery();
             if (rs.next()) count = rs.getInt(1);
         } catch (SQLException e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
         return count;
     }
 
-    // ================== INSERT DATA ==================
     private void insertData() {
-       String id = txtID.getText();
-    String tglPinjam = txtTanggalPinjam.getText();
-    String tglKembali = txtTanggalKembali.getText();
-    String idPegawai = txtIdPegawai.getText();
+        String id = txtID.getText();
+        String tglPinjam = txtTanggalPinjam.getText();
+        String tglKembali = txtTanggalKembali.getText();
 
-    try {
-        conn.setAutoCommit(false);
+        try {
+            conn.setAutoCommit(false);
 
-        // 1. Insert ke peminjaman
-        String sql = "INSERT INTO peminjaman (ID_Peminjaman, Tanggal_Peminjaman, Tanggal_Pengembalian, Status_Peminjaman, User_ID_User, Pegawai_ID_Pegawai) " +
-                     "VALUES (?, ?, ?, 'Dipinjam', ?, ?)";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
-            st.setString(1, id);
-            st.setString(2, tglPinjam);
-            st.setString(3, tglKembali);
-            st.setString(4, userID);
-            st.setString(5, idPegawai);
-            st.executeUpdate();
+            // Insert ke peminjaman (Pegawai_ID diambil otomatis dari user login)
+            String sql = "INSERT INTO peminjaman (ID_Peminjaman, Tanggal_Peminjaman, Tanggal_Pengembalian, Status_Peminjaman, User_ID_User, Pegawai_ID_Pegawai) " +
+                         "VALUES (?, ?, ?, 'Dipinjam', ?, ?)";
+            try (PreparedStatement st = conn.prepareStatement(sql)) {
+                st.setString(1, id);
+                st.setString(2, tglPinjam);
+                st.setString(3, tglKembali);
+                st.setString(4, userID);
+                st.setString(5, pegawaiID); // <-- Otomatis dari login
+                st.executeUpdate();
+            }
+
+            // Insert ke detail_peminjaman
+            String sqlDetail = "INSERT INTO detail_peminjaman (Peminjaman_ID_Peminjaman, Perangkat_ID_Perangkat) " +
+                               "SELECT ?, Perangkat_ID_Perangkat FROM sementara";
+            try (PreparedStatement st = conn.prepareStatement(sqlDetail)) {
+                st.setString(1, id);
+                st.executeUpdate();
+            }
+
+            // Update status perangkat jadi 'Dipinjam'
+            String sqlUpdateStatus = "UPDATE perangkat SET status = 'Dipinjam' " +
+                                     "WHERE ID_Perangkat IN (SELECT Perangkat_ID_Perangkat FROM sementara)";
+            try (PreparedStatement st = conn.prepareStatement(sqlUpdateStatus)) {
+                st.executeUpdate();
+            }
+
+            conn.commit();
+            JOptionPane.showMessageDialog(this, "Peminjaman berhasil!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            showPanel();
+        } catch (SQLException e) {
+            try { conn.rollback(); } catch (SQLException ex) {}
+            JOptionPane.showMessageDialog(this, "Gagal: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } finally {
+            try { conn.setAutoCommit(true); } catch (SQLException ex) {}
         }
-
-        // 2. Insert ke detail_peminjaman
-        String sqlDetail = "INSERT INTO detail_peminjaman (Peminjaman_ID_Peminjaman, Perangkat_ID_Perangkat) " +
-                           "SELECT ?, Perangkat_ID_Perangkat FROM sementara";
-        try (PreparedStatement st = conn.prepareStatement(sqlDetail)) {
-            st.setString(1, id);
-            st.executeUpdate();
-        }
-
-        conn.commit();
-        JOptionPane.showMessageDialog(this, "Peminjaman berhasil!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-        showPanel();
-    } catch (SQLException e) {
-        try { conn.rollback(); } catch (SQLException ex) {}
-        JOptionPane.showMessageDialog(this, "Gagal: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    } finally {
-        try { conn.setAutoCommit(true); } catch (SQLException ex) {}
-    }
     }
 
-    // ================== LOAD DATA ==================
     private void getDataDetail(String idPeminjaman) {
         DefaultTableModel model = (DefaultTableModel) tblDataDetail.getModel();
         model.setRowCount(0);
         try {
-            String sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat FROM detail_peminjaman dp JOIN perangkat p ON dp.Perangkat_ID_Perangkat = p.ID_Perangkat WHERE dp.Peminjaman_ID_Peminjaman = ?";
+            String sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat " +
+                         "FROM detail_peminjaman dp JOIN perangkat p ON dp.Perangkat_ID_Perangkat = p.ID_Perangkat " +
+                         "WHERE dp.Peminjaman_ID_Peminjaman = ?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setString(1, idPeminjaman);
             ResultSet rs = st.executeQuery();
@@ -984,7 +901,7 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
                 model.addRow(new Object[]{no++, rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)});
             }
         } catch (SQLException e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
     }
 
@@ -992,146 +909,126 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) tblDataSementara.getModel();
         model.setRowCount(0);
         try {
-            String sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat FROM sementara s JOIN perangkat p ON s.Perangkat_ID_Perangkat = p.ID_Perangkat";
+            String sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat " +
+                         "FROM sementara s JOIN perangkat p ON s.Perangkat_ID_Perangkat = p.ID_Perangkat";
             ResultSet rs = conn.prepareStatement(sql).executeQuery();
             int no = 1;
             while (rs.next()) {
                 model.addRow(new Object[]{no++, rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)});
             }
         } catch (SQLException e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
     }
 
     private void loadData() {
-       calculateTotalPages();
-    int start = (halamanSaatIni - 1) * dataPerHalaman;
-    DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-    model.setRowCount(0);
-
-    String sql;
-    if ("admin".equals(userRole)) {
-        sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
-              "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
-              "ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
-    } else {
-        sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
-              "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
-              "WHERE p.User_ID_User = ? " +
-              "ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
-    }
-
-    try (PreparedStatement st = conn.prepareStatement(sql)) {
-        int idx = 1;
-        if (!"admin".equals(userRole)) {
-            st.setString(idx++, userID);
+        calculateTotalPages();
+        int start = (halamanSaatIni - 1) * dataPerHalaman;
+        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+        model.setRowCount(0);
+        String sql;
+        if ("admin".equals(userRole)) {
+            sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
+                  "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
+                  "ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
+        } else {
+            sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
+                  "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
+                  "WHERE p.User_ID_User = ? " +
+                  "ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
         }
-        st.setInt(idx++, start);
-        st.setInt(idx++, dataPerHalaman);
-
-        try (ResultSet rs = st.executeQuery()) {
-            int no = start + 1;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    no++,
-                    rs.getString(1),
-                    rs.getDate(2) != null ? sdf.format(rs.getDate(2)) : "",
-                    rs.getDate(3) != null ? sdf.format(rs.getDate(3)) : "",
-                    rs.getString(4),
-                    rs.getString(5)
-                });
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            int idx = 1;
+            if (!"admin".equals(userRole)) {
+                st.setString(idx++, userID);
             }
+            st.setInt(idx++, start);
+            st.setInt(idx++, dataPerHalaman);
+            try (ResultSet rs = st.executeQuery()) {
+                int no = start + 1;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                while (rs.next()) {
+                    model.addRow(new Object[]{
+                        no++,
+                        rs.getString(1),
+                        rs.getDate(2) != null ? sdf.format(rs.getDate(2)) : "",
+                        rs.getDate(3) != null ? sdf.format(rs.getDate(3)) : "",
+                        rs.getString(4),
+                        rs.getString(5)
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
+        lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
     }
 
     private void calculateTotalPages() {
-       try {
-        String sql;
-        if ("admin".equals(userRole)) {
-            sql = "SELECT COUNT(*) FROM peminjaman";
-        } else {
-            sql = "SELECT COUNT(*) FROM peminjaman WHERE User_ID_User = ?";
-        }
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
-            if (!"admin".equals(userRole)) {
-                st.setString(1, userID);
+        try {
+            String sql;
+            if ("admin".equals(userRole)) {
+                sql = "SELECT COUNT(*) FROM peminjaman";
+            } else {
+                sql = "SELECT COUNT(*) FROM peminjaman WHERE User_ID_User = ?";
             }
-            try (ResultSet rs = st.executeQuery()) {
-                if (rs.next()) {
-                    int total = rs.getInt(1);
-                    totalPages = (int) Math.ceil(total / (double) dataPerHalaman);
-                    if (totalPages == 0) totalPages = 1;
+            try (PreparedStatement st = conn.prepareStatement(sql)) {
+                if (!"admin".equals(userRole)) st.setString(1, userID);
+                try (ResultSet rs = st.executeQuery()) {
+                    if (rs.next()) {
+                        int total = rs.getInt(1);
+                        totalPages = (int) Math.ceil(total / (double) dataPerHalaman);
+                        if (totalPages == 0) totalPages = 1;
+                    }
                 }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
     }
 
     private void searchData() {
         String key = txtSearch.getText().trim();
-    DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-    model.setRowCount(0);
-
-    String sql;
-    if ("admin".equals(userRole)) {
-        sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
-              "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
-              "WHERE p.ID_Peminjaman LIKE ? OR g.Nama_Pegawai LIKE ? " +
-              "ORDER BY p.ID_Peminjaman DESC";
-    } else {
-        sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
-              "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
-              "WHERE p.User_ID_User = ? AND (p.ID_Peminjaman LIKE ? OR g.Nama_Pegawai LIKE ?) " +
-              "ORDER BY p.ID_Peminjaman DESC";
-    }
-
-    try (PreparedStatement st = conn.prepareStatement(sql)) {
-        int idx = 1;
-        String like = "%" + key + "%";
-        if (!"admin".equals(userRole)) {
-            st.setString(idx++, userID);
+        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+        model.setRowCount(0);
+        String sql;
+        if ("admin".equals(userRole)) {
+            sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
+                  "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
+                  "WHERE p.ID_Peminjaman LIKE ? OR g.Nama_Pegawai LIKE ? " +
+                  "ORDER BY p.ID_Peminjaman DESC";
+        } else {
+            sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, p.Status_Peminjaman, g.Nama_Pegawai " +
+                  "FROM peminjaman p JOIN pegawai g ON p.Pegawai_ID_Pegawai = g.ID_Pegawai " +
+                  "WHERE p.User_ID_User = ? AND (p.ID_Peminjaman LIKE ? OR g.Nama_Pegawai LIKE ?) " +
+                  "ORDER BY p.ID_Peminjaman DESC";
         }
-        st.setString(idx++, like);
-        st.setString(idx++, like);
-
-        try (ResultSet rs = st.executeQuery()) {
-            int no = 1;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    no++,
-                    rs.getString(1),
-                    rs.getDate(2) != null ? sdf.format(rs.getDate(2)) : "",
-                    rs.getDate(3) != null ? sdf.format(rs.getDate(3)) : "",
-                    rs.getString(4),
-                    rs.getString(5)
-                });
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            int idx = 1;
+            String like = "%" + key + "%";
+            if (!"admin".equals(userRole)) {
+                st.setString(idx++, userID);
             }
+            st.setString(idx++, like);
+            st.setString(idx++, like);
+            try (ResultSet rs = st.executeQuery()) {
+                int no = 1;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                while (rs.next()) {
+                    model.addRow(new Object[]{
+                        no++,
+                        rs.getString(1),
+                        rs.getDate(2) != null ? sdf.format(rs.getDate(2)) : "",
+                        rs.getDate(3) != null ? sdf.format(rs.getDate(3)) : "",
+                        rs.getString(4),
+                        rs.getString(5)
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-    }
-    private String getUserRole() {
-    String sql = "SELECT Role FROM user WHERE ID_User = ?";
-    try (PreparedStatement st = conn.prepareStatement(sql)) {
-        st.setString(1, userID);
-        ResultSet rs = st.executeQuery();
-        if (rs.next()) {
-            return rs.getString("Role");
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return "user";
-}
 
     private void showPanel() {
         panelMain.removeAll();
@@ -1141,5 +1038,13 @@ public class TransaksiPeminjaman extends javax.swing.JPanel {
         loadData();
         pnDetail.setVisible(false);
         clearSementara();
+    }
+
+    private void paginationPerangkat() {
+        btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
+        btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
+        cbx_data.addActionListener(e -> { dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString()); halamanSaatIni = 1; loadData(); });
+        btn_next.addActionListener(e -> { if (halamanSaatIni < totalPages) { halamanSaatIni++; loadData(); } });
+        btn_last.addActionListener(e -> { halamanSaatIni = totalPages; loadData(); });
     }
 }

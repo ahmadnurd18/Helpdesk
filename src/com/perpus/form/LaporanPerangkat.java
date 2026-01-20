@@ -47,7 +47,7 @@ public class LaporanPerangkat extends javax.swing.JPanel {
     }
 
     private void setLayoutForm() {
-        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/perangkat.svg", 1f)); // ganti icon jika ada
+        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/device.svg", 1f)); // ganti icon jika ada
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
         btnPrint.setIcon(new FlatSVGIcon("com/perpus/icon/print_white.svg", 1f));
 

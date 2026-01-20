@@ -49,8 +49,8 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
     }
 
     private void setLayoutForm() {
-        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/perangkat.svg", 1f));
-        iconJudul2.setIcon(new FlatSVGIcon("com/perpus/icon/perangkat.svg", 1f));
+        iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/device.svg", 1f));
+        iconJudul2.setIcon(new FlatSVGIcon("com/perpus/icon/device.svg", 1f));
         iconDashboard.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
         iconDashboard2.setIcon(new FlatSVGIcon("com/perpus/icon/dashboard.svg", 1f));
         btnAdd.setIcon(new FlatSVGIcon("com/perpus/icon/add_white.svg", 1f));
@@ -501,7 +501,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         lb_halaman.setText("Halaman " + halamanSaatIni + " dari Total Data " + getTotalData());
         int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
         getData(startIndex, dataPerHalaman, (DefaultTableModel) tblData.getModel());
-        btnDelete.setVisible(false);
+        btnDelete.setVisible(true);
         btnCancel.setVisible(false);
     }
 
@@ -669,7 +669,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
                     }
                 }
             } catch (SQLException e) {
-                JOptionPane.showMessageDialog(this, "Gagal hapus: " + e.getMessage());
+                JOptionPane.showMessageDialog(this, "Gagal hapus: Perangkat tesebut, masih ada dalam transaksi" );
             }
         }
     }

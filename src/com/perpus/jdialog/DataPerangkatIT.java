@@ -12,7 +12,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 public class DataPerangkatIT extends javax.swing.JDialog {
-
     private int halamanSaatIni = 1;
     private int dataPerHalaman = 14;
     private int totalPages;
@@ -53,7 +52,7 @@ public class DataPerangkatIT extends javax.swing.JDialog {
     }
 
     private void applyRowColor() {
-        tblData.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+      tblData.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
                     boolean isSelected, boolean hasFocus, int row, int column) {
@@ -62,14 +61,12 @@ public class DataPerangkatIT extends javax.swing.JDialog {
                     String status = (String) table.getValueAt(row, 6);
                     if ("Sedang Dipinjam".equals(status)) {
                         c.setBackground(new Color(255, 220, 220)); // merah muda
-                        c.setForeground(Color.BLACK);
                     } else if ("Dipinjam (Anda)".equals(status)) {
                         c.setBackground(new Color(220, 255, 220)); // hijau muda
-                        c.setForeground(Color.BLACK);
-                    } else {
-                        c.setBackground(table.getBackground());
-                        c.setForeground(table.getForeground());
+                    } else { // Tersedia atau lainnya
+                        c.setBackground(table.getBackground()); // putih/default
                     }
+                    c.setForeground(Color.BLACK);
                 }
                 return c;
             }
@@ -207,9 +204,9 @@ public class DataPerangkatIT extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     
-    public DataPerangkatIT(java.awt.Frame parent, boolean modal) {
-    this(parent, modal, "admin", null); // default ke admin saat testing
-}
+public DataPerangkatIT(java.awt.Frame parent, boolean modal) {
+        this(parent, modal, "admin", null); // default ke admin saat testing
+    }
     public static void main(String args[]) {
     try {
         for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -268,7 +265,6 @@ public class DataPerangkatIT extends javax.swing.JDialog {
                 searchData();
             }
         });
-
         tblData.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -280,7 +276,7 @@ public class DataPerangkatIT extends javax.swing.JDialog {
     }
 
     // ================== TABEL MODEL ==================
-   private void setTabelModel() {
+    private void setTabelModel() {
         DefaultTableModel model = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -294,7 +290,7 @@ public class DataPerangkatIT extends javax.swing.JDialog {
     }
 
     // ================== DATA & PAGINATION ==================
-   private int getTotalData() {
+    private int getTotalData() {
         String sql;
         if ("admin".equalsIgnoreCase(userRole)) {
             sql = "SELECT COUNT(*) FROM perangkat";
@@ -317,51 +313,45 @@ public class DataPerangkatIT extends javax.swing.JDialog {
         return 0;
     }
 
-  private void calculateTotalPages() {
+    private void calculateTotalPages() {
         int total = getTotalData();
         totalPages = (int) Math.ceil(total / (double) dataPerHalaman);
         if (totalPages == 0) totalPages = 1;
     }
 
     private void loadData() {
-        calculateTotalPages();
+       calculateTotalPages();
         int start = (halamanSaatIni - 1) * dataPerHalaman;
-
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
 
         String sql;
-        String baseSql = "FROM perangkat p " +
-            "LEFT JOIN detail_peminjaman dp ON p.ID_Perangkat = dp.Perangkat_ID_Perangkat " +
-            "LEFT JOIN peminjaman pm ON dp.Peminjaman_ID_Peminjaman = pm.ID_Peminjaman AND pm.Status_Peminjaman = 'Dipinjam' ";
-
         if ("admin".equalsIgnoreCase(userRole)) {
-            sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat, " +
-                  "CASE WHEN dp.Peminjaman_ID_Peminjaman IS NULL THEN 'Tersedia' ELSE 'Sedang Dipinjam' END AS status_tersedia " +
-                  baseSql + "ORDER BY p.ID_Perangkat LIMIT ?, ?";
+            sql = "SELECT ID_Perangkat, Jenis_Perangkat, Merek, No_Serial, Model_Perangkat, status AS status_display "
+                + "FROM perangkat ORDER BY ID_Perangkat LIMIT ?, ?";
         } else {
-            sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat, " +
-                 "CASE "+
-        "WHEN dp.Perangkat_ID_Perangkat IS NOT NULL AND pm.Status_Peminjaman = 'Dipinjam' THEN 'Sedang Dipinjam'"+
-        "ELSE 'Tersedia'"+
-    "END AS status_display"+baseSql +
-                  "WHERE dp.Peminjaman_ID_Peminjaman IS NULL OR pm.Pegawai_ID_Pegawai = ? " +
-                  "ORDER BY p.ID_Perangkat LIMIT ?, ?";
+            sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat, "
+                + "CASE "
+                + "WHEN p.status = 'Dipinjam' AND EXISTS ("
+                + "  SELECT 1 FROM detail_peminjaman dp JOIN peminjaman pm "
+                + "  ON dp.Peminjaman_ID_Peminjaman = pm.ID_Peminjaman "
+                + "  WHERE dp.Perangkat_ID_Perangkat = p.ID_Perangkat AND pm.Pegawai_ID_Pegawai = ? AND pm.Status_Peminjaman = 'Dipinjam'"
+                + ") THEN 'Dipinjam (Anda)' "
+                + "WHEN p.status = 'Dipinjam' THEN 'Sedang Dipinjam' "
+                + "ELSE 'Tersedia' END AS status_display "
+                + "FROM perangkat p ORDER BY p.ID_Perangkat LIMIT ?, ?";
         }
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
             int idx = 1;
             if (!"admin".equalsIgnoreCase(userRole)) {
                 st.setString(idx++, userIdPegawai);
-                st.setString(idx++, userIdPegawai);
             }
             st.setInt(idx++, start);
             st.setInt(idx++, dataPerHalaman);
-
             try (ResultSet rs = st.executeQuery()) {
                 int no = start + 1;
                 while (rs.next()) {
-                    String status = rs.getString("status_tersedia");
                     model.addRow(new Object[]{
                         no++,
                         rs.getString("ID_Perangkat"),
@@ -369,7 +359,7 @@ public class DataPerangkatIT extends javax.swing.JDialog {
                         rs.getString("Merek"),
                         rs.getString("No_Serial"),
                         rs.getString("Model_Perangkat"),
-                        status
+                        rs.getString("status_display")
                     });
                 }
             }
@@ -379,45 +369,58 @@ public class DataPerangkatIT extends javax.swing.JDialog {
         lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
     }
 
-  private void searchData() {
+    private void searchData() {
         String key = txtSearch.getText().trim();
+        if (key.isEmpty()) {
+            loadData();
+            return;
+        }
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
 
         String sql;
-        String baseSql = "FROM perangkat p " +
-            "LEFT JOIN detail_peminjaman dp ON p.ID_Perangkat = dp.Perangkat_ID_Perangkat " +
-            "LEFT JOIN peminjaman pm ON dp.Peminjaman_ID_Peminjaman = pm.ID_Peminjaman AND pm.Status_Peminjaman = 'Dipinjam' " +
-            "WHERE (p.ID_Perangkat LIKE ? OR p.Jenis_Perangkat LIKE ? OR p.Merek LIKE ? OR p.No_Serial LIKE ? OR p.Model_Perangkat LIKE ?) ";
-
+        String like = "%" + key + "%";
         if ("admin".equalsIgnoreCase(userRole)) {
-            sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat, " +
-                  "CASE WHEN dp.Peminjaman_ID_Peminjaman IS NULL THEN 'Tersedia' ELSE 'Sedang Dipinjam' END AS status " +
-                  baseSql + "ORDER BY p.ID_Perangkat";
+            sql = "SELECT ID_Perangkat, Jenis_Perangkat, Merek, No_Serial, Model_Perangkat, status AS status_display "
+                + "FROM perangkat "
+                + "WHERE ID_Perangkat LIKE ? OR Jenis_Perangkat LIKE ? OR Merek LIKE ? OR No_Serial LIKE ? OR Model_Perangkat LIKE ? "
+                + "ORDER BY ID_Perangkat";
         } else {
-            sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat, " +
-                  "CASE WHEN dp.Peminjaman_ID_Peminjaman IS NULL THEN 'Tersedia' " +
-                  "     WHEN pm.Pegawai_ID_Pegawai = ? THEN 'Dipinjam (Anda)' ELSE 'Sedang Dipinjam' END AS status " +
-                  baseSql + "AND (dp.Peminjaman_ID_Peminjaman IS NULL OR pm.Pegawai_ID_Pegawai = ?) " +
-                  "ORDER BY p.ID_Perangkat";
+            sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat, "
+                + "CASE "
+                + "WHEN p.status = 'Dipinjam' AND EXISTS ("
+                + "  SELECT 1 FROM detail_peminjaman dp JOIN peminjaman pm "
+                + "  ON dp.Peminjaman_ID_Peminjaman = pm.ID_Peminjaman "
+                + "  WHERE dp.Perangkat_ID_Perangkat = p.ID_Perangkat AND pm.Pegawai_ID_Pegawai = ? AND pm.Status_Peminjaman = 'Dipinjam'"
+                + ") THEN 'Dipinjam (Anda)' "
+                + "WHEN p.status = 'Dipinjam' THEN 'Sedang Dipinjam' "
+                + "ELSE 'Tersedia' END AS status_display "
+                + "FROM perangkat p "
+                + "WHERE p.ID_Perangkat LIKE ? OR p.Jenis_Perangkat LIKE ? OR p.Merek LIKE ? OR p.No_Serial LIKE ? OR p.Model_Perangkat LIKE ? "
+                + "ORDER BY p.ID_Perangkat";
         }
 
         try (PreparedStatement st = conn.prepareStatement(sql)) {
-            String like = "%" + key + "%";
             int idx = 1;
-            for (int i = 0; i < 5; i++) st.setString(idx++, like);
+            st.setString(idx++, like);
+            st.setString(idx++, like);
+            st.setString(idx++, like);
+            st.setString(idx++, like);
+            st.setString(idx++, like);
             if (!"admin".equalsIgnoreCase(userRole)) {
                 st.setString(idx++, userIdPegawai);
-                st.setString(idx++, userIdPegawai);
             }
-
             try (ResultSet rs = st.executeQuery()) {
                 int no = 1;
                 while (rs.next()) {
                     model.addRow(new Object[]{
                         no++,
-                        rs.getString(1), rs.getString(2), rs.getString(3),
-                        rs.getString(4), rs.getString(5), rs.getString(6)
+                        rs.getString("ID_Perangkat"),
+                        rs.getString("Jenis_Perangkat"),
+                        rs.getString("Merek"),
+                        rs.getString("No_Serial"),
+                        rs.getString("Model_Perangkat"),
+                        rs.getString("status_display")
                     });
                 }
             }
@@ -426,8 +429,6 @@ public class DataPerangkatIT extends javax.swing.JDialog {
         }
         lb_halaman.setText("Ditemukan: " + model.getRowCount() + " perangkat");
     }
-  
-  
 
     // ================== PILIH DATA ==================
     private void pilihData() {

@@ -1,46 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Laporan_Tiket_Helpdesk" language="groovy" pageWidth="1120" pageHeight="595" orientation="Landscape" columnWidth="1080" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4f1db66b-0a5a-4cc2-94cc-e46260a39b75">
-	<parameter name="tanggalMulai" class="java.util.Date"/>
-	<parameter name="tanggalAkhir" class="java.util.Date"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Laporan_Tiket_Helpdesk" pageWidth="1120" pageHeight="595" orientation="Landscape" columnWidth="1080" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="11bd51bb-aa78-429c-a2a2-8f515262cd42">
+	<parameter name="userID" class="java.lang.String"/>
+	<parameter name="tanggalMulai" class="java.sql.Date"/>
+	<parameter name="tanggalAkhir" class="java.sql.Date"/>
+	<parameter name="periodeText" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Semua Tanggal"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
     t.ID_Tiket,
     t.Judul_Tiket,
     t.Deskripsi_Tiket,
     t.Prioritas_Tiket,
-    t.StartDate,
-    t.EndDate,
+    DATE_FORMAT(t.StartDate, '%d/%m/%Y') AS StartDate,
+    DATE_FORMAT(t.EndDate, '%d/%m/%Y') AS EndDate,
     t.Status_Tiket,
     u.Nama_Full AS Nama_User,
-    p.Nama_Pegawai AS Nama_Pegawai
+    COALESCE(p.Nama_Pegawai, '-') AS Nama_Pegawai
 FROM tiket t
 JOIN user u ON t.User_ID_User = u.ID_User
 LEFT JOIN pegawai p ON t.Pegawai_ID_Pegawai = p.ID_Pegawai
-WHERE t.StartDate BETWEEN $P{tanggalMulai} AND $P{tanggalAkhir}
-ORDER BY t.StartDate DESC, t.ID_Tiket ASC]]>
+WHERE ($P{userID} IS NULL OR t.User_ID_User = $P{userID})
+  AND ($P{tanggalMulai} IS NULL OR t.StartDate >= $P{tanggalMulai})
+  AND ($P{tanggalAkhir} IS NULL OR t.StartDate <= $P{tanggalAkhir})
+ORDER BY t.StartDate DESC]]>
 	</queryString>
 	<field name="ID_Tiket" class="java.lang.String"/>
 	<field name="Judul_Tiket" class="java.lang.String"/>
 	<field name="Deskripsi_Tiket" class="java.lang.String"/>
 	<field name="Prioritas_Tiket" class="java.lang.String"/>
-	<field name="StartDate" class="java.sql.Date"/>
-	<field name="EndDate" class="java.sql.Date"/>
+	<field name="StartDate" class="java.lang.String"/>
+	<field name="EndDate" class="java.lang.String"/>
 	<field name="Status_Tiket" class="java.lang.String"/>
 	<field name="Nama_User" class="java.lang.String"/>
 	<field name="Nama_Pegawai" class="java.lang.String"/>
 	<title>
 		<band height="80">
 			<frame>
-				<reportElement mode="Opaque" x="-20" y="-20" width="1120" height="100" backcolor="#009999" uuid="3bf76294-ec2e-4dd7-9991-94c68e908836"/>
+				<reportElement mode="Opaque" x="-20" y="-20" width="1120" height="100" backcolor="#009999" uuid="ce44663a-2cb6-4a04-9a5b-2f208b1b39b8"/>
 				<staticText>
-					<reportElement x="380" y="15" width="360" height="40" forecolor="#FFFFFF" uuid="c2c656e1-b347-432e-8caf-bb212478c845"/>
+					<reportElement x="380" y="15" width="360" height="40" forecolor="#FFFFFF" uuid="a800d25e-07f1-49b2-9aef-b9570a9217ba"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="26" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Laporan Tiket Helpdesk]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="400" y="55" width="320" height="25" forecolor="#FFFFFF" uuid="b18e442f-8098-408f-b4e8-ed27e502261c"/>
+					<reportElement x="400" y="55" width="320" height="25" forecolor="#FFFFFF" uuid="ff096228-c970-4be7-b3d3-7b4fd6e3f869"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="16"/>
 					</textElement>
@@ -50,48 +56,40 @@ ORDER BY t.StartDate DESC, t.ID_Tiket ASC]]>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="30">
+		<band height="40">
 			<staticText>
-				<reportElement x="0" y="5" width="50" height="20" uuid="8fb3f393-dc37-468c-a9ec-a2b63af5b2b6"/>
+				<reportElement x="0" y="5" width="50" height="20" uuid="c38d125b-ec89-432b-ae2b-575936706d7c"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[NO :]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="55" y="5" width="300" height="20" uuid="94f620a7-7273-4f7d-a8f5-086a6bcb3390"/>
+				<reportElement x="55" y="5" width="300" height="20" uuid="69c58efa-0d6d-4c23-95a7-f096bea5487a"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA["REP/TKT/" +
-(new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("01") ? "I" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("02") ? "II" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("03") ? "III" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("04") ? "IV" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("05") ? "V" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("06") ? "VI" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("07") ? "VII" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("08") ? "VIII" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("09") ? "IX" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("10") ? "X" :
- new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("11") ? "XI" : "XII") +
-"/" + new java.text.SimpleDateFormat("yyyy").format(new java.util.Date()) +
-"/MTT/" + String.format("%04d", $V{REPORT_COUNT} != null ? $V{REPORT_COUNT} : 1)]]></textFieldExpression>
+				<textFieldExpression><![CDATA["REPTKT/" + new java.text.SimpleDateFormat("yyyy").format(new java.util.Date()) + "/" + 
+(new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("01") ? "I" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("02") ? "II" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("03") ? "III" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("04") ? "IV" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("05") ? "V" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("06") ? "VI" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("07") ? "VII" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("08") ? "VIII" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("09") ? "IX" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("10") ? "X" : 
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("11") ? "XI" : "XII") + 
+"/MTT/" + String.format("%04d", $V{REPORT_COUNT})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="700" y="5" width="60" height="20" uuid="cdbbfabe-e3cc-41d6-9312-b70aff4ab79f"/>
+				<reportElement x="700" y="5" width="100" height="20" uuid="b1700dd8-1c5a-4ea1-9a3d-f4d999372a6c"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Periode: ]]></text>
 			</staticText>
-			<textField pattern="d MMMM yyyy">
-				<reportElement x="760" y="5" width="100" height="20" uuid="005c01a9-a00b-4ecc-a57a-417835ea120e"/>
-				<textFieldExpression><![CDATA[$P{tanggalMulai}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="860" y="5" width="20" height="20" uuid="71c60e6d-9be2-4234-8013-6259384e94dc"/>
-				<text><![CDATA[s.d.]]></text>
-			</staticText>
-			<textField pattern="d MMMM yyyy">
-				<reportElement x="880" y="5" width="100" height="20" uuid="87c3175b-fd03-4391-9b37-3b0fcc75b68a"/>
-				<textFieldExpression><![CDATA[$P{tanggalAkhir}]]></textFieldExpression>
+			<textField>
+				<reportElement x="800" y="5" width="280" height="20" uuid="f893f9d3-092a-44d8-8ba4-5d71ba506172"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{periodeText}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
