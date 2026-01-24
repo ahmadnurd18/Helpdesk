@@ -6,6 +6,7 @@ import com.perpus.form.FormProfile;
 import com.perpus.form.LaporanPerangkat;
 import com.perpus.form.LaporanPegawai;
 import com.perpus.form.LaporanPeminjaman;
+import com.perpus.form.LaporanPengguna;
 import com.perpus.form.LaporanTiket;
 import com.perpus.form.MasterPegawai;
 import com.perpus.form.MasterPerangkatIT;
@@ -70,6 +71,9 @@ public class MenuUtama extends javax.swing.JFrame {
                     else if (index == 15){
                         setForm(new LaporanPerangkat());
                     }  
+                    else if (index == 16){
+                        setForm(new LaporanPengguna());
+                    }
                 } else {
                     if(index == 0){
                         setForm(new MasterDashboard(userID, levelUser));
@@ -109,7 +113,7 @@ public class MenuUtama extends javax.swing.JFrame {
     }
     
     private void setLayoutForm(){
-        setIconImage(new ImageIcon(getClass().getResource("/com/perpus/icon/LogoITHelpdesk.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/com/perpus/icon/Logomtt.png")).getImage());
         btnProfile.setIcon(new FlatSVGIcon("com/perpus/icon/petugas_white.svg", 1f));
     }
     

@@ -24,19 +24,24 @@ ORDER BY ID_Perangkat ASC]]>
 		<band height="72">
 			<frame>
 				<reportElement mode="Opaque" x="-20" y="-20" width="843" height="92" backcolor="#009999" uuid="7271291f-668c-48c4-9a89-344b56f95343"/>
+				<image scaleImage="RetainShape" hAlign="Left" vAlign="Middle">
+					<reportElement x="0" y="0" width="143" height="91" uuid="24ec31fc-7f53-4f02-9899-434c1b0535e1"/>
+					<box leftPadding="14"/>
+					<imageExpression><![CDATA["../icon/Logobigmtt.png"]]></imageExpression>
+				</image>
 				<staticText>
-					<reportElement x="206" y="14" width="406" height="43" forecolor="#FFFFFF" uuid="619bb199-ad51-4299-ba8b-37bf75a51049"/>
+					<reportElement x="143" y="47" width="679" height="44" forecolor="#FFFFFF" uuid="4291d5d8-1eea-4aa0-a84a-ed765a54cfd6"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font size="24" isBold="true"/>
+						<font size="10"/>
 					</textElement>
-					<text><![CDATA[LAPORAN DATA PERANGKAT IT]]></text>
+					<text><![CDATA[Rukan Mahkota Ancol Blok D No. 12 Jl. RE. Martadinata, Ancol Jakarta Utara 14420 DKI Jakarta]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="279" y="57" width="280" height="20" forecolor="#FFFFFF" uuid="dbc8c10f-529e-41e4-ad9b-7958afffa230"/>
+					<reportElement x="143" y="0" width="679" height="47" forecolor="#FFFFFF" uuid="7082f82f-9fe3-4d13-b26e-a6eefa860c01"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font size="14"/>
+						<font size="26" isBold="true"/>
 					</textElement>
-					<text><![CDATA[PT. MACRO TREND TECHNOLOGY]]></text>
+					<text><![CDATA[Laporan Perangkat IT]]></text>
 				</staticText>
 			</frame>
 		</band>

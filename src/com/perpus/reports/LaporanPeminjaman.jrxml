@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="LaporanPeminjamanDetail" language="groovy" pageWidth="1120" pageHeight="595" orientation="Landscape" columnWidth="1080" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bb9e1b20-b41b-40b6-8efa-d5fbc73637a9">
 	<property name="ireport.zoom" value="1.3310000000000013"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="104"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="tanggalMulai" class="java.sql.Date" isForPrompting="false"/>
 	<parameter name="tanggalAkhir" class="java.sql.Date" isForPrompting="false"/>
@@ -42,19 +42,24 @@ ORDER BY p.Tanggal_Peminjaman DESC, p.ID_Peminjaman, pr.ID_Perangkat]]>
 		<band height="80">
 			<frame>
 				<reportElement mode="Opaque" x="-20" y="-20" width="1120" height="100" backcolor="#009999" uuid="70c7b6ea-8715-476b-a2d8-904e5b713855"/>
+				<image scaleImage="RetainShape" hAlign="Left" vAlign="Middle">
+					<reportElement x="0" y="0" width="153" height="100" uuid="bedc5dab-2b88-4219-8c40-432d1e2e8d7c"/>
+					<box leftPadding="14"/>
+					<imageExpression><![CDATA["../icon/Logobigmtt.png"]]></imageExpression>
+				</image>
 				<staticText>
-					<reportElement x="356" y="15" width="424" height="40" forecolor="#FFFFFF" uuid="3acc3cad-caf5-473e-846d-aa5d89ea6b97"/>
+					<reportElement x="153" y="47" width="947" height="44" forecolor="#FFFFFF" uuid="fe4cceec-4b72-4db6-a5be-efa5b9266ea2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[Rukan Mahkota Ancol Blok D No. 12 Jl. RE. Martadinata, Ancol Jakarta Utara 14420 DKI Jakarta]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="153" y="0" width="947" height="47" forecolor="#FFFFFF" uuid="a957ab75-7d84-47f4-a2b8-edf7334aeb18"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="26" isBold="true"/>
 					</textElement>
-					<text><![CDATA[LAPORAN DETAIL PEMINJAMAN PERANGKAT IT]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="400" y="55" width="320" height="25" forecolor="#FFFFFF" uuid="b008edf0-0002-496d-8cb9-43cdd905c4eb"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font size="16"/>
-					</textElement>
-					<text><![CDATA[PT. MACRO TREND TECHNOLOGY]]></text>
+					<text><![CDATA[Laporan Peminjaman Perangkat]]></text>
 				</staticText>
 			</frame>
 		</band>

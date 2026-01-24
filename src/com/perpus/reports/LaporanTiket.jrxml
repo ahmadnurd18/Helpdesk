@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Laporan_Tiket_Helpdesk" pageWidth="1120" pageHeight="595" orientation="Landscape" columnWidth="1080" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="11bd51bb-aa78-429c-a2a2-8f515262cd42">
+	<property name="ireport.zoom" value="1.6105100000000012"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="userID" class="java.lang.String"/>
 	<parameter name="tanggalMulai" class="java.sql.Date"/>
 	<parameter name="tanggalAkhir" class="java.sql.Date"/>
@@ -39,18 +42,23 @@ ORDER BY t.StartDate DESC]]>
 			<frame>
 				<reportElement mode="Opaque" x="-20" y="-20" width="1120" height="100" backcolor="#009999" uuid="ce44663a-2cb6-4a04-9a5b-2f208b1b39b8"/>
 				<staticText>
-					<reportElement x="380" y="15" width="360" height="40" forecolor="#FFFFFF" uuid="a800d25e-07f1-49b2-9aef-b9570a9217ba"/>
+					<reportElement x="153" y="0" width="947" height="47" forecolor="#FFFFFF" uuid="90324da2-bdb5-46c7-8092-fb72333f9d7a"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font size="26" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Laporan Tiket Helpdesk]]></text>
+					<text><![CDATA[Laporan Riwayat Tiket]]></text>
 				</staticText>
+				<image scaleImage="RetainShape" hAlign="Left" vAlign="Middle">
+					<reportElement x="0" y="0" width="153" height="100" uuid="9e50398f-f9dd-473c-8961-e617bcbd3aa5"/>
+					<box leftPadding="14"/>
+					<imageExpression><![CDATA["../icon/Logobigmtt.png"]]></imageExpression>
+				</image>
 				<staticText>
-					<reportElement x="400" y="55" width="320" height="25" forecolor="#FFFFFF" uuid="ff096228-c970-4be7-b3d3-7b4fd6e3f869"/>
+					<reportElement x="153" y="47" width="947" height="44" forecolor="#FFFFFF" uuid="5a88c629-1ab4-4305-813c-7a2b7ec80670"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font size="16"/>
+						<font size="10"/>
 					</textElement>
-					<text><![CDATA[PT. MACRO TREND TECHNOLOGY]]></text>
+					<text><![CDATA[Rukan Mahkota Ancol Blok D No. 12 Jl. RE. Martadinata, Ancol Jakarta Utara 14420 DKI Jakarta]]></text>
 				</staticText>
 			</frame>
 		</band>
@@ -180,13 +188,15 @@ ORDER BY t.StartDate DESC]]>
 				<textFieldExpression><![CDATA[$F{ID_Tiket}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement x="140" y="0" width="180" height="30" uuid="cc2faee2-f8bc-4f7e-91d1-775393f9a0a4"/>
-				<textElement verticalAlignment="Top"/>
+				<reportElement x="140" y="0" width="180" height="29" uuid="cc2faee2-f8bc-4f7e-91d1-775393f9a0a4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{Judul_Tiket}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="320" y="0" width="220" height="30" uuid="999e81b6-41d3-4073-a639-ca446f1882b8"/>
-				<textElement verticalAlignment="Top"/>
+			<textField>
+				<reportElement stretchType="RelativeToBandHeight" x="320" y="0" width="220" height="30" uuid="999e81b6-41d3-4073-a639-ca446f1882b8"/>
+				<textElement textAlignment="Justified" verticalAlignment="Top">
+					<font size="9"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{Deskripsi_Tiket}]]></textFieldExpression>
 			</textField>
 			<textField>
@@ -230,16 +240,16 @@ ORDER BY t.StartDate DESC]]>
 	<pageFooter>
 		<band height="20">
 			<textField>
-				<reportElement x="0" y="4" width="800" height="15" backcolor="#E6E6E6" uuid="514c5c2b-2ba0-4bbc-a047-be44aa530ef7"/>
+				<reportElement x="0" y="0" width="800" height="19" backcolor="#E6E6E6" uuid="514c5c2b-2ba0-4bbc-a047-be44aa530ef7"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA["Halaman " + $V{PAGE_NUMBER} + " dari "]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement x="800" y="4" width="100" height="15" backcolor="#E6E6E6" uuid="967174db-1633-40c3-b11f-448b21287139"/>
+				<reportElement x="800" y="0" width="100" height="19" backcolor="#E6E6E6" uuid="967174db-1633-40c3-b11f-448b21287139"/>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField pattern="EEEE, d MMMM yyyy">
-				<reportElement x="900" y="4" width="180" height="15" uuid="78c3a942-6754-4e4b-b3a6-94c707d6dab5"/>
+				<reportElement x="900" y="0" width="180" height="19" uuid="78c3a942-6754-4e4b-b3a6-94c707d6dab5"/>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 		</band>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="255" pageHeight="141" columnWidth="235" leftMargin="10" rightMargin="10" topMargin="20" bottomMargin="5" uuid="925d5954-8468-41f4-afdf-a72e2b1472e1">
-	<property name="ireport.zoom" value="4.1772481694156625"/>
+	<property name="ireport.zoom" value="3.797498335832421"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="id" class="java.lang.String">
@@ -34,24 +34,25 @@
 		<band height="13">
 			<frame>
 				<reportElement mode="Opaque" x="-12" y="-21" width="259" height="33" backcolor="#009999" uuid="26397840-962b-4751-a0bb-42e9fdf64caf"/>
+				<image scaleImage="RetainShape" hAlign="Left" vAlign="Middle">
+					<reportElement x="3" y="2" width="76" height="29" uuid="a860f255-7b7f-48ae-960d-d4e4d3112e80"/>
+					<box leftPadding="14"/>
+					<imageExpression><![CDATA["../icon/Logobigmtt.png"]]></imageExpression>
+				</image>
 				<staticText>
-					<reportElement x="44" y="2" width="160" height="15" forecolor="#FFFFFF" uuid="c12398dc-364a-4d8d-90e9-72d2938f7927"/>
+					<reportElement x="81" y="0" width="166" height="21" forecolor="#FFFFFF" uuid="0861352c-6c28-408e-8729-9ee628ba05c5"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font size="8" isBold="true"/>
+						<font size="12" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Kartu Pegawai Perusahaan]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="44" y="17" width="160" height="12" forecolor="#FFFFFF" uuid="73e5cd25-9c1c-4b50-bc9e-1710b1df71f9"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font size="6" isBold="false"/>
+					<reportElement x="82" y="20" width="174" height="10" forecolor="#FFFFFF" uuid="f3c643ba-27ef-4741-80ca-6c8fb04a2c1f"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font size="4"/>
 					</textElement>
-					<text><![CDATA[PT. MACRO TREND TECHNOLOGY]]></text>
+					<text><![CDATA[Rukan Mahkota Ancol Blok D No. 12 Jl. RE. Martadinata, Ancol Jakarta Utara 14420 DKI Jakarta]]></text>
 				</staticText>
-				<image>
-					<reportElement x="12" y="2" width="32" height="27" uuid="dbac035a-36d5-49a8-95f2-e9d139942620"/>
-					<imageExpression><![CDATA["../icon/LogoAppPerpus.png"]]></imageExpression>
-				</image>
 			</frame>
 		</band>
 	</title>

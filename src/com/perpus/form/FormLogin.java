@@ -30,7 +30,7 @@ public class FormLogin extends javax.swing.JFrame {
     }
 
     private void setLayoutForm() {
-        setIconImage(new ImageIcon(getClass().getResource("/com/perpus/icon/LogoITHelpdesk.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/com/perpus/icon/Logomtt.png")).getImage());
 
         txtUsername.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
         txtPassword.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
@@ -143,7 +143,7 @@ public class FormLogin extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel1)))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
