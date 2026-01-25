@@ -525,25 +525,26 @@ public class MasterPengguna extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-     panelMain.removeAll();
-        panelMain.add(panelAdd);
-        panelMain.repaint();
-        panelMain.revalidate();
+   panelMain.removeAll();
+    panelMain.add(panelAdd);
+    panelMain.repaint();
+    panelMain.revalidate();
 
+    if (btnAdd.getText().equals("UBAH")) {
+        loadDataToForm();
+        btnSave.setText("PERBARUI");
+
+        lbPassword.setVisible(true);
+        txtPassword.setVisible(true);
+    } else {
         txtID.setText(setIDUser());
         txtID.setEnabled(false);
-        selectedPegawaiID = null;
+        resetForm();
 
-        if (btnAdd.getText().equals("UBAH")) {
-            // <-- GANTI dataTabel()
-            btnSave.setText("PERBARUI");
-            lbPassword.setVisible(false);
-            txtPassword.setVisible(false);
-        } else {
-            btnSave.setText("SIMPAN");
-            lbPassword.setVisible(true);
-            txtPassword.setVisible(true);
-        }
+        btnSave.setText("SIMPAN");
+        lbPassword.setVisible(true);
+        txtPassword.setVisible(true);
+    }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
@@ -560,11 +561,11 @@ public class MasterPengguna extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCancel2ActionPerformed
 
     private void tblDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDataMouseClicked
-        if(btnAdd.getText().equals("TAMBAH")){
-            btnAdd.setText("UBAH");
-            btnDelete.setVisible(true);
-            btnCancel.setVisible(true);
-        }
+        if (btnAdd.getText().equals("TAMBAH")) {
+        btnAdd.setText("UBAH");
+        btnDelete.setVisible(true);
+        btnCancel.setVisible(true);
+    }
             
     }//GEN-LAST:event_tblDataMouseClicked
 
@@ -831,6 +832,38 @@ private String setIDUser(){
         }
     }
     
+    private void loadDataToForm() {
+    int row = tblData.getSelectedRow();
+    if (row < 0) return;
+
+    String id = tblData.getValueAt(row, 1).toString();
+
+    try {
+        String sql = "SELECT ID_User, Nama_Full, Nama_User, Email, Password, Role, Pegawai_ID_Pegawai " +
+                     "FROM user WHERE ID_User=?";
+        PreparedStatement st = conn.prepareStatement(sql);
+        st.setString(1, id);
+        ResultSet rs = st.executeQuery();
+
+        if (rs.next()) {
+            txtID.setText(rs.getString("ID_User"));
+            txtNama.setText(rs.getString("Nama_Full"));
+            txtUsername.setText(rs.getString("Nama_User"));
+            txtEmail.setText(rs.getString("Email"));
+            txtPassword.setText(rs.getString("Password")); // 🔥 INI KUNCINYA
+            cbxLevel.setSelectedItem(rs.getString("Role"));
+
+            selectedPegawaiID = rs.getString("Pegawai_ID_Pegawai");
+        }
+
+        txtID.setEnabled(false);
+
+    } catch (SQLException e) {
+        Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE, null, e);
+    }
+}
+
+
     private boolean isValidInput() {
         String id = txtID.getText().trim();
         String nama = txtNama.getText().trim();
@@ -857,39 +890,45 @@ private String setIDUser(){
         return true;
     }
    
-    private void updateData() {
-     if (!isValidInput()) return;
+ private void updateData() {
+    if (!isValidInput()) return;
 
-        String userId = txtID.getText();
-        String namaFull = txtNama.getText();
-        String namaUser = txtUsername.getText();
-        String email = txtEmail.getText();
-        String role = cbxLevel.getSelectedItem().toString();
+    String userId = txtID.getText();
+    String namaFull = txtNama.getText();
+    String namaUser = txtUsername.getText();
+    String email = txtEmail.getText();
+    String password = new String(txtPassword.getPassword());
+    String role = cbxLevel.getSelectedItem().toString();
 
-        try {
-            String sql = "UPDATE user SET Nama_Full=?, Nama_User=?, Email=?, Role=?, Pegawai_ID_Pegawai=? WHERE ID_User=?";
-            PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1, namaFull);
-            st.setString(2, namaUser);
-            st.setString(3, email);
-            st.setString(4, role);
-            if (selectedPegawaiID != null) {
-                st.setString(5, selectedPegawaiID);
-            } else {
-                st.setNull(5, java.sql.Types.CHAR);
-            }
-            st.setString(6, userId);
+    try {
+        String sql = "UPDATE user SET Nama_Full=?, Nama_User=?, Email=?, Password=?, Role=?, Pegawai_ID_Pegawai=? " +
+                     "WHERE ID_User=?";
+        PreparedStatement st = conn.prepareStatement(sql);
+        st.setString(1, namaFull);
+        st.setString(2, namaUser);
+        st.setString(3, email);
+        st.setString(4, password);
+        st.setString(5, role);
 
-            if (st.executeUpdate() > 0) {
-                JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!");
-                resetForm();
-                showPanel();
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Gagal update: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE, null, e);
+        if (selectedPegawaiID != null) {
+            st.setString(6, selectedPegawaiID);
+        } else {
+            st.setNull(6, java.sql.Types.CHAR);
         }
+
+        st.setString(7, userId);
+
+        if (st.executeUpdate() > 0) {
+            JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!");
+            resetForm();
+            showPanel();
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal update: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        Logger.getLogger(MasterPengguna.class.getName()).log(Level.SEVERE, null, e);
     }
+}
+
     private void deleteData() {
         int selectedRow = tblData.getSelectedRow();
         int confirm = JOptionPane.showConfirmDialog(this,

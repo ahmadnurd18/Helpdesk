@@ -460,12 +460,24 @@ public class MasterPegawai extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        panelMain.removeAll();
-        panelMain.add(panelAdd);
-        panelMain.repaint();
-        panelMain.revalidate();
-        resetForm();
-        txtID.setEnabled(false);
+       panelMain.removeAll();
+    panelMain.add(panelAdd);
+    panelMain.repaint();
+    panelMain.revalidate();
+
+    txtID.setEnabled(false);
+
+    if (btnAdd.getText().equals("UBAH")) {
+        // MODE EDIT
+        dataTabel();              // 🔥 ISI FORM DARI TABEL
+        btnSave.setText("PERBARUI");
+        jLabel5.setText("Edit Data Pegawai");
+    } else {
+        // MODE TAMBAH
+        resetForm();              // 🔥 RESET HANYA SAAT TAMBAH
+        btnSave.setText("SIMPAN");
+        jLabel5.setText("Tambah Data Pegawai Perusahaan");
+    }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void tblDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDataMouseClicked
@@ -475,9 +487,14 @@ if (btnAdd.getText().equals("TAMBAH")) {
             btnCancel.setVisible(true);
             btnPrint.setVisible(true);
         }
-        if (evt.getClickCount() == 2) {
-            dataTabel();
-        }
+      if (evt.getClickCount() == 2) {
+    panelMain.removeAll();
+    panelMain.add(panelAdd);
+    panelMain.repaint();
+    panelMain.revalidate();
+
+    dataTabel();
+}
             
     }//GEN-LAST:event_tblDataMouseClicked
 
@@ -710,24 +727,25 @@ int row = tblData.getSelectedRow();
         }
     }
 
-    private void dataTabel() {
-        int row = tblData.getSelectedRow();
-        if (row == -1) return;
-        txtID.setText(tblData.getValueAt(row, 1).toString());
-        txtNama.setText(tblData.getValueAt(row, 2).toString());
-        txtEmail.setText(tblData.getValueAt(row, 3).toString());
-        txtTelepon.setText(tblData.getValueAt(row, 4).toString());
-        String jk = tblData.getValueAt(row, 5).toString();
-        rbLaki.setSelected("Laki-Laki".equals(jk));
-        rbPerempuan.setSelected("Perempuan".equals(jk));
-        txtTanggal.setText(tblData.getValueAt(row, 6).toString());
-        jLabel5.setText("Edit Data Pegawai");
-        btnSave.setText("PERBARUI");
-        panelMain.removeAll();
-        panelMain.add(panelAdd);
-        panelMain.repaint();
-        panelMain.revalidate();
-    }
+   private void dataTabel() {
+    int row = tblData.getSelectedRow();
+    if (row == -1) return;
+
+    txtID.setText(tblData.getValueAt(row, 1).toString());
+    txtNama.setText(tblData.getValueAt(row, 2).toString());
+    txtEmail.setText(tblData.getValueAt(row, 3).toString());
+    txtTelepon.setText(tblData.getValueAt(row, 4).toString());
+
+    String jk = tblData.getValueAt(row, 5).toString();
+    rbLaki.setSelected("Laki-Laki".equals(jk));
+    rbPerempuan.setSelected("Perempuan".equals(jk));
+
+    txtTanggal.setText(tblData.getValueAt(row, 6).toString());
+
+    btnSave.setText("PERBARUI");
+    jLabel5.setText("Edit Data Pegawai");
+}
+
 
     private void updateData() {
         String id = txtID.getText().trim();

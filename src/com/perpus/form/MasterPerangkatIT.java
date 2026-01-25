@@ -190,6 +190,11 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         btnDelete.setText("HAPUS");
 
         tblData.setRowHeight(100);
+        tblData.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblDataMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblData);
 
         btnCancel.setText("BATAL");
@@ -211,7 +216,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
                         .addComponent(iconJudul, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 566, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 675, Short.MAX_VALUE)
                         .addComponent(iconDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2))
@@ -248,7 +253,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -405,7 +410,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         panelAdd.setLayout(panelAddLayout);
         panelAddLayout.setHorizontalGroup(
             panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 974, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1133, Short.MAX_VALUE)
         );
         panelAddLayout.setVerticalGroup(
             panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -425,6 +430,11 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtModelActionPerformed
 
+    private void tblDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDataMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblDataMouseClicked
+
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
@@ -498,11 +508,15 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
 
     private void loadData() {
         calculateTotalPages();
-        lb_halaman.setText("Halaman " + halamanSaatIni + " dari Total Data " + getTotalData());
-        int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
-        getData(startIndex, dataPerHalaman, (DefaultTableModel) tblData.getModel());
-        btnDelete.setVisible(true);
-        btnCancel.setVisible(false);
+      calculateTotalPages();
+    lb_halaman.setText("Halaman " + halamanSaatIni + " dari Total Data " + getTotalData());
+    int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
+    getData(startIndex, dataPerHalaman, (DefaultTableModel) tblData.getModel());
+
+    // 🔥 RESET BUTTON STATE
+    btnAdd.setText("TAMBAH");
+    btnDelete.setVisible(false);
+    btnCancel.setVisible(false);
     }
 
     private void setTabelModel() {
@@ -652,27 +666,32 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
     }
 
     private void deleteData() {
-        int row = tblData.getSelectedRow();
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Pilih data yang akan dihapus");
-            return;
-        }
-        if (JOptionPane.showConfirmDialog(this, "Hapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            String id = tblData.getValueAt(row, 1).toString();
-            try {
-                String sql = "DELETE FROM perangkat WHERE ID_Perangkat=?";
-                try (PreparedStatement st = conn.prepareStatement(sql)) {
-                    st.setString(1, id);
-                    if (st.executeUpdate() > 0) {
-                        JOptionPane.showMessageDialog(this, "Data dihapus");
-                        loadData();
-                    }
+    int row = tblData.getSelectedRow();
+    if (row == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih data yang akan dihapus");
+        return;
+    }
+
+    if (JOptionPane.showConfirmDialog(this, "Hapus data ini?", "Konfirmasi",
+            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+
+        String id = tblData.getValueAt(row, 1).toString();
+        try {
+            String sql = "DELETE FROM perangkat WHERE ID_Perangkat=?";
+            try (PreparedStatement st = conn.prepareStatement(sql)) {
+                st.setString(1, id);
+                if (st.executeUpdate() > 0) {
+                    JOptionPane.showMessageDialog(this, "Data dihapus");
+                    loadData(); // 🔥 reset button otomatis
                 }
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(this, "Gagal hapus: Perangkat tesebut, masih ada dalam transaksi" );
             }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                "Gagal hapus: Perangkat masih digunakan di transaksi");
         }
     }
+}
+
 
     private void searchData() {
         String key = txtSearch.getText();
@@ -702,15 +721,21 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         }
     }
 
-    private void resetForm() {
-        txtID.setText(setIDPerangkat());
-        txtJenisPerangkat.setText("");
-        txtMerek.setText("");
-        txtModel.setText("");
-        txtNoSerial.setText("");
-        btnSave.setText("SIMPAN");
-        title.setText("Tambah Data Perangkat");
-    }
+private void resetForm() {
+    txtID.setText(setIDPerangkat());
+    txtJenisPerangkat.setText("");
+    txtMerek.setText("");
+    txtModel.setText("");
+    txtNoSerial.setText("");
+
+    btnSave.setText("SIMPAN");
+    btnAdd.setText("TAMBAH");
+    btnDelete.setVisible(false);
+    btnCancel.setVisible(false);
+
+    title.setText("Tambah Data Perangkat");
+}
+
 
     // ======================= ACTION LISTENERS =======================
     private void paginationPerangkat() {
@@ -723,28 +748,40 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
 
     private void actionButton() {
         btnAdd.addActionListener(e -> {
-            panelMain.removeAll();
-            panelMain.add(panelAdd);
-            panelMain.repaint();
-            panelMain.revalidate();
-            resetForm();
-            txtID.setEnabled(false);
-        });
+    panelMain.removeAll();
+    panelMain.add(panelAdd);
+    panelMain.repaint();
+    panelMain.revalidate();
 
-        btnSave.addActionListener(e -> {
-            if (btnSave.getText().equals("SIMPAN")) insertData();
-            else updateData();
-        });
+    if (btnAdd.getText().equals("UBAH")) {
+        dataTabel(); // isi form dari tabel
+        btnSave.setText("PERBARUI");
+    } else {
+        resetForm();
+        txtID.setText(setIDPerangkat());
+        txtID.setEnabled(false);
+        btnSave.setText("SIMPAN");
+    }
+});
 
         btnDelete.addActionListener(e -> deleteData());
         btnCancel.addActionListener(e -> loadView());
         btnCancel2.addActionListener(e -> loadView());
 
         tblData.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                if (e.getClickCount() == 2) dataTabel();
-            }
-        });
+            @Override
+    public void mouseClicked(java.awt.event.MouseEvent e) {
+        if (tblData.getSelectedRow() != -1) {
+            btnAdd.setText("UBAH");
+            btnDelete.setVisible(true);
+            btnCancel.setVisible(true);
+        }
+
+        if (e.getClickCount() == 2) {
+            dataTabel(); // edit
+        }
+    }
+});
     }
 }
 
