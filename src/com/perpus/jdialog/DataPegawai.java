@@ -3,18 +3,8 @@ package com.perpus.jdialog;
 import com.perpus.config.Koneksi;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.awt.event.*;
+import java.sql.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
@@ -24,53 +14,37 @@ public class DataPegawai extends javax.swing.JDialog {
     private int dataPerHalaman = 14;
     private int totalPages;
     private Connection conn;
-    
-    private String idPegawai;
-    private String namaPegawai;
-    private String emailPegawai;
-    private String teleponPegawai;
 
-    public String getIdPegawai() {
-        return idPegawai;
-    }
+    private String idPegawai, namaPegawai, emailPegawai, teleponPegawai;
 
-    public String getNamaPegawai() {
-        return namaPegawai;
-    }
+    public String getIdPegawai() { return idPegawai; }
+    public String getNamaPegawai() { return namaPegawai; }
+    public String getEmailPegawai() { return emailPegawai; }
+    public String getTeleponPegawai() { return teleponPegawai; }
 
-    public String getEmailPegawai() {
-        return emailPegawai;
-    }
-
-    public String getTeleponPegawai() {
-        return teleponPegawai;
-    }
-    
     public DataPegawai(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
         conn = Koneksi.getConnection();
         setTabelModel();
         loadData();
-        paginationAnggota();
+        pagination();
         actionButton();
         setColumnWidth();
         setLayoutForm();
+        setLocationRelativeTo(null);
     }
 
-    private void setLayoutForm(){
+    private void setLayoutForm() {
         iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/pegawai.svg", 1f));
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pencarian");
-        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON, 
-                new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Cari ID, Nama, Email, Telepon...");
+        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
+                new FlatSVGIcon("com/perpus/icon/search.svg", 0.8f));
     }
-    
+
     private void setColumnWidth() {
-        TableColumnModel columnModel = tblData.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(40);
-        columnModel.getColumn(0).setMaxWidth(40);
-        columnModel.getColumn(0).setMinWidth(40);
+        TableColumnModel tcm = tblData.getColumnModel();
+        tcm.getColumn(0).setPreferredWidth(40); tcm.getColumn(0).setMaxWidth(40); tcm.getColumn(0).setMinWidth(40);
     }
     
     @SuppressWarnings("unchecked")
@@ -101,7 +75,7 @@ public class DataPegawai extends javax.swing.JDialog {
 
         lbJudul.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         lbJudul.setForeground(new java.awt.Color(102, 102, 102));
-        lbJudul.setText("Data Anggota Perpustakaan");
+        lbJudul.setText("Data Pegawai Perusahaan");
 
         tblData.setRowHeight(30);
         jScrollPane1.setViewportView(tblData);
@@ -250,176 +224,111 @@ public class DataPegawai extends javax.swing.JDialog {
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 
-     private void paginationAnggota() {
-        btn_first.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = 1;
-                loadData();
-            }
-        });
-        
-        btn_before.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni > 1) {
-                    halamanSaatIni--;
-                    loadData();
-                }
-            }
-        });
-        
-        cbx_data.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString());
-                halamanSaatIni = 1;
-                loadData();
-            }
-        });
-        
-        btn_next.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni < totalPages) {
-                    halamanSaatIni++;
-                    loadData();
-                }
-            }
-        });
-        
-        btn_last.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = totalPages;
-                loadData();
-            }
-        });
+   private void pagination() {
+        btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
+        btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
+        cbx_data.addActionListener(e -> { dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString()); halamanSaatIni = 1; loadData(); });
+        btn_next.addActionListener(e -> { if (halamanSaatIni < totalPages) { halamanSaatIni++; loadData(); } });
+        btn_last.addActionListener(e -> { halamanSaatIni = totalPages; loadData(); });
     }
-    
-    private void actionButton(){
-        txtSearch.addKeyListener(new KeyAdapter(){
-            @Override
+
+    private void actionButton() {
+        txtSearch.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
+                halamanSaatIni = 1;
                 searchData();
             }
         });
-        
-        tblData.addMouseListener(new MouseAdapter(){
-            @Override
+
+        tblData.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                pilihData();
+                if (e.getClickCount() == 2) pilihData();
             }
         });
     }
-    
-    private int getTotalData(){
-        int totalData = 0;
-        
-        try {
-            String sql = "SELECT COUNT(*) AS total FROM pegawaii";
-            try (PreparedStatement st = conn.prepareStatement(sql)){
-                ResultSet rs = st.executeQuery();
-                if(rs.next()){
-                    totalData = rs.getInt("total");
-                }
-            } 
-        } catch (Exception e) {
-            Logger.getLogger(DataPegawai.class.getName()).log(Level.SEVERE,null,e);
-        }
-        
-        return totalData;
+
+    private void setTabelModel() {
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override public boolean isCellEditable(int row, int column) { return false; }
+        };
+        model.setColumnIdentifiers(new Object[]{"No", "ID Pegawai", "Nama", "Email", "Telepon"});
+        tblData.setModel(model);
     }
-    
-    private void calculateTotalPages(){
-        int totalData = getTotalData();
-        totalPages = (int) Math.ceil((double) totalData / dataPerHalaman );
+
+    private int getTotalData() {
+        int total = 0;
+        String sql = "SELECT COUNT(*) FROM pegawai";
+        try (PreparedStatement st = conn.prepareStatement(sql); ResultSet rs = st.executeQuery()) {
+            if (rs.next()) total = rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return total;
     }
-    
+
+    private void calculateTotalPages() {
+        int total = getTotalData();
+        totalPages = (int) Math.ceil(total / (double) dataPerHalaman);
+        if (totalPages == 0) totalPages = 1;
+    }
+
     private void loadData() {
         calculateTotalPages();
-        int totalData = getTotalData();
-        lb_halaman.setText("Halaman " + halamanSaatIni + " dari Total Data " + totalData);
-        
-        int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
-        getData(startIndex, dataPerHalaman,(DefaultTableModel) tblData.getModel());
-    }
-    
-    private void setTabelModel() {
+        int start = (halamanSaatIni - 1) * dataPerHalaman;
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.addColumn("  No");
-        model.addColumn("ID Pegawai");
-        model.addColumn("Nama");
-        model.addColumn("Email");
-        model.addColumn("Telepon");
-    }
-    
-    public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
         model.setRowCount(0);
 
-        try {
-            String sql = "SELECT id_pegawai, nama, email, telepon FROM pegawaii LIMIT ?,?";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setInt(1, startIndex);
-                st.setInt(2, entriesPage);
-                ResultSet rs = st.executeQuery();
-
-                int no = startIndex + 1;
-                
+        String sql = "SELECT ID_Pegawai, Nama_Pegawai, Email, Telepon FROM pegawai LIMIT ?, ?";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setInt(1, start);
+            st.setInt(2, dataPerHalaman);
+            try (ResultSet rs = st.executeQuery()) {
+                int no = start + 1;
                 while (rs.next()) {
-                    String idPegawai = rs.getString("id_pegawai");
-                    String namaPegawai = rs.getString("nama");
-                    String emailPegawai = rs.getString("email");
-                    String teleponPegawai = rs.getString("telepon");
-
-                    Object[] rowData = {"   " + no++, idPegawai, namaPegawai, emailPegawai, teleponPegawai};
-                    model.addRow(rowData);
+                    model.addRow(new Object[]{
+                        no++,
+                        rs.getString("ID_Pegawai"),
+                        rs.getString("Nama_Pegawai"),
+                        rs.getString("Email"),
+                        rs.getString("Telepon")
+                    });
                 }
             }
-        } catch (SQLException e) {
-            Logger.getLogger(DataPegawai.class.getName()).log(Level.SEVERE, null, e);
-        }
+        } catch (SQLException e) { e.printStackTrace(); }
+        lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
     }
-    
+
     private void searchData() {
-        String kataKunci = txtSearch.getText();
-        
+        String key = txtSearch.getText().trim();
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
-        
-        try {
-            String sql = "SELECT id_pegawai, nama, email, telepon FROM pegawaii WHERE id_pegawai LIKE ? OR nama LIKE ? OR email LIKE ?";
-            try (PreparedStatement st = conn.prepareStatement(sql)){
-                st.setString(1, "%" + kataKunci + "%");
-                st.setString(2, "%" + kataKunci + "%");
-                st.setString(3, "%" + kataKunci + "%");
-                ResultSet rs = st.executeQuery();
-                
+
+        String sql = "SELECT ID_Pegawai, Nama_Pegawai, Email, Telepon FROM pegawai " +
+                     "WHERE ID_Pegawai LIKE ? OR Nama_Pegawai LIKE ? OR Email LIKE ? OR Telepon LIKE ?";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            String like = "%" + key + "%";
+            for (int i = 1; i <= 4; i++) st.setString(i, like);
+            try (ResultSet rs = st.executeQuery()) {
                 int no = 1;
-                
                 while (rs.next()) {
-                    String idPegawai = rs.getString("id_pegawai");
-                    String namaPegawai = rs.getString("nama");
-                    String emailPegawai = rs.getString("email");
-                    String teleponPegawai = rs.getString("telepon");
-                    
-                    Object[] rowData = {"   " + no++, idPegawai, namaPegawai, emailPegawai, teleponPegawai};
-                    model.addRow(rowData);
+                    model.addRow(new Object[]{
+                        no++,
+                        rs.getString("ID_Pegawai"),
+                        rs.getString("Nama_Pegawai"),
+                        rs.getString("Email"),
+                        rs.getString("Telepon")
+                    });
                 }
-            } 
-        } catch (SQLException e) {
-            Logger.getLogger(DataPegawai.class.getName()).log(Level.SEVERE,null,e);
-        }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        lb_halaman.setText("Ditemukan: " + model.getRowCount() + " data");
     }
-    
-    private void pilihData(){
+
+    private void pilihData() {
         int row = tblData.getSelectedRow();
-        
+        if (row == -1) return;
         idPegawai = tblData.getValueAt(row, 1).toString();
         namaPegawai = tblData.getValueAt(row, 2).toString();
         emailPegawai = tblData.getValueAt(row, 3).toString();
         teleponPegawai = tblData.getValueAt(row, 4).toString();
-        
         dispose();
     }
 }

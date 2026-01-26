@@ -1,22 +1,11 @@
 package com.perpus.jdialog;
 
+import com.perpus.config.Koneksi;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.perpus.config.Koneksi;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
+import java.awt.event.*;
+import java.sql.*;
+import javax.swing.table.*;
 
 public class DataPeminjaman extends javax.swing.JDialog {
 
@@ -24,86 +13,40 @@ public class DataPeminjaman extends javax.swing.JDialog {
     private int dataPerHalaman = 14;
     private int totalPages;
     private Connection conn;
-    
+    private String userID;
+private String userRole;
+
+    // Hanya ID Peminjaman yang diperlukan
     private String idPeminjaman;
-    private String tanggalPinjam;
-    private String tanggalKembali;
-    private String idAnggota;
-    private String namaAnggota;
-    private String idBuku;
-    private String judulBuku;
-    private String pengarangBuku;
-    private String penerbitBuku;
-    private String jumlahPinjam;
 
-    public String getIdPeminjaman() {
-        return idPeminjaman;
-    }
+    public String getIdPeminjaman() { return idPeminjaman; }
 
-    public String getTanggalPinjam() {
-        return tanggalPinjam;
-    }
+   public DataPeminjaman(java.awt.Frame parent, boolean modal, String userID, String userRole) {
+    super(parent, modal);
+    initComponents();
+    conn = Koneksi.getConnection();
+    this.userID = userID;
+    this.userRole = userRole != null ? userRole.toLowerCase() : "user";
+    setTabelModel();
+    loadData();
+    pagination();
+    actionButton();
+    setColumnWidth();
+    setLayoutForm();
+    setLocationRelativeTo(null);
+}
 
-    public String getTanggalKembali() {
-        return tanggalKembali;
-    }
-
-    public String getIdAnggota() {
-        return idAnggota;
-    }
-
-    public String getNamaAnggota() {
-        return namaAnggota;
-    }
-
-    public String getIdBuku() {
-        return idBuku;
-    }
-
-    public String getJudulBuku() {
-        return judulBuku;
-    }
-
-    public String getPengarangBuku() {
-        return pengarangBuku;
-    }
-
-    public String getPenerbitBuku() {
-        return penerbitBuku;
-    }
-
-    public String getJumlahPinjam() {
-        return jumlahPinjam;
-    }
-    
-    public DataPeminjaman(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
-        initComponents();
-        
-        conn = Koneksi.getConnection();
-        setTabelModel();
-        loadData();
-        paginationAnggota();
-        actionButton();
-        setColumnWidth();
-        setLayoutForm();
-    }
-
-    private void setLayoutForm(){
+    private void setLayoutForm() {
         iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/peminjaman.svg", 1f));
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, ""
-                + "Pencarian");
-        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON, 
-                new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Cari ID Peminjaman, Pegawai, Perangkat...");
+        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
+                new FlatSVGIcon("com/perpus/icon/search.svg", 0.8f));
     }
 
     private void setColumnWidth() {
-        TableColumnModel columnModel = tblData.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(40);
-        columnModel.getColumn(0).setMaxWidth(40);
-        columnModel.getColumn(0).setMinWidth(40);
+        TableColumnModel tcm = tblData.getColumnModel();
+        tcm.getColumn(0).setPreferredWidth(40); tcm.getColumn(0).setMaxWidth(40); tcm.getColumn(0).setMinWidth(40);
     }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -131,7 +74,7 @@ public class DataPeminjaman extends javax.swing.JDialog {
 
         lbJudul.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         lbJudul.setForeground(new java.awt.Color(102, 102, 102));
-        lbJudul.setText("Data Peminjaman Buku Perpustakaan");
+        lbJudul.setText("Data Peminjaman Perangkat");
 
         tblData.setRowHeight(100);
         jScrollPane1.setViewportView(tblData);
@@ -235,53 +178,39 @@ public class DataPeminjaman extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    public DataPeminjaman(java.awt.Frame parent, boolean modal) {
+    this(parent, modal, "USR2511001", "admin");   // ganti dengan userID & role yang kamu mau
+    // atau pakai null, null kalau kamu ingin mengetes sebagai user biasa:
+    // this(parent, modal, null, "user");
+}
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+       /* Set the Nimbus look and feel */
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DataPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DataPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DataPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DataPeminjaman.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
+    } catch (Exception ex) {
+        java.util.logging.Logger.getLogger(DataPeminjaman.class.getName())
+                .log(java.util.logging.Level.SEVERE, null, ex);
+    }
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DataPeminjaman dialog = new DataPeminjaman(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+    /* Create and display the dialog */
+    java.awt.EventQueue.invokeLater(() -> {
+        DataPeminjaman dialog = new DataPeminjaman(new javax.swing.JFrame(), true);
+        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                System.exit(0);
             }
         });
+        dialog.setVisible(true);
+    });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -300,230 +229,143 @@ public class DataPeminjaman extends javax.swing.JDialog {
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 
-    private void paginationAnggota() {
-        btn_first.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = 1;
-                loadData();
-            }
-            
-        });
-        
-        btn_before.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni > 1)
-                {
-                    halamanSaatIni--;
-                    loadData();
-                }
-            }
-            
-        });
-        
-        cbx_data.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString());
-                halamanSaatIni = 1;
-                loadData();
-            }
-            
-        });
-        
-        btn_next.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni < totalPages) {
-                    halamanSaatIni++;
-                    loadData();
-                }
-            }
-            
-        });
-        
-        btn_last.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = totalPages;
-                loadData();
-            }
-            
-        });
+   private void pagination() {
+        btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
+        btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
+        cbx_data.addActionListener(e -> { dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString()); halamanSaatIni = 1; loadData(); });
+        btn_next.addActionListener(e -> { if (halamanSaatIni < totalPages) { halamanSaatIni++; loadData(); } });
+        btn_last.addActionListener(e -> { halamanSaatIni = totalPages; loadData(); });
     }
-    
-    private void actionButton(){
-        txtSearch.addKeyListener(new KeyAdapter(){
-            @Override
-            public void keyReleased(KeyEvent e) {
+
+    // ================== AKSI TOMBOL ==================
+    private void actionButton() {
+        txtSearch.addKeyListener(new KeyAdapter() {
+            @Override public void keyReleased(KeyEvent e) {
+                halamanSaatIni = 1;
                 searchData();
             }
         });
-        
-        tblData.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                pilihData();
+
+        tblData.addMouseListener(new MouseAdapter() {
+            @Override public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) { // Double-click
+                    pilihData();
+                }
             }
         });
     }
-    
-    private int getTotalData(){
-        int totalData = 0;
-        
-        try {
-            String sql = "SELECT COUNT(*) AS total FROM peminjaman";
-            try (PreparedStatement st = conn.prepareStatement(sql)){
-                ResultSet rs = st.executeQuery();
-                if(rs.next()){
-                    totalData = rs.getInt("total");
-                }
-            } 
-        } catch (Exception e) {
-            Logger.getLogger(DataPeminjaman.class.getName()).log(Level.SEVERE,null,e);
-        }
-        
-        return totalData;
-    }
-    
-    private void calculateTotalPages(){
-        int totalData = getTotalData();
-        totalPages = (int) Math.ceil((double) totalData / dataPerHalaman );
-    }
-    
-    private void loadData() {
-        calculateTotalPages();
-        int totalData = getTotalData();
-        lb_halaman.setText(String.valueOf("Halaman "+ halamanSaatIni + " dari Total Data " + totalData));
-        
-        int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
-        getData(startIndex, dataPerHalaman,(DefaultTableModel) tblData.getModel());
-    }
-    
+
+    // ================== TABEL MODEL ==================
     private void setTabelModel() {
-        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.addColumn("  No");
-        model.addColumn("ID");
-        model.addColumn("Tanggal Pinjam");
-        model.addColumn("Tanggal Kembali");
-        model.addColumn("ID Anggota");
-        model.addColumn("Nama Anggota");
-        model.addColumn("ID Buku");
-        model.addColumn("Judul");
-        model.addColumn("Pengarang");
-        model.addColumn("Penerbit");
-        model.addColumn("Jumlah");
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override public boolean isCellEditable(int row, int column) { return false; }
+        };
+        model.setColumnIdentifiers(new Object[]{"No", "ID Peminjaman", "Tanggal Pinjam", "Tanggal Kembali", "ID Pegawai", "Nama Pegawai", "ID Perangkat", "Jenis", "Merek", "Serial"});
+        tblData.setModel(model);
     }
-    
-    public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
-        model.setRowCount(0);
 
-        try {
-            String sql = "SELECT *\n" +
-                    "FROM detail_peminjaman pmd\n" +
-                    "INNER JOIN peminjaman pm ON pm.ID_Peminjaman = pmd.ID_Peminjaman\n" +
-                    "INNER JOIN anggota agt ON agt.ID_Anggota = pm.ID_Anggota\n" +
-                    "INNER JOIN buku bk ON bk.ID_Buku = pmd.ID_Buku\n" +
-                    "INNER JOIN penerbit pnb ON pnb.ID_Penerbit = bk.ID_Penerbit\n" +
-                    "WHERE Status_Peminjaman ='Sedang dipinjam' LIMIT ?,?";
-            
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setInt(1, startIndex);
-                st.setInt(2, entriesPage);
-                ResultSet rs = st.executeQuery();
+    // ================== DATA & PAGINATION ==================
+    private int getTotalData() {
+        int total = 0;
+        String sql = "SELECT COUNT(*) FROM peminjaman WHERE Status_Peminjaman = 'Dipinjam'";
+        try (PreparedStatement st = conn.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
+            if (rs.next()) total = rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return total;
+    }
 
-                int no = startIndex + 1;
-                
-                while (rs.next()) {
-                    String idPeminjaman     = rs.getString("ID_Peminjaman");
-                    String tanggalPinjam    = rs.getString("Tanggal_Peminjaman");
-                    String tanggalKembali   = rs.getString("Tanggal_Pengembalian");
-                    String idAnggota        = rs.getString("ID_Anggota");
-                    String namaAnggota      = rs.getString("Nama_Anggota");
-                    String idBuku           = rs.getString("ID_Buku");
-                    String judulBuku        = rs.getString("Judul_Buku");
-                    String pengarangBuku    = rs.getString("Pengarang_Buku");
-                    String penerbitBuku     = rs.getString("Nama_Penerbit");
-                    String jumlahPinjam     = rs.getString("Jumlah_Pinjam");
+    private void calculateTotalPages() {
+        int total = getTotalData();
+        totalPages = (int) Math.ceil(total / (double) dataPerHalaman);
+        if (totalPages == 0) totalPages = 1;
+    }
 
-                    Object[] rowData = {"   " + no++, idPeminjaman, tanggalPinjam, tanggalKembali, idAnggota,namaAnggota,idBuku,judulBuku,pengarangBuku,penerbitBuku,jumlahPinjam};
-                    model.addRow(rowData);
-                }
+    private void loadData() {
+       calculateTotalPages();
+    int start = (halamanSaatIni - 1) * dataPerHalaman;
+    DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+    model.setRowCount(0);
+
+    String sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, " +
+                 "pg.ID_Pegawai, pg.Nama_Pegawai, pr.ID_Perangkat, pr.Jenis_Perangkat, pr.Merek, pr.No_Serial " +
+                 "FROM peminjaman p " +
+                 "JOIN pegawai pg ON p.Pegawai_ID_Pegawai = pg.ID_Pegawai " +
+                 "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman " +
+                 "JOIN perangkat pr ON dp.Perangkat_ID_Perangkat = pr.ID_Perangkat " +
+                 "WHERE p.Status_Peminjaman = 'Dipinjam'";
+
+    if (!"admin".equals(userRole)) {
+        sql += " AND p.User_ID_User = ?";
+    }
+    sql += " ORDER BY p.ID_Peminjaman DESC LIMIT ?, ?";
+
+    try (PreparedStatement st = conn.prepareStatement(sql)) {
+        int idx = 1;
+        if (!"admin".equals(userRole)) st.setString(idx++, userID);
+        st.setInt(idx++, start);
+        st.setInt(idx++, dataPerHalaman);
+
+        try (ResultSet rs = st.executeQuery()) {
+            int no = start + 1;
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    no++, rs.getString(1), rs.getString(2), rs.getString(3),
+                    rs.getString(4), rs.getString(5), rs.getString(6),
+                    rs.getString(7), rs.getString(8), rs.getString(9)
+                });
             }
-        } catch (SQLException e) {
-            Logger.getLogger(DataPeminjaman.class.getName()).log(Level.SEVERE, null, e);
         }
+    } catch (SQLException e) { e.printStackTrace(); }
+    lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
     }
-    
+
     private void searchData() {
-        String kataKunci = txtSearch.getText();
-        
+        String key = txtSearch.getText().trim();
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
-        
-        try {
-            String sql;
-            if(!kataKunci.isEmpty()){
-                sql = "SELECT * FROM detail_peminjaman pmd\n" +
-                        "INNER JOIN peminjaman pm ON pm.ID_Peminjaman = pmd.ID_Peminjaman\n" +
-                        "INNER JOIN anggota agt ON agt.ID_Anggota = pm.ID_Anggota\n" +
-                        "INNER JOIN buku bk ON bk.ID_Buku = pmd.ID_Buku\n" +
-                        "INNER JOIN penerbit pnb ON pnb.ID_Penerbit = bk.ID_Penerbit\n" +
-                        "WHERE Status_Peminjaman ='Sedang dipinjam' AND pm.ID_Peminjaman LIKE ? OR agt.Nama_Anggota LIKE ?";
-            }else{
-                sql = "SELECT * FROM detail_peminjaman pmd\n" +
-                        "INNER JOIN peminjaman pm ON pm.ID_Peminjaman = pmd.ID_Peminjaman\n" +
-                        "INNER JOIN anggota agt ON agt.ID_Anggota = pm.ID_Anggota\n" +
-                        "INNER JOIN buku bk ON bk.ID_Buku = pmd.ID_Buku\n" +
-                        "INNER JOIN penerbit pnb ON pnb.ID_Penerbit = bk.ID_Penerbit\n" +
-                        "WHERE Status_Peminjaman ='Sedang dipinjam'";
-            }
-            
-           try (PreparedStatement st = conn.prepareStatement(sql)){
-                if(!kataKunci.isEmpty()){
-                    st.setString(1, "%" + kataKunci + "%");
-                    st.setString(2, "%" + kataKunci + "%");
-                }
-                
-                ResultSet rs = st.executeQuery();
-                
+
+        String sql = "SELECT p.ID_Peminjaman, p.Tanggal_Peminjaman, p.Tanggal_Pengembalian, " +
+                     "pg.ID_Pegawai, pg.Nama_Pegawai, pr.ID_Perangkat, pr.Jenis_Perangkat, pr.Merek, pr.No_Serial " +
+                     "FROM peminjaman p " +
+                     "JOIN pegawai pg ON p.Pegawai_ID_Pegawai = pg.ID_Pegawai " +
+                     "JOIN detail_peminjaman dp ON p.ID_Peminjaman = dp.Peminjaman_ID_Peminjaman " +
+                     "JOIN perangkat pr ON dp.Perangkat_ID_Perangkat = pr.ID_Perangkat " +
+                     "WHERE p.Status_Peminjaman = 'Dipinjam' " +
+                     "AND (p.ID_Peminjaman LIKE ? OR pg.Nama_Pegawai LIKE ? OR pr.ID_Perangkat LIKE ? OR pr.Jenis_Perangkat LIKE ?)";
+
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            String like = "%" + key + "%";
+            for (int i = 1; i <= 4; i++) st.setString(i, like);
+            try (ResultSet rs = st.executeQuery()) {
+                int no = 1;
                 while (rs.next()) {
-                    String idPeminjaman     = rs.getString("ID_Peminjaman");
-                    String tanggalPinjam    = rs.getString("Tanggal_Peminjaman");
-                    String tanggalKembali   = rs.getString("Tanggal_Pengembalian");
-                    String idAnggota        = rs.getString("ID_Anggota");
-                    String namaAnggota      = rs.getString("Nama_Anggota");
-                    String idBuku           = rs.getString("ID_Buku");
-                    String judulBuku        = rs.getString("Judul_Buku");
-                    String pengarangBuku    = rs.getString("Pengarang_Buku");
-                    String penerbitBuku     = rs.getString("Nama_Penerbit");
-                    String jumlahPinjam     = rs.getString("Jumlah_Pinjam");
-
-                    Object[] rowData = {idPeminjaman, tanggalPinjam, tanggalKembali, idAnggota,namaAnggota,idBuku,judulBuku,pengarangBuku,penerbitBuku,jumlahPinjam};
-                    model.addRow(rowData);
+                    model.addRow(new Object[]{
+                        no++,
+                        rs.getString("ID_Peminjaman"),
+                        rs.getString("Tanggal_Peminjaman"),
+                        rs.getString("Tanggal_Pengembalian"),
+                        rs.getString("ID_Pegawai"),
+                        rs.getString("Nama_Pegawai"),
+                        rs.getString("ID_Perangkat"),
+                        rs.getString("Jenis_Perangkat"),
+                        rs.getString("Merek"),
+                        rs.getString("No_Serial")
+                    });
                 }
-            } 
-        } catch (SQLException e) {
-            Logger.getLogger(DataPeminjaman.class.getName()).log(Level.SEVERE,null,e);
-        }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        lb_halaman.setText("Ditemukan: " + model.getRowCount() + " peminjaman");
     }
-    
-    private void pilihData(){
-        int row = tblData.getSelectedRow();
-        
-        idPeminjaman        = tblData.getValueAt(row, 1).toString();
-        tanggalPinjam       = tblData.getValueAt(row, 2).toString();
-        tanggalKembali      = tblData.getValueAt(row, 3).toString();
-        idAnggota           = tblData.getValueAt(row, 4).toString();
-        namaAnggota         = tblData.getValueAt(row, 5).toString();
-        idBuku              = tblData.getValueAt(row, 6).toString();
-        judulBuku           = tblData.getValueAt(row, 7).toString();
-        pengarangBuku       = tblData.getValueAt(row, 8).toString();
-        penerbitBuku        = tblData.getValueAt(row, 9).toString();
-        jumlahPinjam        = tblData.getValueAt(row, 10).toString();  
 
+    // ================== PILIH DATA ==================
+    private void pilihData() {
+        int row = tblData.getSelectedRow();
+        if (row == -1) return;
+        idPeminjaman = tblData.getValueAt(row, 1).toString();
         dispose();
     }
 
+    // Variables declaration
+    
 }

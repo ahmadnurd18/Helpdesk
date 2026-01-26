@@ -1,10 +1,17 @@
 package com.perpus.main;
 
+
+import java.sql.*;
+import com.perpus.config.Koneksi;
+import javax.swing.JOptionPane;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.perpus.form.FormProfile;
-import com.perpus.form.LaporanAnggota;
-import com.perpus.form.LaporanBuku;
+
+import com.perpus.form.LaporanPerangkat;
+import com.perpus.form.LaporanPegawai;
 import com.perpus.form.LaporanPeminjaman;
+import com.perpus.form.LaporanPengguna;
+import com.perpus.form.LaporanTiket;
 import com.perpus.form.MasterPegawai;
 import com.perpus.form.MasterPerangkatIT;
 import com.perpus.form.MasterDashboard;
@@ -32,6 +39,7 @@ public class MenuUtama extends javax.swing.JFrame {
     private String userID;
     private String levelUser;
     private Timer timer;
+    private Connection conn;
     
     public MenuUtama(String userID, String namaUser, String levelUser) {
         initComponents();
@@ -39,55 +47,63 @@ public class MenuUtama extends javax.swing.JFrame {
         this.levelUser = levelUser;
         lbProfileName.setText(namaUser);
         
+        conn = Koneksi.getConnection();
+if (conn != null && "admin".equals(levelUser)) {
+    showTicketReminder();  // tampilkan pop-up jika admin
+}
+        
+        
         menu.getLevelUser(levelUser);
         menu.addEventMenuSelected(new EventMenuSelected(){
             @Override
             public void selected(int index) {
                 if(levelUser != null && levelUser.equals("admin")){
                     if (index == 0){
-                        setForm(new MasterDashboard());
+                        setForm(new MasterDashboard(userID, levelUser));
                     } else if (index == 2){
                         setForm(new MasterPegawai());
                     } else if (index == 3){
-                        setForm(new MasterKategori());
-                    } else if (index == 4){
                         setForm(new MasterPerangkatIT());
-                    } else if (index == 5){
+                    } else if (index == 4){
                         setForm(new MasterPengguna());
+                    } else if (index == 7){
+                        setForm(new TransaksiTiket(userID, levelUser));
                     } else if (index == 8){
-                        setForm(new TransaksiTiket(userID));
+                        setForm(new TransaksiPeminjaman(userID, levelUser));
                     } else if (index == 9){
-                        setForm(new TransaksiPeminjaman(userID));
-                    } else if (index == 10){
-                        setForm(new TransaksiPengembalian(userID));
+                        setForm(new TransaksiPengembalian(userID, levelUser));
+                    } else if (index == 12){
+                        setForm(new LaporanPegawai());
                     } else if (index == 13){
-                        setForm(new LaporanPeminjaman());
-                    } else if (index == 14){
-                        setForm(new LaporanAnggota());
-                    } else if (index == 15){
-                        setForm(new LaporanBuku());
+                        setForm(new LaporanTiket(userID, levelUser));
+                    }   else if (index == 14){
+                        setForm(new LaporanPeminjaman(userID, levelUser));
+                    }
+                    else if (index == 15){
+                        setForm(new LaporanPerangkat());
                     }  
+                    else if (index == 16){
+                        setForm(new LaporanPengguna());
+                    }
                 } else {
                     if(index == 0){
-                        setForm(new MasterDashboard());
+                        setForm(new MasterDashboard(userID, levelUser));
                            } else if (index == 2){
-                        setForm(new TransaksiTiket(userID));
+                        setForm(new TransaksiTiket(userID, levelUser));
                     } else if (index == 3){
-                        setForm(new TransaksiPeminjaman(userID));
-                    } else if (index == 3){
-                        setForm(new TransaksiPengembalian(userID));
-                    } else if (index == 6){
-                        setForm(new LaporanPeminjaman());
+                        setForm(new TransaksiPeminjaman(userID, levelUser));
+                    } else if (index == 4){
+                        setForm(new TransaksiPengembalian(userID, levelUser));
                     } else if (index == 7){
-                        setForm(new LaporanAnggota());
+                        setForm(new LaporanPeminjaman(userID, levelUser));
                     } else if (index == 8){
-                        setForm(new LaporanBuku());
-                    }
+                        setForm(new LaporanTiket(userID, levelUser));
+                    } 
                 }
             }
         });
         
-        setForm(new MasterDashboard());
+        setForm(new MasterDashboard(userID, levelUser));
         setLayoutForm();
         setDate();
     }
@@ -108,7 +124,7 @@ public class MenuUtama extends javax.swing.JFrame {
     }
     
     private void setLayoutForm(){
-        setIconImage(new ImageIcon(getClass().getResource("/com/perpus/icon/LogoITHelpdesk.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/com/perpus/icon/Logomtt.png")).getImage());
         btnProfile.setIcon(new FlatSVGIcon("com/perpus/icon/petugas_white.svg", 1f));
     }
     
@@ -133,6 +149,35 @@ public class MenuUtama extends javax.swing.JFrame {
         timer.start();
     }
     
+    private void showTicketReminder() {
+    int count = 0;
+    try {
+        String sql = "SELECT COUNT(*) AS total " +
+                     "FROM tiket " +
+                     "WHERE Status_Tiket = 'ON PROGRESS' " +
+                     "AND EndDate IS NOT NULL " +
+                     "AND EndDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)";
+        PreparedStatement st = conn.prepareStatement(sql);
+        ResultSet rs = st.executeQuery();
+        if (rs.next()) {
+            count = rs.getInt("total");
+        }
+        rs.close();
+        st.close();
+    } catch (SQLException e) {
+        // Optional: log error tanpa ganggu user
+        System.err.println("Error cek reminder tiket: " + e.getMessage());
+        return;  // jika error, jangan tampilkan pop-up
+    }
+
+    if (count > 0) {
+        JOptionPane.showMessageDialog(this,
+            "Terdapat " + count + " tiket on progress yang harus diselesaikan dalam 7 hari",
+            "Reminder Tiket Deadline",
+            JOptionPane.WARNING_MESSAGE);
+    }
+}
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -148,6 +193,7 @@ public class MenuUtama extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         main.setBackground(new java.awt.Color(255, 255, 255));
+        main.setPreferredSize(new java.awt.Dimension(1339, 722));
 
         lbDate.setFont(new java.awt.Font("SansSerif", 0, 10)); // NOI18N
         lbDate.setForeground(new java.awt.Color(102, 102, 102));
@@ -170,7 +216,7 @@ public class MenuUtama extends javax.swing.JFrame {
         headerLayout.setHorizontalGroup(
             headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, headerLayout.createSequentialGroup()
-                .addContainerGap(772, Short.MAX_VALUE)
+                .addContainerGap(883, Short.MAX_VALUE)
                 .addGroup(headerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lbProfileName, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lbDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -213,19 +259,19 @@ public class MenuUtama extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addComponent(menu, javax.swing.GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
+            .addComponent(menu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(main, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(main, javax.swing.GroupLayout.DEFAULT_SIZE, 1450, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(main, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(main, javax.swing.GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
         );
 

@@ -161,7 +161,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Laporan Peminjaman Perangkat"/>
+                <Property name="text" type="java.lang.String" value="Laporan Tiket Helpdesk"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
@@ -172,7 +172,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Laporan &gt; Peminjaman"/>
+                <Property name="text" type="java.lang.String" value="Laporan &gt; Tiket"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="iconDashboard">

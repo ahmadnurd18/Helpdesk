@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="LaporanPerangkat" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="adacc514-bdeb-419d-b92f-ab08e4083dd7">
+	<property name="ireport.zoom" value="1.3310000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT 
+    ID_Perangkat, 
+    Jenis_Perangkat, 
+    Merek, 
+    No_Serial, 
+    Model_Perangkat, 
+    status 
+FROM perangkat 
+ORDER BY ID_Perangkat ASC]]>
+	</queryString>
+	<field name="ID_Perangkat" class="java.lang.String"/>
+	<field name="Jenis_Perangkat" class="java.lang.String"/>
+	<field name="Merek" class="java.lang.String"/>
+	<field name="No_Serial" class="java.lang.String"/>
+	<field name="Model_Perangkat" class="java.lang.String"/>
+	<field name="status" class="java.lang.String"/>
+	<title>
+		<band height="72">
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="-20" width="843" height="92" backcolor="#009999" uuid="7271291f-668c-48c4-9a89-344b56f95343"/>
+				<image scaleImage="RetainShape" hAlign="Left" vAlign="Middle">
+					<reportElement x="0" y="0" width="143" height="91" uuid="24ec31fc-7f53-4f02-9899-434c1b0535e1"/>
+					<box leftPadding="14"/>
+					<imageExpression><![CDATA["../icon/Logobigmtt.png"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="143" y="47" width="679" height="44" forecolor="#FFFFFF" uuid="4291d5d8-1eea-4aa0-a84a-ed765a54cfd6"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10"/>
+					</textElement>
+					<text><![CDATA[Rukan Mahkota Ancol Blok D No. 12 Jl. RE. Martadinata, Ancol Jakarta Utara 14420 DKI Jakarta]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="143" y="0" width="679" height="47" forecolor="#FFFFFF" uuid="7082f82f-9fe3-4d13-b26e-a6eefa860c01"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="26" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Laporan Perangkat IT]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="30">
+			<staticText>
+				<reportElement x="0" y="5" width="50" height="20" uuid="d1425c0f-51d4-4f7e-99e3-b4f7b8a390a9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[NO :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="55" y="5" width="300" height="20" uuid="6152c71d-3ca9-408f-b2cc-c3dffd1595fe"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["REP/PRK/" +
+(new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("01") ? "I" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("02") ? "II" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("03") ? "III" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("04") ? "IV" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("05") ? "V" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("06") ? "VI" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("07") ? "VII" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("08") ? "VIII" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("09") ? "IX" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("10") ? "X" :
+ new java.text.SimpleDateFormat("MM").format(new java.util.Date()).equals("11") ? "XI" : "XII") +
+"/" + new java.text.SimpleDateFormat("yyyy").format(new java.util.Date()) +
+"/MTT/" + String.format("%04d", $V{REPORT_COUNT} != null ? $V{REPORT_COUNT} : 1)]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="120" height="29" forecolor="#009999" backcolor="#E6E6E6" uuid="cfb920cd-64fb-4bff-a240-80c3531decf5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ID Perangkat]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="120" y="0" width="150" height="29" forecolor="#009999" backcolor="#E6E6E6" uuid="c89be69f-27ee-4f95-9b08-bc1d8db6775e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Jenis Perangkat]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="270" y="0" width="150" height="29" forecolor="#009999" backcolor="#E6E6E6" uuid="52b18e9e-e6c9-4c45-8dd0-5434d7263d13"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Merek]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="420" y="0" width="150" height="29" forecolor="#009999" backcolor="#E6E6E6" uuid="a53fd065-2ba1-4271-b63c-f6e58c78ee80"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No Serial]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="570" y="0" width="150" height="29" forecolor="#009999" backcolor="#E6E6E6" uuid="117a674e-2e51-4a1f-829a-bdfba4a18565"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Model]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="720" y="0" width="82" height="29" forecolor="#009999" backcolor="#E6E6E6" uuid="49f312d8-9f77-4a4c-ba68-8ed678b1b5a7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Status]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25">
+			<textField>
+				<reportElement x="0" y="0" width="120" height="25" uuid="3d9c2064-4b43-45be-b5e6-b1b6ea10510f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ID_Perangkat}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="0" width="150" height="25" uuid="5a4ec4fe-db32-4411-957a-10cc17ab52da"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Jenis_Perangkat}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="270" y="0" width="150" height="25" uuid="b038180a-e968-420f-b1f0-2f3e1dac509b"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Merek}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="0" width="150" height="25" uuid="fbf79f59-6d0d-4311-a01f-5180379364af"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{No_Serial}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="570" y="0" width="150" height="25" uuid="a6bd8172-68dc-40a9-a2b9-648dcff45caf"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Model_Perangkat}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="720" y="0" width="82" height="25" uuid="2a85e66c-87c1-4a95-a6d8-932656ecf07f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="24" width="802" height="1" uuid="b57e4b33-6a90-4d8f-a1fd-be83a7c457fb"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#CCCCCC"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="17">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="4" width="762" height="13" backcolor="#E6E6E6" uuid="8b953610-9a3e-4d31-a8b3-f1c4a78c483f"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement mode="Opaque" x="762" y="4" width="40" height="13" backcolor="#E6E6E6" uuid="8173a3de-0566-4014-ae63-15b756a83c3b"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="4" width="100" height="13" uuid="4eda50cb-b7ff-4c4c-be7a-f60bc02a6291"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="117">
+			<staticText>
+				<reportElement x="600" y="10" width="40" height="20" uuid="d4df997b-e95c-48d2-aa24-ec641ec689e3"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Tegal, ]]></text>
+			</staticText>
+			<textField pattern="d MMMM yyyy">
+				<reportElement x="640" y="10" width="150" height="20" uuid="b56d2db8-9fa7-4208-81db-575056e9cc90"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="620" y="30" width="150" height="20" uuid="b50b737a-3d86-4857-82d9-c60eb98aee6d"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Martin Marta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="620" y="93" width="150" height="20" uuid="09c50518-2139-40f4-8c63-c9af2e7d96c2"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Direktur Perusahaan]]></text>
+			</staticText>
+		</band>
+	</lastPageFooter>
+</jasperReport>

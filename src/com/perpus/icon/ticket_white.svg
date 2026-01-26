@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFFFFF">
+  <!-- Ticket icon yang sudah di-scale dan di-center agar sama besar dengan peminjaman_white.svg -->
+  <path d="M19 4H5c-1.1 0-2 .9-2 2v3c1.1 0 2 .9 2 2s-.9 2-2 2v3c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-3c-1.1 0-2-.9-2-2s.9-2 2-2V6c0-1.1-.9-2-2-2z
+       M12 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+</svg>

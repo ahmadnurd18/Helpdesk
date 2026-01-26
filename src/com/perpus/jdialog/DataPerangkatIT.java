@@ -3,78 +3,75 @@ package com.perpus.jdialog;
 import com.perpus.config.Koneksi;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 public class DataPerangkatIT extends javax.swing.JDialog {
-
     private int halamanSaatIni = 1;
     private int dataPerHalaman = 14;
     private int totalPages;
     private Connection conn;
-
     private String idPerangkat;
-    private String namaPerangkat;
-    private String kondisi;
-    private String status;
+    private String userRole;
+    private String userIdPegawai; // ID_Pegawai dari pegawai yang sedang meminjam
 
-    public String getIdPerangkat() {
-        return idPerangkat;
-    }
+    public String getIdPerangkat() { return idPerangkat; }
 
-    public String getNamaPerangkat() {
-        return namaPerangkat;
-    }
-
-    public String getKondisi() {
-        return kondisi;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public DataPerangkatIT(java.awt.Frame parent, boolean modal) {
+    public DataPerangkatIT(java.awt.Frame parent, boolean modal, String role, String idPegawaiLogin) {
         super(parent, modal);
         initComponents();
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pencarian");
         conn = Koneksi.getConnection();
+        this.userRole = role != null ? role : "user";
+        this.userIdPegawai = idPegawaiLogin;
         setTabelModel();
         loadData();
-        paginationAnggota();
+        pagination();
         actionButton();
         setColumnWidth();
         setLayoutForm();
+        setLocationRelativeTo(null);
+        applyRowColor(); // tambahkan warna baris
     }
 
     private void setLayoutForm() {
         iconJudul.setIcon(new FlatSVGIcon("com/perpus/icon/device.svg", 1f));
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Pencarian Perangkat IT");
-        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON, 
-                new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Cari ID, Jenis, Merek, Serial...");
+        txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
+                new FlatSVGIcon("com/perpus/icon/search.svg", 0.8f));
     }
 
     private void setColumnWidth() {
-        TableColumnModel columnModel = tblData.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(40);
-        columnModel.getColumn(0).setMaxWidth(40);
-        columnModel.getColumn(0).setMinWidth(40);
+        TableColumnModel tcm = tblData.getColumnModel();
+        tcm.getColumn(0).setPreferredWidth(40); tcm.getColumn(0).setMaxWidth(40); tcm.getColumn(0).setMinWidth(40);
+        tcm.getColumn(6).setPreferredWidth(120); // kolom Status
     }
 
+    private void applyRowColor() {
+      tblData.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (!isSelected) {
+                    String status = (String) table.getValueAt(row, 6);
+                    if ("Sedang Dipinjam".equals(status)) {
+                        c.setBackground(new Color(255, 220, 220)); // merah muda
+                    } else if ("Dipinjam (Anda)".equals(status)) {
+                        c.setBackground(new Color(220, 255, 220)); // hijau muda
+                    } else { // Tersedia atau lainnya
+                        c.setBackground(table.getBackground()); // putih/default
+                    }
+                    c.setForeground(Color.BLACK);
+                }
+                return c;
+            }
+        });
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -102,7 +99,7 @@ public class DataPerangkatIT extends javax.swing.JDialog {
 
         lbJudul.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         lbJudul.setForeground(new java.awt.Color(102, 102, 102));
-        lbJudul.setText("Data Perangkat It");
+        lbJudul.setText("Data Perangkat");
 
         tblData.setRowHeight(30);
         jScrollPane1.setViewportView(tblData);
@@ -206,28 +203,34 @@ public class DataPerangkatIT extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    public static void main(String args[]) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DataPerangkatIT.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        java.awt.EventQueue.invokeLater(() -> {
-            DataPerangkatIT dialog = new DataPerangkatIT(new javax.swing.JFrame(), true);
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
-        });
+    
+public DataPerangkatIT(java.awt.Frame parent, boolean modal) {
+        this(parent, modal, "admin", null); // default ke admin saat testing
     }
+    public static void main(String args[]) {
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
+            }
+        }
+    } catch (Exception ex) {
+        java.util.logging.Logger.getLogger(DataPerangkatIT.class.getName()).log(
+            java.util.logging.Level.SEVERE, null, ex);
+    }
+
+    java.awt.EventQueue.invokeLater(() -> {
+        DataPerangkatIT dialog = new DataPerangkatIT(new javax.swing.JFrame(), true);
+        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        dialog.setVisible(true);
+    });
+}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_before;
@@ -245,197 +248,192 @@ public class DataPerangkatIT extends javax.swing.JDialog {
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 
-   private void paginationAnggota() {
-        btn_first.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = 1;
-                loadData();
-            }
-        });
-
-        btn_before.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni > 1) {
-                    halamanSaatIni--;
-                    loadData();
-                }
-            }
-        });
-
-        cbx_data.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString());
-                halamanSaatIni = 1;
-                loadData();
-            }
-        });
-
-        btn_next.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni < totalPages) {
-                    halamanSaatIni++;
-                    loadData();
-                }
-            }
-        });
-
-        btn_last.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = totalPages;
-                loadData();
-            }
-        });
+ private void pagination() {
+        btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
+        btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
+        cbx_data.addActionListener(e -> { dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString()); halamanSaatIni = 1; loadData(); });
+        btn_next.addActionListener(e -> { if (halamanSaatIni < totalPages) { halamanSaatIni++; loadData(); } });
+        btn_last.addActionListener(e -> { halamanSaatIni = totalPages; loadData(); });
     }
 
+    // ================== AKSI TOMBOL ==================
     private void actionButton() {
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
+                halamanSaatIni = 1;
                 searchData();
             }
         });
-
         tblData.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                pilihData();
+                if (e.getClickCount() == 2) { // Double-click
+                    pilihData();
+                }
             }
         });
     }
 
-    private int getTotalData() {
-        int totalData = 0;
-        try {
-            String sql = "SELECT COUNT(*) AS total FROM perangkat_it";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                ResultSet rs = st.executeQuery();
-                if (rs.next()) {
-                    totalData = rs.getInt("total");
-                }
+    // ================== TABEL MODEL ==================
+    private void setTabelModel() {
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
             }
-        } catch (Exception e) {
-            Logger.getLogger(DataPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
+        };
+        model.setColumnIdentifiers(new Object[]{
+            "No", "ID Perangkat", "Jenis", "Merek", "Serial", "Model", "Status"
+        });
+        tblData.setModel(model);
+    }
+
+    // ================== DATA & PAGINATION ==================
+    private int getTotalData() {
+        String sql;
+        if ("admin".equalsIgnoreCase(userRole)) {
+            sql = "SELECT COUNT(*) FROM perangkat";
+        } else {
+            sql = "SELECT COUNT(DISTINCT p.ID_Perangkat) FROM perangkat p " +
+                  "LEFT JOIN detail_peminjaman dp ON p.ID_Perangkat = dp.Perangkat_ID_Perangkat " +
+                  "LEFT JOIN peminjaman pm ON dp.Peminjaman_ID_Peminjaman = pm.ID_Peminjaman AND pm.Status_Peminjaman = 'Dipinjam' " +
+                  "WHERE dp.Peminjaman_ID_Peminjaman IS NULL OR pm.Pegawai_ID_Pegawai = ?";
         }
-        return totalData;
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            if (!"admin".equalsIgnoreCase(userRole)) {
+                st.setString(1, userIdPegawai);
+            }
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     private void calculateTotalPages() {
-        int totalData = getTotalData();
-        totalPages = (int) Math.ceil((double) totalData / dataPerHalaman);
+        int total = getTotalData();
+        totalPages = (int) Math.ceil(total / (double) dataPerHalaman);
+        if (totalPages == 0) totalPages = 1;
     }
 
     private void loadData() {
-        calculateTotalPages();
-        int totalData = getTotalData();
-        lb_halaman.setText(String.valueOf("Halaman " + halamanSaatIni + " dari Total Data " + totalData));
-
-        int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
-        getData(startIndex, dataPerHalaman, (DefaultTableModel) tblData.getModel());
-    }
-
-    private void setTabelModel() {
+       calculateTotalPages();
+        int start = (halamanSaatIni - 1) * dataPerHalaman;
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.addColumn("  No");
-        model.addColumn("ID Perangkat");
-        model.addColumn("Nama Perangkat");
-        model.addColumn("Jenis Perangkat");
-        model.addColumn("Merek");
-        model.addColumn("Model");
-        model.addColumn("Serial Number");
-        model.addColumn("Tanggal Pembelian");
-        model.addColumn("Kondisi");
-        model.addColumn("Status");
-    }
-
-    public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
         model.setRowCount(0);
 
-        try {
-            String sql = "SELECT id_perangkat, nama_perangkat, jenis_perangkat, merek, model, serial_number, " +
-                         "tanggal_pembelian, kondisi, status FROM perangkat_it ORDER BY id_perangkat ASC LIMIT ?, ?";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setInt(1, startIndex);
-                st.setInt(2, entriesPage);
-                ResultSet rs = st.executeQuery();
+        String sql;
+        if ("admin".equalsIgnoreCase(userRole)) {
+            sql = "SELECT ID_Perangkat, Jenis_Perangkat, Merek, No_Serial, Model_Perangkat, status AS status_display "
+                + "FROM perangkat ORDER BY ID_Perangkat LIMIT ?, ?";
+        } else {
+            sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat, "
+                + "CASE "
+                + "WHEN p.status = 'Dipinjam' AND EXISTS ("
+                + "  SELECT 1 FROM detail_peminjaman dp JOIN peminjaman pm "
+                + "  ON dp.Peminjaman_ID_Peminjaman = pm.ID_Peminjaman "
+                + "  WHERE dp.Perangkat_ID_Perangkat = p.ID_Perangkat AND pm.Pegawai_ID_Pegawai = ? AND pm.Status_Peminjaman = 'Dipinjam'"
+                + ") THEN 'Dipinjam (Anda)' "
+                + "WHEN p.status = 'Dipinjam' THEN 'Sedang Dipinjam' "
+                + "ELSE 'Tersedia' END AS status_display "
+                + "FROM perangkat p ORDER BY p.ID_Perangkat LIMIT ?, ?";
+        }
 
-                int no = startIndex + 1;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            int idx = 1;
+            if (!"admin".equalsIgnoreCase(userRole)) {
+                st.setString(idx++, userIdPegawai);
+            }
+            st.setInt(idx++, start);
+            st.setInt(idx++, dataPerHalaman);
+            try (ResultSet rs = st.executeQuery()) {
+                int no = start + 1;
                 while (rs.next()) {
-                    String idPerangkat = rs.getString("id_perangkat");
-                    String namaPerangkat = rs.getString("nama_perangkat");
-                    String jenisPerangkat = rs.getString("jenis_perangkat");
-                    String merek = rs.getString("merek") != null ? rs.getString("merek") : "";
-                    String model_perangkat = rs.getString("model") != null ? rs.getString("model") : "";
-                    String serialNumber = rs.getString("serial_number") != null ? rs.getString("serial_number") : "";
-                    String tanggalPembelian = rs.getString("tanggal_pembelian") != null ? sdf.format(rs.getDate("tanggal_pembelian")) : "";
-                    String kondisi = rs.getString("kondisi") != null ? rs.getString("kondisi") : "Baru";
-                    String status = rs.getString("status") != null ? rs.getString("status") : "Tersedia";
-
-                    Object[] rowData = {
-                        "   " + no++, idPerangkat, namaPerangkat, jenisPerangkat, merek, model_perangkat, serialNumber,
-                        tanggalPembelian, kondisi, status
-                    };
-                    model.addRow(rowData);
+                    model.addRow(new Object[]{
+                        no++,
+                        rs.getString("ID_Perangkat"),
+                        rs.getString("Jenis_Perangkat"),
+                        rs.getString("Merek"),
+                        rs.getString("No_Serial"),
+                        rs.getString("Model_Perangkat"),
+                        rs.getString("status_display")
+                    });
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(DataPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
+        lb_halaman.setText("Halaman " + halamanSaatIni + " dari " + totalPages);
     }
 
     private void searchData() {
-        String kataKunci = txtSearch.getText();
-
+        String key = txtSearch.getText().trim();
+        if (key.isEmpty()) {
+            loadData();
+            return;
+        }
         DefaultTableModel model = (DefaultTableModel) tblData.getModel();
         model.setRowCount(0);
 
-        try {
-            String sql = "SELECT id_perangkat, nama_perangkat, jenis_perangkat, merek, model, serial_number, " +
-                         "tanggal_pembelian, kondisi, status FROM perangkat_it " +
-                         "WHERE nama_perangkat LIKE ? OR id_perangkat LIKE ?";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, "%" + kataKunci + "%");
-                st.setString(2, "%" + kataKunci + "%");
-                ResultSet rs = st.executeQuery();
+        String sql;
+        String like = "%" + key + "%";
+        if ("admin".equalsIgnoreCase(userRole)) {
+            sql = "SELECT ID_Perangkat, Jenis_Perangkat, Merek, No_Serial, Model_Perangkat, status AS status_display "
+                + "FROM perangkat "
+                + "WHERE ID_Perangkat LIKE ? OR Jenis_Perangkat LIKE ? OR Merek LIKE ? OR No_Serial LIKE ? OR Model_Perangkat LIKE ? "
+                + "ORDER BY ID_Perangkat";
+        } else {
+            sql = "SELECT p.ID_Perangkat, p.Jenis_Perangkat, p.Merek, p.No_Serial, p.Model_Perangkat, "
+                + "CASE "
+                + "WHEN p.status = 'Dipinjam' AND EXISTS ("
+                + "  SELECT 1 FROM detail_peminjaman dp JOIN peminjaman pm "
+                + "  ON dp.Peminjaman_ID_Peminjaman = pm.ID_Peminjaman "
+                + "  WHERE dp.Perangkat_ID_Perangkat = p.ID_Perangkat AND pm.Pegawai_ID_Pegawai = ? AND pm.Status_Peminjaman = 'Dipinjam'"
+                + ") THEN 'Dipinjam (Anda)' "
+                + "WHEN p.status = 'Dipinjam' THEN 'Sedang Dipinjam' "
+                + "ELSE 'Tersedia' END AS status_display "
+                + "FROM perangkat p "
+                + "WHERE p.ID_Perangkat LIKE ? OR p.Jenis_Perangkat LIKE ? OR p.Merek LIKE ? OR p.No_Serial LIKE ? OR p.Model_Perangkat LIKE ? "
+                + "ORDER BY p.ID_Perangkat";
+        }
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            int idx = 1;
+            st.setString(idx++, like);
+            st.setString(idx++, like);
+            st.setString(idx++, like);
+            st.setString(idx++, like);
+            st.setString(idx++, like);
+            if (!"admin".equalsIgnoreCase(userRole)) {
+                st.setString(idx++, userIdPegawai);
+            }
+            try (ResultSet rs = st.executeQuery()) {
+                int no = 1;
                 while (rs.next()) {
-                    String idPerangkat = rs.getString("id_perangkat");
-                    String namaPerangkat = rs.getString("nama_perangkat");
-                    String jenisPerangkat = rs.getString("jenis_perangkat");
-                    String merek = rs.getString("merek") != null ? rs.getString("merek") : "";
-                    String model_perangkat = rs.getString("model") != null ? rs.getString("model") : "";
-                    String serialNumber = rs.getString("serial_number") != null ? rs.getString("serial_number") : "";
-                    String tanggalPembelian = rs.getString("tanggal_pembelian") != null ? sdf.format(rs.getDate("tanggal_pembelian")) : "";
-                    String kondisi = rs.getString("kondisi") != null ? rs.getString("kondisi") : "Baru";
-                    String status = rs.getString("status") != null ? rs.getString("status") : "Tersedia";
-
-                    Object[] rowData = {
-                        idPerangkat, namaPerangkat, jenisPerangkat, merek, model_perangkat, serialNumber,
-                        tanggalPembelian, kondisi, status
-                    };
-                    model.addRow(rowData);
+                    model.addRow(new Object[]{
+                        no++,
+                        rs.getString("ID_Perangkat"),
+                        rs.getString("Jenis_Perangkat"),
+                        rs.getString("Merek"),
+                        rs.getString("No_Serial"),
+                        rs.getString("Model_Perangkat"),
+                        rs.getString("status_display")
+                    });
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(DataPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
+        lb_halaman.setText("Ditemukan: " + model.getRowCount() + " perangkat");
     }
 
+    // ================== PILIH DATA ==================
     private void pilihData() {
         int row = tblData.getSelectedRow();
-
-        idPerangkat = tblData.getValueAt(row, 1).toString(); // ID Perangkat (kolom 1)
-        namaPerangkat = tblData.getValueAt(row, 2).toString(); // Nama Perangkat (kolom 2)
-        kondisi = tblData.getValueAt(row, 8).toString(); // Kondisi (kolom 8)
-        status = tblData.getValueAt(row, 9).toString(); // Status (kolom 9)
-
+        if (row == -1) return;
+        idPerangkat = tblData.getValueAt(row, 1).toString();
         dispose();
     }}

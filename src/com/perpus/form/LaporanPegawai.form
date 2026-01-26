@@ -70,7 +70,7 @@
                               <Component id="iconJudul" min="-2" pref="30" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="617" max="32767" attributes="0"/>
+                              <EmptySpace pref="626" max="32767" attributes="0"/>
                               <Component id="iconDashboard" min="-2" pref="30" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
@@ -123,7 +123,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Laporan Anggota Perpustakaan"/>
+                <Property name="text" type="java.lang.String" value="Laporan Pegawai Perusahaan"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
@@ -134,7 +134,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="66" green="66" red="66" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Laporan &gt; Anggota"/>
+                <Property name="text" type="java.lang.String" value="Laporan &gt; Pegawai"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="iconDashboard">

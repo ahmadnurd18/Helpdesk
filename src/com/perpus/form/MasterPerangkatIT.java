@@ -6,25 +6,15 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 public class MasterPerangkatIT extends javax.swing.JPanel {
-
     private int halamanSaatIni = 1;
     private int dataPerHalaman = 14;
     private int totalPages;
@@ -34,7 +24,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         initComponents();
         conn = Koneksi.getConnection();
         if (conn == null) {
-            JOptionPane.showMessageDialog(this, "Koneksi database gagal. Periksa konfigurasi Koneksi.java.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Koneksi database gagal.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         setTabelModel();
@@ -43,22 +33,19 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         actionButton();
         setColumnWidth();
         setLayoutForm();
+        txtID.setText(setIDPerangkat());
     }
 
     private void setColumnWidth() {
         TableColumnModel columnModel = tblData.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(40); // No
+        columnModel.getColumn(0).setPreferredWidth(40);
         columnModel.getColumn(0).setMaxWidth(40);
         columnModel.getColumn(0).setMinWidth(40);
-        columnModel.getColumn(1).setPreferredWidth(100); // ID Perangkat
-        columnModel.getColumn(2).setPreferredWidth(150); // Nama Perangkat
-        columnModel.getColumn(3).setPreferredWidth(100); // Jenis Perangkat
-        columnModel.getColumn(4).setPreferredWidth(100); // Merek
-        columnModel.getColumn(5).setPreferredWidth(150); // Model
-        columnModel.getColumn(6).setPreferredWidth(120); // Serial Number
-        columnModel.getColumn(7).setPreferredWidth(100); // Tanggal Pembelian
-        columnModel.getColumn(8).setPreferredWidth(80); // Kondisi
-        columnModel.getColumn(9).setPreferredWidth(80); // Status
+        columnModel.getColumn(1).setPreferredWidth(100); // ID
+        columnModel.getColumn(2).setPreferredWidth(120); // Jenis
+        columnModel.getColumn(3).setPreferredWidth(100); // Merek
+        columnModel.getColumn(4).setPreferredWidth(150); // Model
+        columnModel.getColumn(5).setPreferredWidth(120); // No Serial
     }
 
     private void setLayoutForm() {
@@ -71,37 +58,18 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         btnCancel.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
         btnSave.setIcon(new FlatSVGIcon("com/perpus/icon/save_white.svg", 1f));
         btnCancel2.setIcon(new FlatSVGIcon("com/perpus/icon/cancel_white.svg", 1f));
-
         txtSearch.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
                 new FlatSVGIcon("com/perpus/icon/search.svg", 0.80f));
-
         txtID.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
-        txtNamaPerangkat.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
         txtMerek.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
         txtModel.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
-        txtSerialNumber.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
-
-        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Cari nama, merek, atau serial number");
+        txtNoSerial.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
+        txtSearch.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Cari merek, model, atau no serial");
         txtID.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ID Perangkat");
-        txtNamaPerangkat.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Nama Perangkat");
         txtMerek.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Merek");
         txtModel.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Model");
-        txtSerialNumber.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan Serial Number");
-
-        cboJenis.setForeground(new Color(153, 153, 153));
-        cboJenis.addActionListener(e -> {
-            cboJenis.setForeground(cboJenis.getSelectedItem().equals("Laptop") ? new Color(153, 153, 153) : new Color(0, 0, 0));
-        });
-
-        cboKondisi.setForeground(new Color(153, 153, 153));
-        cboKondisi.addActionListener(e -> {
-            cboKondisi.setForeground(cboKondisi.getSelectedItem().equals("Baru") ? new Color(153, 153, 153) : new Color(0, 0, 0));
-        });
-
-        cboStatus.setForeground(new Color(153, 153, 153));
-        cboStatus.addActionListener(e -> {
-            cboStatus.setForeground(cboStatus.getSelectedItem().equals("Tersedia") ? new Color(153, 153, 153) : new Color(0, 0, 0));
-        });
+        txtNoSerial.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Masukkan No Serial");
+       txtJenisPerangkat.putClientProperty(FlatClientProperties.TEXT_FIELD_SHOW_CLEAR_BUTTON, true);
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -137,21 +105,13 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         jLabel9 = new javax.swing.JLabel();
         txtID = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        txtNamaPerangkat = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
+        txtJenisPerangkat = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         txtMerek = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        cboJenis = new javax.swing.JComboBox<>();
-        DatePembelian = new com.toedter.calendar.JDateChooser();
-        jLabel16 = new javax.swing.JLabel();
-        cboKondisi = new javax.swing.JComboBox<>();
-        jLabel17 = new javax.swing.JLabel();
-        cboStatus = new javax.swing.JComboBox<>();
         txtModel = new javax.swing.JTextField();
-        txtSerialNumber = new javax.swing.JTextField();
+        txtNoSerial = new javax.swing.JTextField();
         btnCancel2 = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
 
@@ -230,6 +190,11 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         btnDelete.setText("HAPUS");
 
         tblData.setRowHeight(100);
+        tblData.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblDataMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblData);
 
         btnCancel.setText("BATAL");
@@ -251,7 +216,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
                         .addComponent(iconJudul, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 566, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 675, Short.MAX_VALUE)
                         .addComponent(iconDashboard, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2))
@@ -288,7 +253,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -322,11 +287,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
 
         jLabel10.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel10.setText("Nama Perangkat");
-
-        jLabel11.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel11.setText("Jenis Perangkat");
+        jLabel10.setText("Jenis Perangkat");
 
         jLabel12.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(102, 102, 102));
@@ -340,23 +301,11 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         jLabel14.setForeground(new java.awt.Color(102, 102, 102));
         jLabel14.setText("Nomor Seri");
 
-        jLabel15.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel15.setText("Tanggal Pembelian");
-
-        cboJenis.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Laptop", "Printer", "Switch", "Monitor", "Lainnya" }));
-
-        jLabel16.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        jLabel16.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel16.setText("Kondisi");
-
-        cboKondisi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Baru", "Rusak", "Bekas" }));
-
-        jLabel17.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-        jLabel17.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel17.setText("Status");
-
-        cboStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tersedia", "Dipinjam", "Rusak" }));
+        txtModel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtModelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -369,28 +318,17 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
                             .addComponent(jLabel10)
-                            .addComponent(jLabel11)
                             .addComponent(jLabel12)
                             .addComponent(jLabel14)
-                            .addComponent(jLabel13)
-                            .addComponent(jLabel15))
-                        .addGap(548, 778, Short.MAX_VALUE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel16)
-                            .addComponent(jLabel17))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel13))
+                        .addGap(567, 797, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cboKondisi, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(DatePembelian, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cboJenis, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtMerek)
-                            .addComponent(txtNamaPerangkat)
-                            .addComponent(txtID)
-                            .addComponent(cboStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtModel, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtSerialNumber, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtNoSerial, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtModel, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtMerek, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtJenisPerangkat, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtID, javax.swing.GroupLayout.Alignment.LEADING))
                         .addContainerGap())))
         );
         jPanel4Layout.setVerticalGroup(
@@ -403,12 +341,8 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtNamaPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
-                .addComponent(cboJenis, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(txtJenisPerangkat, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(txtMerek, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -419,20 +353,8 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(7, 7, 7)
-                .addComponent(txtSerialNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(DatePembelian, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cboKondisi, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cboStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8))
+                .addComponent(txtNoSerial, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         btnCancel2.setText("BATAL");
@@ -479,7 +401,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
                     .addComponent(btnCancel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(153, Short.MAX_VALUE))
+                .addContainerGap(502, Short.MAX_VALUE))
         );
 
         jScrollPane2.setViewportView(jPanel1);
@@ -488,13 +410,11 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         panelAdd.setLayout(panelAddLayout);
         panelAddLayout.setHorizontalGroup(
             panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1024, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1133, Short.MAX_VALUE)
         );
         panelAddLayout.setVerticalGroup(
             panelAddLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelAddLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 893, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 575, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         panelMain.add(panelAdd, "card2");
@@ -506,9 +426,17 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         searchData();
     }//GEN-LAST:event_txtSearchKeyReleased
 
+    private void txtModelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtModelActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtModelActionPerformed
+
+    private void tblDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDataMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblDataMouseClicked
+
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.toedter.calendar.JDateChooser DatePembelian;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnCancel2;
@@ -518,9 +446,6 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
     private javax.swing.JButton btn_first;
     private javax.swing.JButton btn_last;
     private javax.swing.JButton btn_next;
-    private javax.swing.JComboBox<String> cboJenis;
-    private javax.swing.JComboBox<String> cboKondisi;
-    private javax.swing.JComboBox<String> cboStatus;
     private javax.swing.JComboBox<String> cbx_data;
     private javax.swing.JLabel iconDashboard;
     private javax.swing.JLabel iconDashboard2;
@@ -528,13 +453,9 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
     private javax.swing.JLabel iconJudul2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -550,154 +471,34 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
     private javax.swing.JTable tblData;
     private javax.swing.JLabel title;
     private javax.swing.JTextField txtID;
+    private javax.swing.JTextField txtJenisPerangkat;
     private javax.swing.JTextField txtMerek;
     private javax.swing.JTextField txtModel;
-    private javax.swing.JTextField txtNamaPerangkat;
+    private javax.swing.JTextField txtNoSerial;
     private javax.swing.JTextField txtSearch;
-    private javax.swing.JTextField txtSerialNumber;
     // End of variables declaration//GEN-END:variables
 
     
- private void paginationPerangkat() {
-        btn_first.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = 1;
-                loadData();
-            }
-        });
-
-        btn_before.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni > 1) {
-                    halamanSaatIni--;
-                    loadData();
-                }
-            }
-        });
-
-        cbx_data.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString());
-                halamanSaatIni = 1;
-                loadData();
-            }
-        });
-
-        btn_next.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (halamanSaatIni < totalPages) {
-                    halamanSaatIni++;
-                    loadData();
-                }
-            }
-        });
-
-        btn_last.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                halamanSaatIni = totalPages;
-                loadData();
-            }
-        });
+ private void loadView() {
+        panelMain.removeAll();
+        panelMain.add(panelView);
+        panelMain.repaint();
+        panelMain.revalidate();
+        loadData();
     }
 
-    // Button Actions
-    private void actionButton() {
-        btnAdd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                panelMain.removeAll();
-                panelMain.add(panelAdd);
-                panelMain.repaint();
-                panelMain.revalidate();
-
-                String newId = setIDPerangkat(); // Pastikan ID dihasilkan
-                txtID.setText(newId);
-                txtID.setEnabled(false);
-
-                if (btnAdd.getText().equals("UBAH")) {
-                    dataTabel();
-                    btnSave.setText("PERBARUI");
-                } else {
-                    btnSave.setText("SIMPAN");
-                    resetForm();
-                }
-            }
-        });
-
-        btnSave.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (btnSave.getText().equals("SIMPAN")) {
-                    insertData();
-                } else if (btnSave.getText().equals("PERBARUI")) {
-                    updateData();
-                }
-            }
-        });
-
-        btnDelete.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteData();
-            }
-        });
-
-        btnCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showPanel();
-                loadData();
-            }
-        });
-
-        btnCancel2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showPanel();
-                loadData();
-            }
-        });
-
-        txtSearch.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                searchData();
-            }
-        });
-
-        tblData.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (btnAdd.getText().equals("TAMBAH")) {
-                    btnAdd.setText("UBAH");
-                    btnDelete.setVisible(true);
-                    btnCancel.setVisible(true);
-                }
-            }
-        });
-    }
-
-    // Other Functions
     private int getTotalData() {
-        int totalData = 0;
+        int total = 0;
         try {
-            String sql = "SELECT COUNT(*) AS total FROM perangkat_it";
-            try (PreparedStatement st = conn.prepareStatement(sql)) {
-                ResultSet rs = st.executeQuery();
-                if (rs.next()) {
-                    totalData = rs.getInt("total");
-                }
+            String sql = "SELECT COUNT(*) AS total FROM perangkat";
+            try (PreparedStatement st = conn.prepareStatement(sql);
+                 ResultSet rs = st.executeQuery()) {
+                if (rs.next()) total = rs.getInt("total");
             }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
-            JOptionPane.showMessageDialog(this, "Gagal memuat jumlah data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-        return totalData;
+        return total;
     }
 
     private void calculateTotalPages() {
@@ -707,308 +508,280 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
 
     private void loadData() {
         calculateTotalPages();
-        int totalData = getTotalData();
-        lb_halaman.setText("Halaman " + halamanSaatIni + " dari Total Halaman " + totalPages);
+      calculateTotalPages();
+    lb_halaman.setText("Halaman " + halamanSaatIni + " dari Total Data " + getTotalData());
+    int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
+    getData(startIndex, dataPerHalaman, (DefaultTableModel) tblData.getModel());
 
-        int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
-        getData(startIndex, dataPerHalaman, (DefaultTableModel) tblData.getModel());
-        btnDelete.setVisible(false);
-        btnCancel.setVisible(false);
-    }
-
-    private void showPanel() {
-        panelMain.removeAll();
-        panelMain.add(new MasterPerangkatIT());
-        panelMain.repaint();
-        panelMain.revalidate();
-    }
-
-    private void resetForm() {
-        txtID.setText("");
-        txtNamaPerangkat.setText("");
-        txtMerek.setText("");
-        txtModel.setText("");
-        txtSerialNumber.setText("");
-        cboJenis.setSelectedIndex(0);
-        DatePembelian.setDate(null);
-        cboKondisi.setSelectedIndex(0);
-        cboStatus.setSelectedIndex(0);
+    // 🔥 RESET BUTTON STATE
+    btnAdd.setText("TAMBAH");
+    btnDelete.setVisible(false);
+    btnCancel.setVisible(false);
     }
 
     private void setTabelModel() {
-        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override public boolean isCellEditable(int row, int column) { return false; }
+        };
         model.addColumn("No");
         model.addColumn("ID Perangkat");
-        model.addColumn("Nama Perangkat");
         model.addColumn("Jenis Perangkat");
         model.addColumn("Merek");
         model.addColumn("Model");
-        model.addColumn("Serial Number");
-        model.addColumn("Tanggal Pembelian");
-        model.addColumn("Kondisi");
-        model.addColumn("Status");
+        model.addColumn("No Serial");
+        tblData.setModel(model);
     }
 
     public void getData(int startIndex, int entriesPage, DefaultTableModel model) {
         model.setRowCount(0);
         try {
-            String sql = "SELECT id_perangkat, nama_perangkat, jenis_perangkat, merek, model, serial_number, tanggal_pembelian, kondisi, status " +
-                         "FROM perangkat_it ORDER BY id_perangkat ASC LIMIT ?,?";
+            String sql = "SELECT * FROM perangkat ORDER BY ID_Perangkat LIMIT ?, ?";
             try (PreparedStatement st = conn.prepareStatement(sql)) {
                 st.setInt(1, startIndex);
                 st.setInt(2, entriesPage);
                 ResultSet rs = st.executeQuery();
-
                 int no = startIndex + 1;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
                 while (rs.next()) {
-                    String idPerangkat = rs.getString("id_perangkat");
-                    String namaPerangkat = rs.getString("nama_perangkat");
-                    String jenisPerangkat = rs.getString("jenis_perangkat");
-                    String merek = rs.getString("merek") != null ? rs.getString("merek") : "";
-                    String modelStr = rs.getString("model") != null ? rs.getString("model") : "";
-                    String serialNumber = rs.getString("serial_number") != null ? rs.getString("serial_number") : "";
-                    Date tanggalPembelian = rs.getDate("tanggal_pembelian");
-                    String kondisi = rs.getString("kondisi");
-                    String status = rs.getString("status");
-
-                    String tanggalPembelianStr = tanggalPembelian != null ? sdf.format(tanggalPembelian) : "";
-
-                    Object[] rowData = {"   " + no++, idPerangkat, namaPerangkat, jenisPerangkat, merek, modelStr, serialNumber, tanggalPembelianStr, kondisi, status};
-                    model.addRow(rowData);
+                    model.addRow(new Object[]{
+                        " " + no++,
+                        rs.getString("ID_Perangkat"),
+                        rs.getString("Jenis_Perangkat"),
+                        rs.getString("Merek") != null ? rs.getString("Merek") : "",
+                        rs.getString("Model_Perangkat") != null ? rs.getString("Model_Perangkat") : "",
+                        rs.getString("No_Serial") != null ? rs.getString("No_Serial") : ""
+                    });
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
-            JOptionPane.showMessageDialog(this, "Gagal memuat data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Gagal load data: " + e.getMessage());
         }
     }
 
-    private String setIDPerangkat() {
-        String urutan = null;
-        Date now = new Date();
-        SimpleDateFormat noFormat = new SimpleDateFormat("yyMM");
-        String no = noFormat.format(now); // Misalnya, "2507" untuk 11:50 AM WIB, 5 Juli 2025
+   private String setIDPerangkat() {
+    String prefix = "PRK";
+    java.util.Date now = new java.util.Date();
+    
+    java.text.SimpleDateFormat yearFormat = new java.text.SimpleDateFormat("yy");
+    java.text.SimpleDateFormat monthFormat = new java.text.SimpleDateFormat("MM");
+    yearFormat.setTimeZone(java.util.TimeZone.getTimeZone("Asia/Jakarta"));
+    monthFormat.setTimeZone(java.util.TimeZone.getTimeZone("Asia/Jakarta"));
+    
+    String year = yearFormat.format(now);
+    String month = monthFormat.format(now);
+    String likePattern = prefix + year + month + "%";
 
-        String sql = "SELECT RIGHT(id_perangkat, 4) AS Nomor " +
-                     "FROM perangkat_it " +
-                     "WHERE id_perangkat LIKE 'PKT" + no + "%' " +
-                     "ORDER BY id_perangkat DESC " +
-                     "LIMIT 1";
+    String sql = "SELECT RIGHT(ID_Perangkat, 4) AS Nomor " +
+                 "FROM perangkat WHERE ID_Perangkat LIKE ? " +
+                 "ORDER BY ID_Perangkat DESC LIMIT 1";
 
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
-            ResultSet rs = st.executeQuery();
+    String newId = prefix + year + month + "0001";
+
+    try (PreparedStatement st = conn.prepareStatement(sql)) {
+        st.setString(1, likePattern);
+        try (ResultSet rs = st.executeQuery()) {
             if (rs.next()) {
                 int nomor = Integer.parseInt(rs.getString("Nomor")) + 1;
-                urutan = "PKT" + no + String.format("%04d", nomor);
-            } else {
-                urutan = "PKT" + no + "0001";
+                newId = prefix + year + month + String.format("%04d", nomor);
             }
-        } catch (SQLException | NumberFormatException e) {
-            Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
-            JOptionPane.showMessageDialog(this, "Gagal menghasilkan ID: " + e.getMessage() + ". Menggunakan default PKT" + no + "0001.", "Error", JOptionPane.ERROR_MESSAGE);
-            urutan = "PKT" + no + "0001"; // Fallback
         }
-        if (urutan != null && urutan.length() > 12) {
-            urutan = urutan.substring(0, 12); // Potong jika melebihi 12 karakter
-        }
-        return urutan != null ? urutan : "PKT" + no + "0001";
+    } catch (SQLException | NumberFormatException e) {
+        System.err.println("Gagal generate ID: " + e.getMessage());
     }
 
+    return newId.length() > 10 ? newId.substring(0, 10) : newId;
+}
+
+    // ======================= CRUD =======================
     private void insertData() {
-        String idPerangkat = txtID.getText().trim();
-        if (idPerangkat.isEmpty()) {
-            idPerangkat = setIDPerangkat(); // Gunakan ID otomatis jika kosong
-        } else if (idPerangkat.length() > 12) { // Sesuaikan dengan panjang kolom
-            JOptionPane.showMessageDialog(this, "ID Perangkat terlalu panjang. Maksimum 12 karakter.", "Error", JOptionPane.ERROR_MESSAGE);
+        String id = txtID.getText().trim();
+           String jenis = txtJenisPerangkat.getText().trim();
+        String merek = txtMerek.getText().trim();
+        String model = txtModel.getText().trim();
+        String noSerial = txtNoSerial.getText().trim();
+
+        if (jenis.equals("Pilih Jenis") || merek.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Jenis dan merek wajib diisi!", "Validasi", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String namaPerangkat = txtNamaPerangkat.getText().trim();
-        String jenisPerangkat = cboJenis.getSelectedItem().toString();
-        String merek = txtMerek.getText().trim();
-        String model = txtModel.getText().trim();
-        String serialNumber = txtSerialNumber.getText().trim();
-        Date tanggalPembelian = DatePembelian.getDate();
-        String kondisi = cboKondisi.getSelectedItem().toString();
-        String status = cboStatus.getSelectedItem().toString();
-
         try {
-            String sql = "INSERT INTO perangkat_it (id_perangkat, nama_perangkat, jenis_perangkat, merek, model, serial_number, tanggal_pembelian, kondisi, status) " +
-                         "VALUES (?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO perangkat (ID_Perangkat, Jenis_Perangkat, Merek, Model_Perangkat, No_Serial) VALUES (?,?,?,?,?)";
             try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, idPerangkat);
-                st.setString(2, namaPerangkat.isEmpty() ? "Unnamed Device" : namaPerangkat);
-                st.setString(3, jenisPerangkat);
-                st.setString(4, merek.isEmpty() ? null : merek);
-                st.setString(5, model.isEmpty() ? null : model);
-                st.setString(6, serialNumber.isEmpty() ? null : serialNumber);
-                st.setDate(7, tanggalPembelian != null ? new java.sql.Date(tanggalPembelian.getTime()) : null);
-                st.setString(8, kondisi);
-                st.setString(9, status);
-
-                int rowInserted = st.executeUpdate();
-                if (rowInserted > 0) {
-                    JOptionPane.showMessageDialog(this, "Data Berhasil Ditambahkan");
+                st.setString(1, id);
+                st.setString(2, jenis);
+                st.setString(3, merek.isEmpty() ? null : merek);
+                st.setString(4, model.isEmpty() ? null : model);
+                st.setString(5, noSerial.isEmpty() ? null : noSerial);
+                if (st.executeUpdate() > 0) {
+                    JOptionPane.showMessageDialog(this, "Data berhasil disimpan");
                     resetForm();
-                    loadData();
-                    showPanel();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Gagal menambahkan data", "Error", JOptionPane.ERROR_MESSAGE);
+                    loadView();
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
-            JOptionPane.showMessageDialog(this, "Gagal menambahkan data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Gagal simpan: " + e.getMessage());
         }
     }
 
     private void dataTabel() {
-        panelView.setVisible(false);
-        panelAdd.setVisible(true);
-
         int row = tblData.getSelectedRow();
-        title.setText("Perbarui Data Perangkat IT");
-
-        txtID.setEnabled(false);
+        if (row == -1) return;
         txtID.setText(tblData.getValueAt(row, 1).toString());
-        txtNamaPerangkat.setText(tblData.getValueAt(row, 2).toString());
-        cboJenis.setSelectedItem(tblData.getValueAt(row, 3).toString());
-        txtMerek.setText(tblData.getValueAt(row, 4).toString());
-        txtModel.setText(tblData.getValueAt(row, 5).toString());
-        txtSerialNumber.setText(tblData.getValueAt(row, 6).toString());
-        try {
-            String tanggalPembelianStr = tblData.getValueAt(row, 7).toString();
-            if (!tanggalPembelianStr.isEmpty()) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                DatePembelian.setDate(sdf.parse(tanggalPembelianStr));
-            } else {
-                DatePembelian.setDate(null);
-            }
-        } catch (Exception e) {
-            Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
-            DatePembelian.setDate(null); // Fallback jika parsing gagal
-        }
-        cboKondisi.setSelectedItem(tblData.getValueAt(row, 8).toString());
-        cboStatus.setSelectedItem(tblData.getValueAt(row, 9).toString());
+          txtJenisPerangkat.setText(tblData.getValueAt(row, 2).toString());
+        txtMerek.setText(tblData.getValueAt(row, 3).toString());
+        txtModel.setText(tblData.getValueAt(row, 4).toString());
+        txtNoSerial.setText(tblData.getValueAt(row, 5).toString());
+        title.setText("Edit Data Perangkat");
+        btnSave.setText("PERBARUI");
+        panelMain.removeAll();
+        panelMain.add(panelAdd);
+        panelMain.repaint();
+        panelMain.revalidate();
     }
 
     private void updateData() {
-        String idPerangkat = txtID.getText().trim();
-        String namaPerangkat = txtNamaPerangkat.getText().trim();
-        String jenisPerangkat = cboJenis.getSelectedItem().toString();
+        String id = txtID.getText().trim();
+        String jenis = txtJenisPerangkat.getText().trim();
         String merek = txtMerek.getText().trim();
         String model = txtModel.getText().trim();
-        String serialNumber = txtSerialNumber.getText().trim();
-        Date tanggalPembelian = DatePembelian.getDate();
-        String kondisi = cboKondisi.getSelectedItem().toString();
-        String status = cboStatus.getSelectedItem().toString();
+        String noSerial = txtNoSerial.getText().trim();
 
         try {
-            String sql = "UPDATE perangkat_it SET nama_perangkat=?, jenis_perangkat=?, merek=?, model=?, serial_number=?, tanggal_pembelian=?, kondisi=?, status=? " +
-                         "WHERE id_perangkat=?";
+            String sql = "UPDATE perangkat SET Jenis_Perangkat=?, Merek=?, Model_Perangkat=?, No_Serial=? WHERE ID_Perangkat=?";
             try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, namaPerangkat.isEmpty() ? "Unnamed Device" : namaPerangkat);
-                st.setString(2, jenisPerangkat);
-                st.setString(3, merek.isEmpty() ? null : merek);
-                st.setString(4, model.isEmpty() ? null : model);
-                st.setString(5, serialNumber.isEmpty() ? null : serialNumber);
-                st.setDate(6, tanggalPembelian != null ? new java.sql.Date(tanggalPembelian.getTime()) : null);
-                st.setString(7, kondisi);
-                st.setString(8, status);
-                st.setString(9, idPerangkat);
-
-                int rowUpdated = st.executeUpdate();
-                if (rowUpdated > 0) {
-                    JOptionPane.showMessageDialog(this, "Data Berhasil Diperbarui");
+                st.setString(1, jenis);
+                st.setString(2, merek.isEmpty() ? null : merek);
+                st.setString(3, model.isEmpty() ? null : model);
+                st.setString(4, noSerial.isEmpty() ? null : noSerial);
+                st.setString(5, id);
+                if (st.executeUpdate() > 0) {
+                    JOptionPane.showMessageDialog(this, "Data diperbarui");
                     resetForm();
-                    loadData();
-                    showPanel();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Gagal memperbarui data", "Error", JOptionPane.ERROR_MESSAGE);
+                    loadView();
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
-            JOptionPane.showMessageDialog(this, "Gagal memperbarui data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Gagal update: " + e.getMessage());
         }
     }
 
     private void deleteData() {
-        int selectedRow = tblData.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Pilih data yang akan dihapus!", "Validasi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Apakah yakin ingin menghapus data ini?",
-                "Konfirmasi Hapus Data",
-                JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            String id = tblData.getValueAt(selectedRow, 1).toString();
-            try {
-                String sql = "DELETE FROM perangkat_it WHERE id_perangkat=?";
-                try (PreparedStatement st = conn.prepareStatement(sql)) {
-                    st.setString(1, id);
-                    int rowDeleted = st.executeUpdate();
-                    if (rowDeleted > 0) {
-                        JOptionPane.showMessageDialog(this, "Data Berhasil Dihapus");
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Gagal menghapus data", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            } catch (SQLException e) {
-                Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
-                JOptionPane.showMessageDialog(this, "Gagal menghapus data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        resetForm();
-        loadData();
-        showPanel();
+    int row = tblData.getSelectedRow();
+    if (row == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih data yang akan dihapus");
+        return;
     }
 
-    private void searchData() {
-        String kataKunci = txtSearch.getText().trim();
-        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
-        model.setRowCount(0);
+    if (JOptionPane.showConfirmDialog(this, "Hapus data ini?", "Konfirmasi",
+            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 
+        String id = tblData.getValueAt(row, 1).toString();
         try {
-            String sql = "SELECT id_perangkat, nama_perangkat, jenis_perangkat, merek, model, serial_number, tanggal_pembelian, kondisi, status " +
-                         "FROM perangkat_it " +
-                         "WHERE nama_perangkat LIKE ? OR merek LIKE ? OR serial_number LIKE ?";
+            String sql = "DELETE FROM perangkat WHERE ID_Perangkat=?";
             try (PreparedStatement st = conn.prepareStatement(sql)) {
-                st.setString(1, "%" + kataKunci + "%");
-                st.setString(2, "%" + kataKunci + "%");
-                st.setString(3, "%" + kataKunci + "%");
-                ResultSet rs = st.executeQuery();
-
-                int no = 1;
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-                while (rs.next()) {
-                    String idPerangkat = rs.getString("id_perangkat");
-                    String namaPerangkat = rs.getString("nama_perangkat");
-                    String jenisPerangkat = rs.getString("jenis_perangkat");
-                    String merek = rs.getString("merek") != null ? rs.getString("merek") : "";
-                    String modelStr = rs.getString("model") != null ? rs.getString("model") : "";
-                    String serialNumber = rs.getString("serial_number") != null ? rs.getString("serial_number") : "";
-                    Date tanggalPembelian = rs.getDate("tanggal_pembelian");
-                    String kondisi = rs.getString("kondisi");
-                    String status = rs.getString("status");
-
-                    String tanggalPembelianStr = tanggalPembelian != null ? sdf.format(tanggalPembelian) : "";
-
-                    Object[] rowData = {"   " + no++, idPerangkat, namaPerangkat, jenisPerangkat, merek, modelStr, serialNumber, tanggalPembelianStr, kondisi, status};
-                    model.addRow(rowData);
+                st.setString(1, id);
+                if (st.executeUpdate() > 0) {
+                    JOptionPane.showMessageDialog(this, "Data dihapus");
+                    loadData(); // 🔥 reset button otomatis
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(MasterPerangkatIT.class.getName()).log(Level.SEVERE, null, e);
-            JOptionPane.showMessageDialog(this, "Gagal mencari data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                "Gagal hapus: Perangkat masih digunakan di transaksi");
         }
+    }
+}
+
+
+    private void searchData() {
+        String key = txtSearch.getText();
+        DefaultTableModel model = (DefaultTableModel) tblData.getModel();
+        model.setRowCount(0);
+        try {
+            String sql = "SELECT * FROM perangkat WHERE Merek LIKE ? OR Model_Perangkat LIKE ? OR No_Serial LIKE ?";
+            try (PreparedStatement st = conn.prepareStatement(sql)) {
+                st.setString(1, "%" + key + "%");
+                st.setString(2, "%" + key + "%");
+                st.setString(3, "%" + key + "%");
+                ResultSet rs = st.executeQuery();
+                int no = 1;
+                while (rs.next()) {
+                    model.addRow(new Object[]{
+                        " " + no++,
+                        rs.getString("ID_Perangkat"),
+                        rs.getString("Jenis_Perangkat"),
+                        rs.getString("Merek") != null ? rs.getString("Merek") : "",
+                        rs.getString("Model_Perangkat") != null ? rs.getString("Model_Perangkat") : "",
+                        rs.getString("No_Serial") != null ? rs.getString("No_Serial") : ""
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+private void resetForm() {
+    txtID.setText(setIDPerangkat());
+    txtJenisPerangkat.setText("");
+    txtMerek.setText("");
+    txtModel.setText("");
+    txtNoSerial.setText("");
+
+    btnSave.setText("SIMPAN");
+    btnAdd.setText("TAMBAH");
+    btnDelete.setVisible(false);
+    btnCancel.setVisible(false);
+
+    title.setText("Tambah Data Perangkat");
+}
+
+
+    // ======================= ACTION LISTENERS =======================
+    private void paginationPerangkat() {
+        btn_first.addActionListener(e -> { halamanSaatIni = 1; loadData(); });
+        btn_before.addActionListener(e -> { if (halamanSaatIni > 1) { halamanSaatIni--; loadData(); } });
+        cbx_data.addActionListener(e -> { dataPerHalaman = Integer.parseInt(cbx_data.getSelectedItem().toString()); halamanSaatIni = 1; loadData(); });
+        btn_next.addActionListener(e -> { if (halamanSaatIni < totalPages) { halamanSaatIni++; loadData(); } });
+        btn_last.addActionListener(e -> { halamanSaatIni = totalPages; loadData(); });
+    }
+
+    private void actionButton() {
+        btnAdd.addActionListener(e -> {
+    panelMain.removeAll();
+    panelMain.add(panelAdd);
+    panelMain.repaint();
+    panelMain.revalidate();
+
+    if (btnAdd.getText().equals("UBAH")) {
+        dataTabel(); // isi form dari tabel
+        btnSave.setText("PERBARUI");
+    } else {
+        resetForm();
+        txtID.setText(setIDPerangkat());
+        txtID.setEnabled(false);
+        btnSave.setText("SIMPAN");
+    }
+});
+
+        btnDelete.addActionListener(e -> deleteData());
+        btnCancel.addActionListener(e -> loadView());
+        btnCancel2.addActionListener(e -> loadView());
+
+        tblData.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+    public void mouseClicked(java.awt.event.MouseEvent e) {
+        if (tblData.getSelectedRow() != -1) {
+            btnAdd.setText("UBAH");
+            btnDelete.setVisible(true);
+            btnCancel.setVisible(true);
+        }
+
+        if (e.getClickCount() == 2) {
+            dataTabel(); // edit
+        }
+    }
+});
     }
 }
 
