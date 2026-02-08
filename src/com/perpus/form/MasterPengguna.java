@@ -44,6 +44,7 @@ public class MasterPengguna extends javax.swing.JPanel {
         paginationUser();
         setColumnWidth();
         setLayoutForm();
+          txtID.setText(setIDUser());
     }
 
     private void setupDialogPegawai() {
@@ -726,7 +727,7 @@ public class MasterPengguna extends javax.swing.JPanel {
     }
    
     private void resetForm() {
-     txtID.setText("");
+     txtID.setText(setIDUser());
         txtNama.setText("");
         txtUsername.setText("");
         txtEmail.setText("");

@@ -360,6 +360,11 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
         btnCancel2.setText("BATAL");
 
         btnSave.setText("SIMPAN");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -433,6 +438,12 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
     private void tblDataMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDataMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_tblDataMouseClicked
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        // TODO add your handling code here:
+           if (btnSave.getText().equals("SIMPAN")) insertData();
+        else updateData();
+    }//GEN-LAST:event_btnSaveActionPerformed
 
     
 
@@ -513,7 +524,7 @@ public class MasterPerangkatIT extends javax.swing.JPanel {
     int startIndex = (halamanSaatIni - 1) * dataPerHalaman;
     getData(startIndex, dataPerHalaman, (DefaultTableModel) tblData.getModel());
 
-    // 🔥 RESET BUTTON STATE
+
     btnAdd.setText("TAMBAH");
     btnDelete.setVisible(false);
     btnCancel.setVisible(false);
